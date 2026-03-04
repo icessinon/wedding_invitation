@@ -29,13 +29,22 @@ export async function GET(request: Request) {
         })
 
         const abTestBaseWhere: any = productId ? { productId } : {}
+        const monthOverlapWhere = {
+            startDate: { lte: monthEnd },
+            OR: [{ endDate: null }, { endDate: { gte: monthStart } }],
+        }
+        const completedInMonthWhere = {
+            ...abTestBaseWhere,
+            status: 'completed',
+            updatedAt: { gte: monthStart, lte: monthEnd },
+        }
 
         const [abTestRunning, abTestPaused, abTestCompleted, abTestVictoryCount, abTestDefeatCount, abTestAddedThisMonth] = await Promise.all([
-            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'running' } }),
-            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'paused' } }),
-            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'completed' } }),
-            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'completed', winnerVariant: { in: ['B', 'C', 'D'] } } }),
-            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'completed', winnerVariant: 'A' } }),
+            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'running', ...monthOverlapWhere } }),
+            prisma.abTest.count({ where: { ...abTestBaseWhere, status: 'paused', ...monthOverlapWhere } }),
+            prisma.abTest.count({ where: completedInMonthWhere }),
+            prisma.abTest.count({ where: { ...completedInMonthWhere, winnerVariant: { in: ['B', 'C', 'D'] } } }),
+            prisma.abTest.count({ where: { ...completedInMonthWhere, winnerVariant: 'A' } }),
             prisma.abTest.count({ where: { ...abTestBaseWhere, createdAt: { gte: monthStart, lte: monthEnd } } }),
         ])
 

@@ -12,4 +12,8 @@ export interface CustomSelectProps {
     disabled?: boolean
     placeholder?: string
     'aria-label'?: string
+    /** ドロップダウン内で検索可能にする（デフォルト: true） */
+    searchable?: boolean
+    /** 検索入力のプレースホルダー */
+    searchPlaceholder?: string
 }

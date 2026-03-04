@@ -4,20 +4,8 @@ import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine, Legend } from 'recharts'
 import type { ConversionRateChartProps } from './types'
 import styles from './ConversionRateChart.module.css'
-import { useEffect, useState } from 'react'
-
 export default function ConversionRateChart({ data, periodLabel, targetRate, periods, comparisonData, comparisonLabel }: ConversionRateChartProps) {
-    const [isDarkMode, setIsDarkMode] = useState(false)
-
-    useEffect(() => {
-        const checkDarkMode = () => {
-            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
-        }
-        checkDarkMode()
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        mediaQuery.addEventListener('change', checkDarkMode)
-        return () => mediaQuery.removeEventListener('change', checkDarkMode)
-    }, [])
+    const isDarkMode = true
 
     const effectivePeriods = periods && periods.length > 0
         ? periods
@@ -217,7 +205,7 @@ export default function ConversionRateChart({ data, periodLabel, targetRate, per
                                 domain={[0, 100]}
                                 tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(75, 85, 99, 0.25)', stroke: '#9ca3af', strokeWidth: 1 }} />
                             {effectivePeriods.map((period, idx) => {
                                 const dataKey = `conversionRatePercent${idx}`
                                 const color = periodColors[idx % periodColors.length]
@@ -257,7 +245,7 @@ export default function ConversionRateChart({ data, periodLabel, targetRate, per
                                 domain={[0, 100]}
                                 tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(75, 85, 99, 0.25)', stroke: '#9ca3af', strokeWidth: 1 }} />
                             <Bar dataKey="conversionRatePercentA" radius={[6, 6, 0, 0]} barSize={35} name={periodLabel || '期間A'} fill="#3b82f6" />
                             <Bar dataKey="conversionRatePercentB" radius={[6, 6, 0, 0]} barSize={35} name={comparisonLabel || '期間B'} fill="#10b981" />
                             <Legend />
@@ -285,7 +273,7 @@ export default function ConversionRateChart({ data, periodLabel, targetRate, per
                                 domain={[0, 100]}
                                 tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(75, 85, 99, 0.25)', stroke: '#9ca3af', strokeWidth: 1 }} />
                             {targetRate && (
                                 <ReferenceLine
                                     y={targetRate * 100}

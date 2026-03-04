@@ -1,22 +1,11 @@
 'use client'
 
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from 'recharts'
-import { useEffect, useState } from 'react'
 import type { TrendChartProps } from './types'
 import styles from './TrendChart.module.css'
 
 export default function TrendChart({ reportName, weeklyResults, monthlyTotal, monthlyData }: TrendChartProps) {
-    const [isDarkMode, setIsDarkMode] = useState(false)
-
-    useEffect(() => {
-        const checkDarkMode = () => {
-            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
-        }
-        checkDarkMode()
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        mediaQuery.addEventListener('change', checkDarkMode)
-        return () => mediaQuery.removeEventListener('change', checkDarkMode)
-    }, [])
+    const isDarkMode = true
 
     if (!weeklyResults || weeklyResults.length === 0) {
         return (

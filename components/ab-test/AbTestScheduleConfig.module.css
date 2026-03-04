@@ -1,8 +1,8 @@
 .scheduleConfig {
     padding: 16px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #374151;
     border-radius: 8px;
-    background: #f9fafb;
+    background: #1f2937;
 }
 
 .checkboxLabel {
@@ -37,7 +37,7 @@
 }
 
 .radioLabel:hover {
-    background: #f3f4f6;
+    background: #374151;
 }
 
 .radioLabel input[type="radio"] {
@@ -47,8 +47,10 @@
 .numberInput {
     width: 60px;
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
+    background: #1f2937;
+    color: #f3f4f6;
 }
 
 .dateTimeInputs {
@@ -59,8 +61,15 @@
 
 .dateTimeInputs input {
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+.dateTimeInputs input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.9;
 }
 
 .recurringConfig {
@@ -69,21 +78,30 @@
     gap: 12px;
     margin-left: 16px;
     padding: 12px;
-    background: white;
+    background: #111827;
     border-radius: 4px;
 }
 
 .recurringConfig select,
 .recurringSelect {
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
+    background: #1f2937;
+    color: #f3f4f6;
 }
 
 .recurringConfig input[type="time"] {
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+.recurringConfig input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.9;
 }
 
 .daysOfWeek {
@@ -97,13 +115,13 @@
     align-items: center;
     gap: 4px;
     padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
     cursor: pointer;
 }
 
 .dayCheckbox:hover {
-    background: #f3f4f6;
+    background: #374151;
 }
 
 .dayCheckbox input[type="checkbox"] {
@@ -114,24 +132,4 @@
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-/* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-    .scheduleConfig {
-        background: #1f2937;
-        border-color: #374151;
-    }
-
-    .radioLabel:hover {
-        background: #374151;
-    }
-
-    .recurringConfig {
-        background: #111827;
-    }
-
-    .dayCheckbox:hover {
-        background: #374151;
-    }
 }

@@ -14,35 +14,25 @@
 .backLink {
     display: inline-flex;
     align-items: center;
-    color: #2563eb;
+    color: #60a5fa;
     text-decoration: none;
     margin-bottom: 0.5rem;
     padding: 0.5rem 1rem;
-    border: 1px solid #93c5fd;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     transition: background-color 0.2s;
 }
 
 .backLink:hover {
-    background-color: #eff6ff;
+    background-color: #374151;
     text-decoration: underline;
-}
-
-@media (prefers-color-scheme: dark) {
-    .backLink {
-        color: #60a5fa;
-        border-color: #1e3a8a;
-    }
-
-    .backLink:hover {
-        background-color: rgba(30, 58, 138, 0.2);
-    }
 }
 
 .title {
     font-size: 1.875rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    color: #f3f4f6;
 }
 
 .loaderContainer {
@@ -56,70 +46,45 @@
 
 .loaderText {
     margin-top: 2rem;
-    color: #4b5563;
+    color: #9ca3af;
     text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-    .loaderText {
-        color: #9ca3af;
-    }
-}
-
 .warningBox {
-    background-color: #fef3c7;
-    border: 1px solid #fde68a;
+    background-color: rgba(245, 158, 11, 0.15);
+    border: 1px solid #d97706;
     border-radius: 0.5rem;
     padding: 1rem;
-    color: #92400e;
-}
-
-@media (prefers-color-scheme: dark) {
-    .warningBox {
-        background-color: rgba(161, 98, 7, 0.2);
-        border-color: #78350f;
-        color: #fcd34d;
-    }
+    color: #fcd34d;
 }
 
 .infoBox {
-    background-color: #eff6ff;
-    border: 1px solid #bfdbfe;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .infoBox {
-        background-color: rgba(30, 58, 138, 0.2);
-        border-color: #1e3a8a;
-    }
+    color: #e5e7eb;
 }
 
 .infoText {
     font-size: 0.875rem;
+    color: #e5e7eb;
 }
 
 .section {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .section {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
 }
 
 .sectionTitle {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1rem;
+    color: #f3f4f6;
 }
 
 .form {
@@ -150,32 +115,37 @@
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 0.25rem;
+    color: #e5e7eb;
 }
 
 .formInput {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 0.375rem;
+    background-color: #111827;
+    color: #f3f4f6;
 }
 
 .formInput:focus {
     outline: none;
     border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 .formSelect {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 0.375rem;
+    background-color: #111827;
+    color: #f3f4f6;
 }
 
 .formSelect:focus {
     outline: none;
     border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 .submitButton {
@@ -203,37 +173,23 @@
 
 .errorBox {
     margin-bottom: 1.5rem;
-    background-color: #fef2f2;
-    border: 1px solid #fecaca;
+    background-color: rgba(185, 28, 28, 0.2);
+    border: 1px solid #b91c1c;
     border-radius: 0.5rem;
     padding: 1rem;
-    color: #991b1b;
-}
-
-@media (prefers-color-scheme: dark) {
-    .errorBox {
-        background-color: rgba(127, 29, 29, 0.2);
-        border-color: #7f1d1d;
-        color: #fca5a5;
-    }
+    color: #fca5a5;
 }
 
 .errorTitle {
     font-weight: 600;
+    color: #fca5a5;
 }
 
 .dataSection {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .dataSection {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
 }
 
 .dataHeader {
@@ -246,6 +202,7 @@
 .dataTitle {
     font-size: 1.25rem;
     font-weight: 600;
+    color: #f3f4f6;
 }
 
 .dataHeaderRight {
@@ -256,15 +213,9 @@
 
 .viewModeTabs {
     display: flex;
-    background-color: #f3f4f6;
+    background-color: #374151;
     border-radius: 0.5rem;
     padding: 0.25rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .viewModeTabs {
-        background-color: #374151;
-    }
 }
 
 .viewModeButton {
@@ -276,43 +227,16 @@
     border: none;
     cursor: pointer;
     background: transparent;
-    color: #4b5563;
+    color: #d1d5db;
 }
 
 .viewModeButton:hover {
-    color: #111827;
-}
-
-.viewModeButtonActive {
-    background-color: white;
-    color: #2563eb;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-@media (prefers-color-scheme: dark) {
-    .viewModeButton {
-        color: #d1d5db;
-    }
-
-    .viewModeButton:hover {
-        color: #f3f4f6;
-    }
-
-    .viewModeButtonActive {
-        background-color: #4b5563;
-        color: #60a5fa;
-    }
+    color: #f3f4f6;
 }
 
 .dataCount {
     font-size: 0.875rem;
-    color: #4b5563;
-}
-
-@media (prefers-color-scheme: dark) {
-    .dataCount {
-        color: #9ca3af;
-    }
+    color: #ffffff;
 }
 
 .tableWrapper {
@@ -325,13 +249,7 @@
 }
 
 .tableHead {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHead {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .tableHeaderCell {
@@ -339,65 +257,28 @@
     text-align: left;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHeaderCell {
-        color: #d1d5db;
-        border-bottom-color: #374151;
-    }
+    color: #e5e7eb;
+    border-bottom: 1px solid #4b5563;
 }
 
 .tableBody {
-    border-top: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableBody {
-        border-top-color: #374151;
-    }
+    border-top: 1px solid #4b5563;
 }
 
 .tableRow {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #4b5563;
     transition: background-color 0.2s;
+    background-color: #1f2937;
 }
 
 .tableRow:hover {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableRow {
-        border-bottom-color: #374151;
-    }
-
-    .tableRow:hover {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .tableCell {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    color: #111827;
-    border-bottom: 1px solid #e5e7eb;
+    color: #f3f4f6;
+    border-bottom: 1px solid #374151;
 }
 
-.tableCellCenter {
-    text-align: center;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableCell {
-        color: #f3f4f6;
-        border-bottom-color: #374151;
-    }
-
-    .tableCellCenter {
-        color: #9ca3af;
-    }
-}

@@ -11,23 +11,12 @@
 
 .chartEmpty {
     font-size: 0.9375rem;
-    color: #6b7280;
+    color: #9ca3af;
     margin: 0;
     padding: 2rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    .chartEmpty {
-        color: #9ca3af;
-    }
-}
-
 .chartGrid {
-    stroke: #e5e7eb;
+    stroke: #4b5563;
 }
 
-@media (prefers-color-scheme: dark) {
-    .chartGrid {
-        stroke: #4b5563;
-    }
-}

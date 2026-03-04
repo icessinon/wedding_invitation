@@ -1,16 +1,9 @@
 .container {
-    background-color: white;
+    background-color: #1f2937;
     border: 1px solid rgb(229, 231, 235);
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .container {
-        background-color: rgb(31, 41, 55);
-        border-color: rgb(55, 65, 81);
-    }
 }
 
 .buttonGroup {
@@ -41,13 +34,8 @@
     background-color: rgb(209, 213, 219);
 }
 
-@media (prefers-color-scheme: dark) {
-    .buttonInactive {
+.buttonInactive {
         background-color: rgb(55, 65, 81);
         color: rgb(209, 213, 219);
     }
 
-    .buttonInactive:hover {
-        background-color: rgb(75, 85, 99);
-    }
-}

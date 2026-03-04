@@ -27,8 +27,3 @@
     color: rgb(107, 114, 128);
 }
 
-@media (prefers-color-scheme: dark) {
-    .emptyState {
-        color: rgb(156, 163, 175);
-    }
-}

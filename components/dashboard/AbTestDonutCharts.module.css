@@ -12,32 +12,19 @@
 }
 
 .chartWrap {
-    background: var(--chart-bg, #ffffff);
-    border: 1px solid #e5e7eb;
+    background: #1f2937;
+    border: 1px solid #374151;
     border-radius: 1rem;
     padding: 1.25rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-    .chartWrap {
-        background: #1f2937;
-        border-color: #374151;
-    }
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .chartTitle {
     font-size: 0.9375rem;
     font-weight: 600;
-    color: #374151;
+    color: #d1d5db;
     margin: 0 0 0.5rem 0;
     text-align: center;
-}
-
-@media (prefers-color-scheme: dark) {
-    .chartTitle {
-        color: #e5e7eb;
-    }
 }
 
 .emptyMessage {
@@ -45,12 +32,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6b7280;
+    color: #9ca3af;
     font-size: 0.875rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .emptyMessage {
-        color: #9ca3af;
-    }
 }

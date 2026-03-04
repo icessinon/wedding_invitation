@@ -258,17 +258,24 @@ export default function HeatmapPage() {
                                             layout="vertical"
                                             margin={{ top: 8, right: 24, left: 8, bottom: 8 }}
                                         >
-                                            <XAxis type="number" tick={{ fontSize: 12 }} />
+                                            <XAxis type="number" tick={{ fontSize: 12, fill: '#ffffff' }} />
                                             <YAxis
                                                 type="category"
                                                 dataKey="viewLabel"
                                                 width={180}
-                                                tick={{ fontSize: 12 }}
+                                                tick={{ fontSize: 12, fill: '#ffffff' }}
                                                 tickFormatter={(v) => (String(v).length > 24 ? String(v).slice(0, 21) + '...' : v)}
                                             />
                                             <Tooltip
                                                 formatter={(value: number) => [value.toLocaleString(), 'イベント数']}
                                                 labelFormatter={(label) => `view ラベル: ${label}`}
+                                                cursor={{ fill: 'rgba(255,255,255,0.12)' }}
+                                                contentStyle={{
+                                                    backgroundColor: '#1f2937',
+                                                    border: '1px solid #4b5563',
+                                                    borderRadius: '0.375rem',
+                                                }}
+                                                labelStyle={{ color: '#ffffff' }}
                                             />
                                             <Bar dataKey="count" radius={[0, 4, 4, 0]} isAnimationActive={false}>
                                                 {data.map((entry, index) => (

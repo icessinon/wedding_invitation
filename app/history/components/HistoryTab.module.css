@@ -8,24 +8,17 @@
 }
 
 .errorContainer {
-    background-color: #fef2f2;
-    border: 1px solid #fecaca;
+    background-color: rgba(185, 28, 28, 0.2);
+    border: 1px solid #b91c1c;
     border-radius: 0.5rem;
     padding: 1rem;
-    color: #991b1b;
-}
-
-@media (prefers-color-scheme: dark) {
-    .errorContainer {
-        background-color: rgba(127, 29, 29, 0.2);
-        border-color: #7f1d1d;
-        color: #fca5a5;
-    }
+    color: #fca5a5;
 }
 
 .errorTitle {
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #fca5a5;
 }
 
 .retryButton {
@@ -44,18 +37,11 @@
 }
 
 .searchForm {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .searchForm {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
 }
 
 .searchInputContainer {
@@ -66,23 +52,17 @@
 .searchInput {
     flex: 1;
     padding: 0.5rem 1rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     font-size: 0.875rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .searchInput {
-        background-color: #374151;
-        border-color: #4b5563;
-        color: #f9fafb;
-    }
+    background-color: #111827;
+    color: #f3f4f6;
 }
 
 .clearButton {
     padding: 0.5rem 1.5rem;
-    background-color: #e5e7eb;
-    color: #1f2937;
+    background-color: #374151;
+    color: #e5e7eb;
     border-radius: 0.5rem;
     transition: background-color 0.2s;
     font-size: 0.875rem;
@@ -91,68 +71,32 @@
 }
 
 .clearButton:hover {
-    background-color: #d1d5db;
-}
-
-@media (prefers-color-scheme: dark) {
-    .clearButton {
-        background-color: #374151;
-        color: #e5e7eb;
-    }
-
-    .clearButton:hover {
-        background-color: #4b5563;
-    }
+    background-color: #4b5563;
 }
 
 .helpText {
     margin-top: 0.5rem;
     font-size: 0.75rem;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .helpText {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }
 
 .countText {
     margin-bottom: 1rem;
     font-size: 0.875rem;
-    color: #4b5563;
-}
-
-@media (prefers-color-scheme: dark) {
-    .countText {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }
 
 .emptyState {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 2rem;
     text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-    .emptyState {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
-}
-
 .emptyText {
-    color: #4b5563;
+    color: #9ca3af;
     margin-bottom: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .emptyText {
-        color: #9ca3af;
-    }
 }
 
 .createButton {
@@ -171,28 +115,15 @@
 }
 
 .table {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     overflow: hidden;
     width: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-    .table {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
-}
-
 .tableHead {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHead {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .tableHeader {
@@ -200,54 +131,27 @@
     text-align: left;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHeader {
-        color: #d1d5db;
-    }
+    color: #e5e7eb;
 }
 
 .tableBody {
-    border-top: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableBody {
-        border-top-color: #374151;
-    }
+    border-top: 1px solid #4b5563;
 }
 
 .tableRow {
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #4b5563;
     transition: background-color 0.2s;
+    background-color: #1f2937;
 }
 
 .tableRow:hover {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableRow {
-        border-bottom-color: #374151;
-    }
-
-    .tableRow:hover {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .tableCell {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableCell {
-        color: #f3f4f6;
-    }
+    color: #f3f4f6;
 }
 
 .actionCell {
@@ -260,7 +164,7 @@
 }
 
 .actionLink {
-    color: #2563eb;
+    color: #60a5fa;
     text-decoration: none;
     font-size: 0.875rem;
     transition: text-decoration 0.2s;
@@ -270,14 +174,8 @@
     text-decoration: underline;
 }
 
-@media (prefers-color-scheme: dark) {
-    .actionLink {
-        color: #60a5fa;
-    }
-}
-
 .deleteButton {
-    color: #dc2626;
+    color: #f87171;
     background: none;
     border: none;
     cursor: pointer;
@@ -295,12 +193,6 @@
     cursor: not-allowed;
 }
 
-@media (prefers-color-scheme: dark) {
-    .deleteButton {
-        color: #f87171;
-    }
-}
-
 .pagination {
     margin-top: 1.5rem;
     display: flex;
@@ -311,16 +203,16 @@
 
 .paginationButton {
     padding: 0.5rem 1rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-    background-color: white;
-    color: #374151;
+    background-color: #1f2937;
+    color: #e5e7eb;
     transition: background-color 0.2s;
     cursor: pointer;
 }
 
 .paginationButton:hover:not(:disabled) {
-    background-color: #f9fafb;
+    background-color: #374151;
 }
 
 .paginationButton:disabled {
@@ -334,23 +226,6 @@
     border-color: #2563eb;
 }
 
-.paginationNumbers {
-    display: flex;
-    gap: 0.25rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .paginationButton {
-        background-color: #1f2937;
-        border-color: #374151;
-        color: #e5e7eb;
-    }
-
-    .paginationButton:hover:not(:disabled) {
-        background-color: #374151;
-    }
-}
-
 .statusBadge {
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
@@ -359,43 +234,17 @@
 }
 
 .statusBadgeCompleted {
-    background-color: #dcfce7;
-    color: #166534;
+    background-color: rgba(22, 101, 52, 0.3);
+    color: #86efac;
 }
 
 .statusBadgeFailed {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: rgba(185, 28, 28, 0.3);
+    color: #fca5a5;
 }
 
 .statusBadgeRunning {
-    background-color: #dbeafe;
-    color: #1e40af;
+    background-color: rgba(30, 58, 138, 0.4);
+    color: #93c5fd;
 }
 
-.statusBadgeDefault {
-    background-color: #f3f4f6;
-    color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-    .statusBadgeCompleted {
-        background-color: #14532d;
-        color: #86efac;
-    }
-
-    .statusBadgeFailed {
-        background-color: #7f1d1d;
-        color: #fca5a5;
-    }
-
-    .statusBadgeRunning {
-        background-color: #1e3a8a;
-        color: #93c5fd;
-    }
-
-    .statusBadgeDefault {
-        background-color: #374151;
-        color: #d1d5db;
-    }
-}

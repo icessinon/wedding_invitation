@@ -8,13 +8,7 @@
 }
 
 .headerRow {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .headerRow {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .headerCell {
@@ -22,8 +16,8 @@
     text-align: left;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
-    border-bottom: 1px solid #e5e7eb;
+    color: #e5e7eb;
+    border-bottom: 1px solid #4b5563;
 }
 
 .headerCellLeft {
@@ -38,20 +32,13 @@
     text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-    .headerCell {
-        color: #d1d5db;
-        border-bottom-color: #4b5563;
-    }
-}
-
 .subHeaderCell {
     padding: 0.5rem 1rem;
     text-align: left;
     font-size: 0.75rem;
     font-weight: 500;
-    color: #4b5563;
-    border-bottom: 1px solid #e5e7eb;
+    color: #9ca3af;
+    border-bottom: 1px solid #4b5563;
 }
 
 .subHeaderCellLeft {
@@ -62,32 +49,19 @@
     text-align: right;
 }
 
-@media (prefers-color-scheme: dark) {
-    .subHeaderCell {
-        color: #9ca3af;
-        border-bottom-color: #4b5563;
-    }
-}
-
 .bodyRow {
     transition: background-color 0.2s;
 }
 
 .bodyRow:hover {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .bodyRow:hover {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .bodyCell {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    color: #111827;
-    border-bottom: 1px solid #e5e7eb;
+    color: #f3f4f6;
+    border-bottom: 1px solid #4b5563;
 }
 
 .bodyCellLeft {
@@ -106,35 +80,16 @@
     font-weight: 500;
 }
 
-@media (prefers-color-scheme: dark) {
-    .bodyCell {
-        color: #f3f4f6;
-        border-bottom-color: #4b5563;
-    }
-}
-
 .positiveValue {
-    color: #16a34a;
-}
-
-@media (prefers-color-scheme: dark) {
-    .positiveValue {
-        color: #4ade80;
-    }
+    color: #4ade80;
 }
 
 .negativeValue {
-    color: #dc2626;
-}
-
-@media (prefers-color-scheme: dark) {
-    .negativeValue {
-        color: #f87171;
-    }
+    color: #f87171;
 }
 
 .emptyCell {
-    color: #6b7280;
+    color: #9ca3af;
 }
 
 .emptyState {
@@ -142,25 +97,13 @@
     align-items: center;
     justify-content: center;
     height: 16rem;
-    color: rgb(107, 114, 128);
-}
-
-@media (prefers-color-scheme: dark) {
-    .emptyState {
-        color: rgb(156, 163, 175);
-    }
+    color: #9ca3af;
 }
 
 .baselineLabel {
     font-size: 0.75rem;
-    color: rgb(107, 114, 128);
+    color: #9ca3af;
     margin-left: 0.25rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .baselineLabel {
-        color: rgb(156, 163, 175);
-    }
 }
 
 .unitText {

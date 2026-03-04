@@ -1,0 +1,27 @@
+# GA4 Analytics Dashboard - ローカル開発用（docker-compose.local.yml）
+# ソースは .:/app でマウント、node_modules は名前付きボリュームで永続化
+FROM node:20-bookworm-slim
+
+# Prisma 用に libssl1.1 を追加（本番 Dockerfile と同様）
+RUN apt-get update -y && apt-get install -y --no-install-recommends ca-certificates && \
+    echo "deb http://deb.debian.org/debian bullseye main" > /etc/apt/sources.list.d/bullseye.list && \
+    apt-get update -y && apt-get install -y --no-install-recommends libssl1.1 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# 依存関係と Prisma（ビルド時にインストールしてイメージを用意）
+COPY package.json package-lock.json* ./
+RUN npm ci --legacy-peer-deps
+
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+# 開発用エントリポイント（マウント後は node_modules が空のため初回に npm ci を実行）
+COPY docker-entrypoint-dev.sh /docker-entrypoint-dev.sh
+RUN chmod +x /docker-entrypoint-dev.sh
+
+EXPOSE 3000
+
+ENTRYPOINT ["/docker-entrypoint-dev.sh"]
+CMD ["npm", "run", "dev"]

@@ -5,20 +5,8 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import type { FunnelStepData } from '@/app/funnel/types'
 import type { DropoffRateChartProps } from './types'
 import styles from './DropoffRateChart.module.css'
-import { useEffect, useState } from 'react'
-
 export default function DropoffRateChart({ data, periodLabel, periods, comparisonData, comparisonLabel }: DropoffRateChartProps) {
-    const [isDarkMode, setIsDarkMode] = useState(false)
-
-    useEffect(() => {
-        const checkDarkMode = () => {
-            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
-        }
-        checkDarkMode()
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        mediaQuery.addEventListener('change', checkDarkMode)
-        return () => mediaQuery.removeEventListener('change', checkDarkMode)
-    }, [])
+    const isDarkMode = true
 
     const effectivePeriods = periods && periods.length > 0
         ? periods

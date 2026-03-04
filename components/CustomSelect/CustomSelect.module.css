@@ -12,20 +12,20 @@
     justify-content: space-between;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    padding-right: 2rem !important; /* 矢印が枠内に収まるよう右余白を確保 */
+    padding-right: 2rem !important;
     font-size: inherit;
     text-align: left;
     cursor: pointer;
     box-sizing: border-box;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-    background-color: white;
-    color: #111827;
+    background-color: #1f2937;
+    color: #f3f4f6;
     transition: border-color 0.2s;
 }
 
 .trigger:hover:not(:disabled) {
-    border-color: #9ca3af;
+    border-color: #6b7280;
 }
 
 .trigger:focus {
@@ -55,31 +55,72 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #4b5563;
+    color: #e5e7eb;
     transition: transform 0.2s ease;
     pointer-events: none;
     flex-shrink: 0;
 }
 
-/* 開いているときは右→下に回転 */
 .arrowOpen {
     transform: translateY(-50%) rotate(90deg);
 }
 
-/* オプションリストはトリガー直下に重ねて表示（レイアウトを伸ばさない） */
-.optionsList {
+.dropdown {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
     margin-top: 2px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-    background-color: white;
+    background-color: #1f2937;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     z-index: 50;
+    overflow: hidden;
+}
+
+.searchWrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #4b5563;
+    background-color: #111827;
+}
+
+.searchIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    flex: 1;
+    min-width: 0;
+    padding: 0.375rem 0;
+    border: none;
+    background: none;
+    color: #f3f4f6;
+    font-size: inherit;
+    outline: none;
+}
+
+.searchInput::placeholder {
+    color: #6b7280;
+}
+
+.optionsList {
     max-height: 16rem;
     overflow-y: auto;
+}
+
+.emptyOption {
+    padding: 0.75rem 1rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    text-align: center;
 }
 
 .option {
@@ -88,7 +129,7 @@
     padding: 0.5rem 1rem;
     border: none;
     background: none;
-    color: #111827;
+    color: #f3f4f6;
     font-size: inherit;
     text-align: left;
     cursor: pointer;
@@ -96,43 +137,10 @@
 }
 
 .option:hover {
-    background-color: #f3f4f6;
+    background-color: #374151;
 }
 
 .optionSelected {
-    background-color: #eff6ff;
+    background-color: #1e3a8a;
     font-weight: 500;
-}
-
-@media (prefers-color-scheme: dark) {
-    .trigger {
-        background-color: #1f2937;
-        border-color: #4b5563;
-        color: #f3f4f6;
-    }
-
-    .trigger:hover:not(:disabled) {
-        border-color: #6b7280;
-    }
-
-    .arrow {
-        color: #e5e7eb;
-    }
-
-    .optionsList {
-        border-color: #4b5563;
-        background-color: #1f2937;
-    }
-
-    .option {
-        color: #f3f4f6;
-    }
-
-    .option:hover {
-        background-color: #374151;
-    }
-
-    .optionSelected {
-        background-color: #1e3a8a;
-    }
 }

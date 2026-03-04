@@ -14,7 +14,7 @@
 }
 
 .modalContent {
-    background: white;
+    background: #1f2937;
     border-radius: 8px;
     padding: 24px;
     max-width: 900px;
@@ -30,7 +30,7 @@
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #4b5563;
 }
 
 .modalTitle {
@@ -44,7 +44,7 @@
     border: none;
     font-size: 32px;
     cursor: pointer;
-    color: #6b7280;
+    color: #9ca3af;
     padding: 0;
     width: 32px;
     height: 32px;
@@ -56,7 +56,7 @@
 }
 
 .closeButton:hover {
-    background: #f3f4f6;
+    background: #374151;
 }
 
 .form {
@@ -101,16 +101,18 @@
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 4px;
-    color: #374151;
+    color: #d1d5db;
 }
 
 .input {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 6px;
     font-size: 14px;
     transition: border-color 0.2s;
+    background: #111827;
+    color: #f3f4f6;
 }
 
 .input:focus {
@@ -127,7 +129,7 @@
 
 .helpText {
     font-size: 12px;
-    color: #6b7280;
+    color: #9ca3af;
     margin-top: 4px;
 }
 
@@ -136,22 +138,23 @@
     justify-content: flex-end;
     gap: 12px;
     padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid #4b5563;
 }
 
 .cancelButton {
     padding: 10px 20px;
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
+    background: #374151;
+    border: 1px solid #4b5563;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
+    color: #e5e7eb;
 }
 
 .cancelButton:hover {
-    background: #e5e7eb;
+    background: #4b5563;
 }
 
 .submitButton {
@@ -193,8 +196,8 @@
 
 .testResult {
     padding: 16px;
-    background: #f0fdf4;
-    border: 1px solid #86efac;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid #22c55e;
     border-radius: 6px;
     margin-bottom: 16px;
 }
@@ -203,12 +206,12 @@
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 12px;
-    color: #166534;
+    color: #4ade80;
 }
 
 .testResultContent {
     font-size: 14px;
-    color: #166534;
+    color: #86efac;
 }
 
 .testResultContent p {
@@ -224,27 +227,27 @@
 
 .cvrResults div {
     padding: 8px;
-    background: white;
+    background: #111827;
     border-radius: 4px;
 }
 
 .testWarning {
     padding: 12px;
-    background: #fef3c7;
-    border: 1px solid #fbbf24;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid #f59e0b;
     border-radius: 6px;
     margin-bottom: 12px;
-    color: #92400e;
+    color: #fcd34d;
     font-size: 14px;
 }
 
 .testError {
     padding: 12px;
-    background: #fee2e2;
+    background: rgba(127, 29, 29, 0.2);
     border: 1px solid #f87171;
     border-radius: 6px;
     margin-bottom: 16px;
-    color: #991b1b;
+    color: #fca5a5;
     font-size: 14px;
 }
 
@@ -254,50 +257,4 @@
 }
 
 /* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-    .modalContent {
-        background: #1f2937;
-        color: #f9fafb;
-    }
 
-    .modalHeader {
-        border-bottom-color: #374151;
-    }
-
-    .closeButton {
-        color: #9ca3af;
-    }
-
-    .closeButton:hover {
-        background: #374151;
-    }
-
-    .label {
-        color: #d1d5db;
-    }
-
-    /* 入力フィールドの色は globals.css でプルダウンと統一 */
-
-    .input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        opacity: 0.8;
-    }
-
-    .helpText {
-        color: #9ca3af;
-    }
-
-    .formActions {
-        border-top-color: #374151;
-    }
-
-    .cancelButton {
-        background: #374151;
-        border-color: #4b5563;
-        color: #f9fafb;
-    }
-
-    .cancelButton:hover {
-        background: #4b5563;
-    }
-}

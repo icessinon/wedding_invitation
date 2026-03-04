@@ -12,6 +12,10 @@ const inter = Inter({
 export const metadata: Metadata = {
     title: "GA4 Analytics Dashboard",
     description: "GA4 Analytics Dashboard - ABテスト、ファネル、ヒートマップ分析",
+    icons: {
+        icon: "/icon.png",
+        apple: "/apple-icon.png",
+    },
 }
 
 export default function RootLayout({

@@ -1,15 +1,8 @@
 .container {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #374151;
     border-radius: 0.5rem;
     padding: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .container {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
 }
 
 .header {
@@ -27,32 +20,22 @@
 
 .monthButton {
     padding: 0.25rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #374151;
     border-radius: 0.25rem;
     transition: background-color 0.2s;
-    background: white;
+    background: #1f2937;
+    color: #f3f4f6;
     cursor: pointer;
 }
 
 .monthButton:hover {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .monthButton {
-        background-color: #1f2937;
-        border-color: #374151;
-        color: #f3f4f6;
-    }
-
-    .monthButton:hover {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .monthTitle {
     font-size: 1.25rem;
     font-weight: 600;
+    color: #f3f4f6;
 }
 
 .todayButton {
@@ -81,26 +64,20 @@
     text-align: center;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-    .weekDay {
-        color: #d1d5db;
-    }
+    color: #9ca3af;
 }
 
 .dayCell {
     padding: 0.5rem;
     min-height: 80px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #4b5563;
     border-radius: 0.25rem;
     transition: background-color 0.2s;
-    background-color: white;
+    background-color: #1f2937;
 }
 
 .dayCellOtherMonth {
-    background-color: #f9fafb;
+    background-color: rgba(17, 24, 39, 0.5);
 }
 
 .dayCellToday {
@@ -112,51 +89,17 @@
 }
 
 .dayCellClickable:hover {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .dayCell {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
-
-    .dayCellOtherMonth {
-        background-color: rgba(17, 24, 39, 0.5);
-    }
-
-    .dayCellClickable:hover {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .dayNumber {
     font-size: 0.875rem;
     margin-bottom: 0.25rem;
-    color: #111827;
+    color: #f3f4f6;
 }
 
 .dayNumberOtherMonth {
-    color: #9ca3af;
-}
-
-.dayNumberToday {
-    font-weight: 700;
-    color: #2563eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .dayNumber {
-        color: #f3f4f6;
-    }
-
-    .dayNumberOtherMonth {
-        color: #6b7280;
-    }
-
-    .dayNumberToday {
-        color: #60a5fa;
-    }
+    color: #6b7280;
 }
 
 .testList {
@@ -219,31 +162,20 @@
 
 .testMore {
     font-size: 0.75rem;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .testMore {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }
 
 .legend {
     margin-top: 1.5rem;
     padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .legend {
-        border-top-color: #374151;
-    }
+    border-top: 1px solid #4b5563;
 }
 
 .legendTitle {
     font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #e5e7eb;
 }
 
 .legendItems {
@@ -276,44 +208,32 @@
 
 .legendHint {
     font-size: 0.75rem;
-    color: #6b7280;
+    color: #9ca3af;
     margin-top: 0.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .legendHint {
-        color: #9ca3af;
-    }
 }
 
 .tooltip {
     position: fixed;
     z-index: 50;
-    background-color: white;
-    border: 1px solid #d1d5db;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
     padding: 0.75rem;
     max-width: 20rem;
     pointer-events: none;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tooltip {
-        background-color: #1f2937;
-        border-color: #4b5563;
-    }
 }
 
 .tooltipTitle {
     font-weight: 600;
     font-size: 0.875rem;
     margin-bottom: 0.25rem;
+    color: #f3f4f6;
 }
 
 .tooltipText {
     font-size: 0.75rem;
-    color: #4b5563;
+    color: #9ca3af;
     margin-bottom: 0.25rem;
 }
 
@@ -324,23 +244,11 @@
     overflow: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-    .tooltipText {
-        color: #9ca3af;
-    }
-}
-
 .tooltipLink {
     font-size: 0.75rem;
-    color: #2563eb;
+    color: #60a5fa;
     margin-top: 0.5rem;
     font-weight: 600;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tooltipLink {
-        color: #60a5fa;
-    }
 }
 
 .emptyCell {

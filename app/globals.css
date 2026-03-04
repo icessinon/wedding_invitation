@@ -3,23 +3,9 @@
 @tailwind utilities;
 
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
-}
-
-/* ダーク: アプリで「ダーク」選択時、または OS がダークかつ未選択時 */
-[data-theme="dark"] {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
-}
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        --foreground-rgb: 255, 255, 255;
-        --background-start-rgb: 0, 0, 0;
-        --background-end-rgb: 0, 0, 0;
-    }
 }
 
 body {
@@ -32,26 +18,22 @@ body {
         rgb(var(--background-start-rgb));
 }
 
-/* Tailwind preflight sets input/select/textarea to color: inherit.
-     In dark mode body text is white, so input values can appear white on light backgrounds.
-     Force readable text color; backgrounds stay from each page’s styles. */
-/* 入力フィールドをプルダウン（CustomSelect）と同じ色合いに統一 */
 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="image"]),
 textarea {
     width: 100%;
     box-sizing: border-box;
     padding: 0.5rem 1rem;
     font-size: inherit;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-    background-color: white;
-    color: #111827;
+    background-color: #1f2937;
+    color: #f3f4f6;
     transition: border-color 0.2s;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="image"]):hover:not(:disabled):not(:focus),
 textarea:hover:not(:disabled):not(:focus) {
-    border-color: #9ca3af;
+    border-color: #6b7280;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="image"]):focus,
@@ -61,78 +43,39 @@ textarea:focus {
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-select {
-    color: #111827;
-}
-
 input:disabled,
 textarea:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-@media (prefers-color-scheme: dark) {
-    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="image"]),
-    textarea {
-        background-color: #1f2937;
-        border-color: #4b5563;
-        color: #f3f4f6;
-    }
-
-    input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="image"]):hover:not(:disabled):not(:focus),
-    textarea:hover:not(:disabled):not(:focus) {
-        border-color: #6b7280;
-    }
-
-    select {
-        color: #f3f4f6;
-    }
-}
-
-/* 日付入力: カレンダーアイコンが右に寄りすぎないよう右余白を確保 */
 input[type="date"] {
     width: 10.5rem;
     padding-right: 0.5rem;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    opacity: 0.7;
+    filter: invert(1);
+    opacity: 0.8;
 }
 
-@media (prefers-color-scheme: dark) {
-    input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        opacity: 0.8;
-    }
-}
-
-
-/* 選択系 select: 下向き矢印を1つだけ右側に表示（全画面共通） */
 select {
+    color: #f3f4f6;
     appearance: none;
     background-repeat: no-repeat !important;
     background-position: right 0.5rem center !important;
     padding-right: 1.5rem !important;
     box-sizing: border-box;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234b5563' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-}
-@media (prefers-color-scheme: dark) {
-    select {
-        /* ダーク背景で矢印を明るく表示（1つだけ右側、モジュールの background 指定より優先） */
-        background-repeat: no-repeat !important;
-        background-position: right 0.5rem center !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e5e7eb' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
-    }
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e5e7eb' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 }
 
-/* 実行系ボタン（ファネル分析を実行・レポートを生成 など） */
 button.executionButton {
     display: inline-block;
     min-width: 150px;
     height: 50px;
     padding: 0 1.5rem;
     border-radius: 10px;
-    border: 1px solid #03045e;
+    border: 1px solid #7c3aed;
     position: relative;
     overflow: hidden;
     transition: all 0.5s ease-in;
@@ -176,7 +119,7 @@ button.executionButton:hover:not(:disabled) span {
 }
 
 button.executionButton span {
-    color: #03045e;
+    color: #e9d5ff;
     font-size: 1.125rem;
     transition: all 0.3s ease-in;
     position: relative;
@@ -189,20 +132,5 @@ button.executionButton:disabled {
 }
 
 button.executionButton:disabled span {
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    button.executionButton {
-        border-color: #7c3aed;
-    }
-    button.executionButton span {
-        color: #e9d5ff;
-    }
-    button.executionButton:hover:not(:disabled) span {
-        color: #e0aaff;
-    }
-    button.executionButton:disabled span {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }

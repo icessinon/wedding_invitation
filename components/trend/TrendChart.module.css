@@ -1,28 +1,16 @@
 .container {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background-color: #ffffff;
+    background-color: #1f2937;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .container {
-        background-color: #1f2937;
-    }
 }
 
 .reportName {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .reportName {
-        color: #f9fafb;
-    }
+    color: #f9fafb;
 }
 
 .charts {
@@ -53,15 +41,8 @@
     font-weight: 600;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e5e7eb;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .sectionTitle {
-        color: #f9fafb;
-        border-bottom-color: #4b5563;
-    }
+    border-bottom: 2px solid #4b5563;
+    color: #f9fafb;
 }
 
 .chartTitle {
@@ -70,38 +51,20 @@
     margin-bottom: 1.5rem;
     margin-top: 0;
     padding-bottom: 0.5rem;
-    color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-    .chartTitle {
-        color: #d1d5db;
-    }
+    color: #d1d5db;
 }
 
 .summary {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .summary {
-        border-top-color: #374151;
-    }
+    border-top: 1px solid #374151;
 }
 
 .summaryTitle {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .summaryTitle {
-        color: #f9fafb;
-    }
+    color: #f9fafb;
 }
 
 .summaryGrid {
@@ -118,35 +81,17 @@
 
 .summaryLabel {
     font-size: 0.875rem;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .summaryLabel {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }
 
 .summaryValue {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .summaryValue {
-        color: #f9fafb;
-    }
+    color: #f9fafb;
 }
 
 .emptyState {
     padding: 2rem;
     text-align: center;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .emptyState {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }

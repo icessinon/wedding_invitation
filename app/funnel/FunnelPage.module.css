@@ -33,16 +33,10 @@
     text-decoration: underline;
 }
 
-@media (prefers-color-scheme: dark) {
-    .backLink {
+.backLink {
         color: #60a5fa;
         border-color: #1e3a8a;
     }
-
-    .backLink:hover {
-        background-color: rgba(30, 58, 138, 0.2);
-    }
-}
 
 .title {
     font-size: 1.875rem;
@@ -65,12 +59,6 @@
     text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-    .loaderText {
-        color: #9ca3af;
-    }
-}
-
 .warningBox {
     background-color: #fef3c7;
     border: 1px solid #fde68a;
@@ -79,46 +67,25 @@
     color: #92400e;
 }
 
-@media (prefers-color-scheme: dark) {
-    .warningBox {
-        background-color: rgba(161, 98, 7, 0.2);
-        border-color: #78350f;
-        color: #fcd34d;
-    }
-}
-
 .infoBox {
-    background-color: #eff6ff;
-    border: 1px solid #bfdbfe;
+    background-color: rgba(30, 58, 138, 0.2);
+    border: 1px solid #1e3a8a;
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 1.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    .infoBox {
-        background-color: rgba(30, 58, 138, 0.2);
-        border-color: #1e3a8a;
-    }
-}
-
 .infoText {
     font-size: 0.875rem;
+    color: #e5e7eb;
 }
 
 .section {
-    background-color: white;
-    border: 1px solid #e5e7eb;
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .section {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
 }
 
 .sectionTitle {
@@ -130,14 +97,8 @@
 .tabContainer {
     display: flex;
     gap: 1rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid #4b5563;
     margin-bottom: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tabContainer {
-        border-bottom-color: #374151;
-    }
 }
 
 .tabButton {
@@ -164,20 +125,9 @@
     color: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-    .tabButtonActive {
-        color: #60a5fa;
-        border-bottom-color: #60a5fa;
-    }
-
-    .tabButtonInactive {
+.tabButtonInactive {
         color: #9ca3af;
     }
-
-    .tabButtonInactive:hover {
-        color: #f3f4f6;
-    }
-}
 
 .form {
     display: flex;
@@ -283,15 +233,9 @@
 }
 
 .stepItem {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .stepItem {
-        border-color: #374151;
-    }
 }
 
 .stepHeader {
@@ -349,26 +293,11 @@
     color: #991b1b;
 }
 
-@media (prefers-color-scheme: dark) {
-    .errorBox {
-        background-color: rgba(127, 29, 29, 0.2);
-        border-color: #7f1d1d;
-        color: #fca5a5;
-    }
-}
-
 .geminiBox {
     background-color: #eff6ff;
     border: 1px solid #bfdbfe;
     border-radius: 0.5rem;
     padding: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .geminiBox {
-        background-color: rgba(30, 58, 138, 0.2);
-        border-color: #1e3a8a;
-    }
 }
 
 .geminiText {
@@ -377,25 +306,13 @@
     white-space: pre-wrap;
 }
 
-@media (prefers-color-scheme: dark) {
-    .geminiText {
-        color: #93c5fd;
-    }
-}
-
 .table {
     width: 100%;
     border-collapse: collapse;
 }
 
 .tableHead {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHead {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .tableHeaderCell {
@@ -404,24 +321,11 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: #374151;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHeaderCell {
-        color: #d1d5db;
-        border-bottom-color: #374151;
-    }
+    border-bottom: 1px solid #4b5563;
 }
 
 .tableRow {
-    border-bottom: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableRow {
-        border-bottom-color: #374151;
-    }
+    border-bottom: 1px solid #4b5563;
 }
 
 .tableCell {
@@ -430,21 +334,9 @@
     color: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-    .tableCell {
-        color: #f3f4f6;
-    }
-}
-
 .tableCellLabel {
     font-size: 0.875rem;
     color: #4b5563;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableCellLabel {
-        color: #9ca3af;
-    }
 }
 
 .tableCellValue {
@@ -479,12 +371,6 @@
     color: #4b5563;
 }
 
-@media (prefers-color-scheme: dark) {
-    .summaryLabel {
-        color: #9ca3af;
-    }
-}
-
 .summaryValue {
     font-weight: 600;
     font-size: 1.125rem;
@@ -501,28 +387,9 @@
 .summaryValuePurple {
     color: #9333ea;
 }
-
-.summaryValueRed {
-    color: #dc2626;
-}
-
-@media (prefers-color-scheme: dark) {
-    .summaryValueBlue {
-        color: #60a5fa;
-    }
-
-    .summaryValueGreen {
-        color: #4ade80;
-    }
-
-    .summaryValuePurple {
+.summaryValuePurple {
         color: #a78bfa;
     }
-
-    .summaryValueRed {
-        color: #f87171;
-    }
-}
 
 .comparisonGrid {
     display: grid;

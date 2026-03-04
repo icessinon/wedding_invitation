@@ -24,28 +24,16 @@
 .title {
     font-size: 2rem;
     font-weight: 700;
-    color: #111827;
+    color: #f3f4f6;
     margin: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-    .title {
-        color: #f9fafb;
-    }
 }
 
 .formContainer {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background-color: #ffffff;
+    background-color: #1f2937;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .formContainer {
-        background-color: #1f2937;
-    }
 }
 
 .form {
@@ -63,25 +51,22 @@
 .label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-    .label {
-        color: #d1d5db;
-    }
+    color: #d1d5db;
 }
 
 .input {
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
     font-size: 1rem;
-    background-color: #ffffff;
-    color: #111827;
+    background-color: #1f2937;
+    color: #ffffff;
 }
 
-/* 入力フィールドのダーク色は globals.css でプルダウンと統一 */
+.input[type="month"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.9;
+}
 
 .input:focus {
     outline: none;
@@ -91,13 +76,7 @@
 
 .helpText {
     font-size: 0.75rem;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .helpText {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }
 
 .submitButton {
@@ -132,13 +111,7 @@
 
 .loaderText {
     margin-top: 1rem;
-    color: #6b7280;
-}
-
-@media (prefers-color-scheme: dark) {
-    .loaderText {
-        color: #9ca3af;
-    }
+    color: #9ca3af;
 }
 
 .errorContainer {
@@ -149,22 +122,9 @@
     margin-bottom: 2rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    .errorContainer {
-        background-color: #7f1d1d;
-        border-color: #991b1b;
-    }
-}
-
 .errorText {
     color: #dc2626;
     margin: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-    .errorText {
-        color: #fca5a5;
-    }
 }
 
 .resultsContainer {
@@ -186,12 +146,6 @@
     color: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-    .resultsTitle {
-        color: #f9fafb;
-    }
-}
-
 .monthSwitcher {
     display: flex;
     align-items: center;
@@ -204,27 +158,13 @@
     color: #374151;
 }
 
-@media (prefers-color-scheme: dark) {
-    .monthSwitcherLabel {
-        color: #d1d5db;
-    }
-}
-
 .monthSwitcherSelect {
     padding: 0.4rem 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 0.9375rem;
-    background-color: #ffffff;
+    background-color: #1f2937;
     color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .monthSwitcherSelect {
-        border-color: #4b5563;
-        background-color: #374151;
-        color: #f9fafb;
-    }
 }
 
 .geminiApiKeyInput {
@@ -241,25 +181,12 @@
     color: #374151;
 }
 
-@media (prefers-color-scheme: dark) {
-    .checkboxLabel {
-        color: #d1d5db;
-    }
-}
-
 .aiSummarySection {
     margin-top: 2rem;
     padding: 1.5rem;
     background-color: #f0f9ff;
     border: 1px solid #bae6fd;
     border-radius: 8px;
-}
-
-@media (prefers-color-scheme: dark) {
-    .aiSummarySection {
-        background-color: #0c4a6e;
-        border-color: #0e7490;
-    }
 }
 
 .aiSummaryTitle {
@@ -269,12 +196,6 @@
     color: #0369a1;
 }
 
-@media (prefers-color-scheme: dark) {
-    .aiSummaryTitle {
-        color: #7dd3fc;
-    }
-}
-
 .aiSummaryLoading {
     display: flex;
     align-items: center;
@@ -282,23 +203,11 @@
     color: #0c4a6e;
 }
 
-@media (prefers-color-scheme: dark) {
-    .aiSummaryLoading {
-        color: #bae6fd;
-    }
-}
-
 .aiSummaryBox {
     font-size: 0.9375rem;
     line-height: 1.7;
     color: #111827;
     white-space: pre-wrap;
-}
-
-@media (prefers-color-scheme: dark) {
-    .aiSummaryBox {
-        color: #e5e7eb;
-    }
 }
 
 .reportGroup {
@@ -309,24 +218,11 @@
     border: 1px solid #e2e8f0;
 }
 
-@media (prefers-color-scheme: dark) {
-    .reportGroup {
-        background-color: #1e293b;
-        border-color: #334155;
-    }
-}
-
 .reportGroupTitle {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
     color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .reportGroupTitle {
-        color: #f9fafb;
-    }
 }
 
 .monthSection {
@@ -343,28 +239,15 @@
     margin-bottom: 1rem;
     color: #374151;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .monthTitle {
-        color: #d1d5db;
-        border-bottom-color: #4b5563;
-    }
+    border-bottom: 2px solid #4b5563;
 }
 
 .emptyContainer {
     padding: 2rem;
     text-align: center;
-    background-color: #f9fafb;
+    background-color: #374151;
     border-radius: 8px;
     margin-top: 2rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .emptyContainer {
-        background-color: #1f2937;
-    }
 }
 
 .emptyText {
@@ -372,37 +255,19 @@
     line-height: 1.6;
 }
 
-@media (prefers-color-scheme: dark) {
-    .emptyText {
-        color: #9ca3af;
-    }
-}
-
 .section {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    background-color: #ffffff;
+    background-color: #1f2937;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-    .section {
-        background-color: #1f2937;
-    }
 }
 
 .sectionTitle {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1rem;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .sectionTitle {
-        color: #f9fafb;
-    }
+    color: #ffffff;
 }
 
 .searchContainer {
@@ -412,19 +277,11 @@
 .searchInput {
     width: 100%;
     padding: 0.5rem 0.75rem;
-    border: 1px solid #d1d5db;
+    border: 1px solid #4b5563;
     border-radius: 4px;
     font-size: 0.875rem;
-    background-color: #ffffff;
-    color: #111827;
-}
-
-@media (prefers-color-scheme: dark) {
-    .searchInput {
-        border-color: #4b5563;
-        background-color: #374151;
-        color: #f9fafb;
-    }
+    background-color: #1f2937;
+    color: #ffffff;
 }
 
 .searchInput:focus {
@@ -445,25 +302,13 @@
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.75rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid #4b5563;
     border-radius: 4px;
     transition: background-color 0.2s;
 }
 
-@media (prefers-color-scheme: dark) {
-    .reportItem {
-        border-color: #4b5563;
-    }
-}
-
 .reportItem:hover {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .reportItem:hover {
-        background-color: #374151;
-    }
+    background-color: #374151;
 }
 
 .reportItemLabel {
@@ -482,13 +327,7 @@
 .reportName {
     flex: 1;
     font-size: 0.875rem;
-    color: #374151;
-}
-
-@media (prefers-color-scheme: dark) {
-    .reportName {
-        color: #d1d5db;
-    }
+    color: #ffffff;
 }
 
 .trendBadge {
@@ -500,26 +339,13 @@
     font-weight: 500;
 }
 
-@media (prefers-color-scheme: dark) {
-    .trendBadge {
-        background-color: #1e3a8a;
-        color: #bfdbfe;
-    }
-}
-
 .cvrInfo {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
     margin-left: 2rem;
     padding-top: 0.5rem;
-    border-top: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .cvrInfo {
-        border-top-color: #4b5563;
-    }
+    border-top: 1px solid #4b5563;
 }
 
 .cvrLabel {
@@ -530,25 +356,13 @@
 
 .cvrLabelTitle {
     font-weight: 500;
-    color: #6b7280;
+    color: #d1d5db;
     min-width: 70px;
 }
 
-@media (prefers-color-scheme: dark) {
-    .cvrLabelTitle {
-        color: #9ca3af;
-    }
-}
-
 .cvrLabelValue {
-    color: #374151;
+    color: #ffffff;
     flex: 1;
-}
-
-@media (prefers-color-scheme: dark) {
-    .cvrLabelValue {
-        color: #d1d5db;
-    }
 }
 
 .noCvrConfig {
@@ -559,12 +373,6 @@
     padding-top: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-    .noCvrConfig {
-        color: #6b7280;
-    }
-}
-
 .pagination {
     display: flex;
     align-items: center;
@@ -572,18 +380,12 @@
     gap: 1rem;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .pagination {
-        border-top-color: #4b5563;
-    }
+    border-top: 1px solid #4b5563;
 }
 
 .paginationButton {
     padding: 0.5rem 1rem;
-    background-color: #ffffff;
+    background-color: #1f2937;
     color: #374151;
     border: 1px solid #d1d5db;
     border-radius: 4px;
@@ -593,22 +395,8 @@
     transition: background-color 0.2s;
 }
 
-@media (prefers-color-scheme: dark) {
-    .paginationButton {
-        background-color: #374151;
-        color: #d1d5db;
-        border-color: #4b5563;
-    }
-}
-
 .paginationButton:hover:not(:disabled) {
-    background-color: #f9fafb;
-}
-
-@media (prefers-color-scheme: dark) {
-    .paginationButton:hover:not(:disabled) {
-        background-color: #4b5563;
-    }
+    background-color: #374151;
 }
 
 .paginationButton:disabled {
@@ -621,8 +409,3 @@
     color: #6b7280;
 }
 
-@media (prefers-color-scheme: dark) {
-    .paginationInfo {
-        color: #9ca3af;
-    }
-}

@@ -18,16 +18,11 @@
     font-size: 1.875rem;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
+    color: #f3f4f6;
 }
 
 .description {
-    color: rgb(75, 85, 99);
-}
-
-@media (prefers-color-scheme: dark) {
-    .description {
-        color: rgb(156, 163, 175);
-    }
+    color: #9ca3af;
 }
 
 .loaderContainer {
@@ -40,24 +35,17 @@
 }
 
 .errorContainer {
-    background-color: rgb(254, 242, 242);
-    border: 1px solid rgb(254, 202, 202);
+    background-color: rgba(185, 28, 28, 0.2);
+    border: 1px solid #b91c1c;
     border-radius: 0.5rem;
     padding: 1rem;
-    color: rgb(153, 27, 27);
-}
-
-@media (prefers-color-scheme: dark) {
-    .errorContainer {
-        background-color: rgba(127, 29, 29, 0.2);
-        border-color: rgb(153, 27, 27);
-        color: rgb(254, 202, 202);
-    }
+    color: #fca5a5;
 }
 
 .errorTitle {
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #fca5a5;
 }
 
 .retryButton {
@@ -76,18 +64,11 @@
 }
 
 .searchContainer {
-    background-color: white;
-    border: 1px solid rgb(229, 231, 235);
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 1.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .searchContainer {
-        background-color: rgb(31, 41, 55);
-        border-color: rgb(55, 65, 81);
-    }
 }
 
 .searchForm {
@@ -98,22 +79,16 @@
 .searchInput {
     flex: 1;
     padding: 0.5rem 1rem;
-    border: 1px solid rgb(209, 213, 219);
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .searchInput {
-        background-color: rgb(55, 65, 81);
-        border-color: rgb(75, 85, 99);
-        color: rgb(243, 244, 246);
-    }
+    background-color: #111827;
+    color: #f3f4f6;
 }
 
 .clearButton {
     padding: 0.5rem 1.5rem;
-    background-color: rgb(229, 231, 235);
-    color: rgb(31, 41, 55);
+    background-color: #374151;
+    color: #e5e7eb;
     border-radius: 0.5rem;
     border: none;
     cursor: pointer;
@@ -121,68 +96,32 @@
 }
 
 .clearButton:hover {
-    background-color: rgb(209, 213, 219);
-}
-
-@media (prefers-color-scheme: dark) {
-    .clearButton {
-        background-color: rgb(55, 65, 81);
-        color: rgb(243, 244, 246);
-    }
-
-    .clearButton:hover {
-        background-color: rgb(75, 85, 99);
-    }
+    background-color: #4b5563;
 }
 
 .searchHint {
     margin-top: 0.5rem;
     font-size: 0.75rem;
-    color: rgb(107, 114, 128);
-}
-
-@media (prefers-color-scheme: dark) {
-    .searchHint {
-        color: rgb(156, 163, 175);
-    }
+    color: #9ca3af;
 }
 
 .countText {
     margin-bottom: 1rem;
     font-size: 0.875rem;
-    color: rgb(75, 85, 99);
-}
-
-@media (prefers-color-scheme: dark) {
-    .countText {
-        color: rgb(156, 163, 175);
-    }
+    color: #9ca3af;
 }
 
 .emptyContainer {
-    background-color: white;
-    border: 1px solid rgb(229, 231, 235);
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     padding: 2rem;
     text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-    .emptyContainer {
-        background-color: rgb(31, 41, 55);
-        border-color: rgb(55, 65, 81);
-    }
-}
-
 .emptyText {
-    color: rgb(75, 85, 99);
+    color: #9ca3af;
     margin-bottom: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-    .emptyText {
-        color: rgb(156, 163, 175);
-    }
 }
 
 .emptyLink {
@@ -200,17 +139,10 @@
 }
 
 .tableContainer {
-    background-color: white;
-    border: 1px solid rgb(229, 231, 235);
+    background-color: #1f2937;
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
     overflow: hidden;
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableContainer {
-        background-color: rgb(31, 41, 55);
-        border-color: rgb(55, 65, 81);
-    }
 }
 
 .table {
@@ -218,13 +150,7 @@
 }
 
 .tableHeader {
-    background-color: rgb(249, 250, 251);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHeader {
-        background-color: rgb(55, 65, 81);
-    }
+    background-color: #374151;
 }
 
 .tableHeaderCell {
@@ -232,49 +158,27 @@
     text-align: left;
     font-size: 0.875rem;
     font-weight: 600;
-    color: rgb(55, 65, 75);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableHeaderCell {
-        color: rgb(209, 213, 219);
-    }
+    color: #e5e7eb;
+    border-bottom: 1px solid #4b5563;
 }
 
 .tableBody {
-    border-top: 1px solid rgb(229, 231, 235);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableBody {
-        border-top-color: rgb(55, 65, 81);
-    }
+    border-top: 1px solid #4b5563;
 }
 
 .tableRow {
     transition: background-color 0.2s;
+    border-bottom: 1px solid #374151;
 }
 
 .tableRow:hover {
-    background-color: rgb(249, 250, 251);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableRow:hover {
-        background-color: rgb(55, 65, 81);
-    }
+    background-color: #374151;
 }
 
 .tableCell {
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
-    color: rgb(17, 24, 39);
-}
-
-@media (prefers-color-scheme: dark) {
-    .tableCell {
-        color: rgb(243, 244, 246);
-    }
+    color: #f3f4f6;
 }
 
 .actionCell {
@@ -283,7 +187,7 @@
 }
 
 .detailLink {
-    color: rgb(37, 99, 235);
+    color: #60a5fa;
     text-decoration: none;
     font-size: 0.875rem;
     transition: text-decoration 0.2s;
@@ -293,14 +197,8 @@
     text-decoration: underline;
 }
 
-@media (prefers-color-scheme: dark) {
-    .detailLink {
-        color: rgb(96, 165, 250);
-    }
-}
-
 .deleteButton {
-    color: rgb(220, 38, 38);
+    color: #f87171;
     background: none;
     border: none;
     cursor: pointer;
@@ -318,12 +216,6 @@
     cursor: not-allowed;
 }
 
-@media (prefers-color-scheme: dark) {
-    .deleteButton {
-        color: rgb(248, 113, 113);
-    }
-}
-
 .pagination {
     margin-top: 1.5rem;
     display: flex;
@@ -334,16 +226,16 @@
 
 .paginationButton {
     padding: 0.5rem 1rem;
-    border: 1px solid rgb(229, 231, 235);
+    border: 1px solid #4b5563;
     border-radius: 0.5rem;
-    background-color: white;
-    color: rgb(17, 24, 39);
+    background-color: #1f2937;
+    color: #e5e7eb;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
-.paginationButton:hover {
-    background-color: rgb(249, 250, 251);
+.paginationButton:hover:not(:disabled) {
+    background-color: #374151;
 }
 
 .paginationButton:disabled {
@@ -351,22 +243,10 @@
     cursor: not-allowed;
 }
 
-@media (prefers-color-scheme: dark) {
-    .paginationButton {
-        background-color: rgb(31, 41, 55);
-        border-color: rgb(55, 65, 81);
-        color: rgb(243, 244, 246);
-    }
-
-    .paginationButton:hover {
-        background-color: rgb(55, 65, 81);
-    }
-}
-
 .paginationButtonActive {
-    background-color: rgb(37, 99, 235);
+    background-color: #2563eb;
     color: white;
-    border-color: rgb(37, 99, 235);
+    border-color: #2563eb;
 }
 
 .paginationButtonActive:hover {
@@ -381,14 +261,14 @@
 .footer {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgb(229, 231, 235);
+    border-top: 1px solid #4b5563;
 }
 
 .footerLink {
     display: inline-flex;
     align-items: center;
     padding: 0.75rem 1.5rem;
-    background-color: rgb(37, 99, 235);
+    background-color: #2563eb;
     color: white;
     border-radius: 0.5rem;
     text-decoration: none;
@@ -396,7 +276,7 @@
 }
 
 .footerLink:hover {
-    background-color: rgb(29, 78, 216);
+    background-color: #1d4ed8;
 }
 
 .statusBadge {
@@ -407,43 +287,17 @@
 }
 
 .statusBadgeCompleted {
-    background-color: rgb(220, 252, 231);
-    color: rgb(22, 101, 52);
+    background-color: rgba(22, 101, 52, 0.3);
+    color: #86efac;
 }
 
 .statusBadgeFailed {
-    background-color: rgb(254, 226, 226);
-    color: rgb(153, 27, 27);
+    background-color: rgba(185, 28, 28, 0.3);
+    color: #fca5a5;
 }
 
 .statusBadgeRunning {
-    background-color: rgb(219, 234, 254);
-    color: rgb(30, 64, 175);
+    background-color: rgba(30, 58, 138, 0.4);
+    color: #93c5fd;
 }
 
-.statusBadgeDefault {
-    background-color: rgb(243, 244, 246);
-    color: rgb(55, 65, 75);
-}
-
-@media (prefers-color-scheme: dark) {
-    .statusBadgeCompleted {
-        background-color: rgba(20, 83, 45, 0.2);
-        color: rgb(134, 239, 172);
-    }
-
-    .statusBadgeFailed {
-        background-color: rgba(127, 29, 29, 0.2);
-        color: rgb(252, 165, 165);
-    }
-
-    .statusBadgeRunning {
-        background-color: rgba(30, 58, 138, 0.2);
-        color: rgb(147, 197, 253);
-    }
-
-    .statusBadgeDefault {
-        background-color: rgba(55, 65, 81, 0.2);
-        color: rgb(209, 213, 219);
-    }
-}

@@ -56,13 +56,6 @@
     line-height: 1;
 }
 
-@media (prefers-color-scheme: light) {
-    .aside {
-        background: rgba(249, 250, 251, 0.98);
-        border-right-color: #e5e7eb;
-    }
-}
-
 .nav {
     display: flex;
     flex-direction: column;
@@ -82,12 +75,6 @@
     background: rgba(255, 255, 255, 0.06);
 }
 
-@media (prefers-color-scheme: light) {
-    .homeLink:hover {
-        background: rgba(0, 0, 0, 0.04);
-    }
-}
-
 .group {
     margin-top: 0.75rem;
 }
@@ -100,12 +87,6 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #9ca3af;
-}
-
-@media (prefers-color-scheme: light) {
-    .groupLabel {
-        color: #6b7280;
-    }
 }
 
 .list {
@@ -133,28 +114,10 @@
     color: #f9fafb;
 }
 
-@media (prefers-color-scheme: light) {
-    .link {
-        color: #374151;
-    }
-
-    .link:hover {
-        background: rgba(0, 0, 0, 0.04);
-        color: #111827;
-    }
-}
-
 .link.active {
     background: rgba(59, 130, 246, 0.15);
     border-left-color: #3b82f6;
     color: #93c5fd;
-}
-
-@media (prefers-color-scheme: light) {
-    .link.active {
-        background: rgba(59, 130, 246, 0.1);
-        color: #2563eb;
-    }
 }
 
 .homeLink.active {
@@ -162,8 +125,3 @@
     color: #93c5fd;
 }
 
-@media (prefers-color-scheme: light) {
-    .homeLink.active {
-        color: #2563eb;
-    }
-}

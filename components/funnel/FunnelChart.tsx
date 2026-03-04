@@ -4,20 +4,8 @@ import React from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts'
 import type { FunnelChartProps } from './types'
 import styles from './FunnelChart.module.css'
-import { useEffect, useState } from 'react'
-
 export default function FunnelChart({ data, periodLabel, periods, comparisonData, comparisonLabel }: FunnelChartProps) {
-    const [isDarkMode, setIsDarkMode] = useState(false)
-
-    useEffect(() => {
-        const checkDarkMode = () => {
-            setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches)
-        }
-        checkDarkMode()
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        mediaQuery.addEventListener('change', checkDarkMode)
-        return () => mediaQuery.removeEventListener('change', checkDarkMode)
-    }, [])
+    const isDarkMode = true
 
     const effectivePeriods = periods && periods.length > 0
         ? periods
@@ -225,7 +213,7 @@ export default function FunnelChart({ data, periodLabel, periods, comparisonData
                                 label={{ value: 'ユーザー数', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: yAxisLabelColor, fontSize: 14, fontWeight: 600 } }}
                                 tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(75, 85, 99, 0.25)', stroke: '#9ca3af', strokeWidth: 1 }} />
                             {effectivePeriods.map((period, idx) => {
                                 const dataKey = `users${idx}`
                                 const color = periodColors[idx % periodColors.length]
@@ -259,7 +247,7 @@ export default function FunnelChart({ data, periodLabel, periods, comparisonData
                                 label={{ value: 'ユーザー数', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: yAxisLabelColor, fontSize: 14, fontWeight: 600 } }}
                                 tick={{ fontSize: 12, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(75, 85, 99, 0.25)', stroke: '#9ca3af', strokeWidth: 1 }} />
                             <Bar dataKey="usersA" radius={[6, 6, 0, 0]} barSize={35} name={periodLabel || '期間A'} fill="#3b82f6" />
                             <Bar dataKey="usersB" radius={[6, 6, 0, 0]} barSize={35} name={comparisonLabel || '期間B'} fill="#10b981" />
                             <Legend />
@@ -283,7 +271,7 @@ export default function FunnelChart({ data, periodLabel, periods, comparisonData
                                 textAnchor="end"
                                 interval={0}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(75, 85, 99, 0.25)', stroke: '#9ca3af', strokeWidth: 1 }} />
                             <Bar dataKey="users" radius={[0, 6, 6, 0]} barSize={40}>
                                 {chartData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
