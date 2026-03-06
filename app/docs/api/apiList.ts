@@ -6,6 +6,30 @@ import type { ApiEndpoint } from './types'
 
 export const API_LIST: { category: string; endpoints: ApiEndpoint[] }[] = [
     {
+        category: '認証',
+        endpoints: [
+            {
+                path: '/api/auth/login',
+                method: 'POST',
+                name: 'ログイン',
+                description: 'Basic認証用。ユーザー名・パスワードを送信し、成功時に HTTP-only クッキー（ga4_auth）をセットします。環境変数 BASIC_AUTH_USER / BASIC_AUTH_PASSWORD と照合します。',
+                params: [
+                    { name: 'username', type: 'string', required: true, description: 'Body JSON。ログインID' },
+                    { name: 'password', type: 'string', required: true, description: 'Body JSON。パスワード' },
+                ],
+                responseNote: '成功時 { ok: true } と Set-Cookie。失敗時 401 で { error: "メッセージ" }',
+            },
+            {
+                path: '/api/auth/logout',
+                method: 'POST',
+                name: 'ログアウト',
+                description: '認証クッキー（ga4_auth）を削除します。',
+                params: [],
+                responseNote: '{ ok: true }',
+            },
+        ],
+    },
+    {
         category: 'ダッシュボード',
         endpoints: [
             {
@@ -179,15 +203,18 @@ export const API_LIST: { category: string; endpoints: ApiEndpoint[] }[] = [
             },
             {
                 path: '/api/analytics/data',
-                method: 'GET',
+                method: 'POST',
                 name: '分析データ',
-                description: 'GA4 の生データを取得します。',
+                description: 'GA4 の生データを取得します。Body で propertyId, startDate, endDate, metrics, dimensions, filter, limit 等を指定します。',
                 params: [
-                    { name: 'productId', type: 'number', required: true, description: 'プロダクトID' },
-                    { name: 'startDate', type: 'string', required: true, description: '開始日' },
-                    { name: 'endDate', type: 'string', required: true, description: '終了日' },
+                    { name: 'propertyId', type: 'string', required: true, description: 'Body JSON。GA4 プロパティID' },
+                    { name: 'startDate', type: 'string', required: true, description: 'Body JSON。開始日 YYYY-MM-DD' },
+                    { name: 'endDate', type: 'string', required: true, description: 'Body JSON。終了日' },
+                    { name: 'metrics', type: 'array', required: true, description: 'Body JSON。メトリクス' },
+                    { name: 'dimensions', type: 'array', required: true, description: 'Body JSON。ディメンション' },
+                    { name: 'limit', type: 'number', required: false, description: 'Body JSON。取得上限' },
                 ],
-                responseNote: 'GA4 レスポンスデータ',
+                responseNote: 'data（GA4 レスポンス）',
             },
             {
                 path: '/api/reports',

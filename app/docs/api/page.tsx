@@ -71,6 +71,9 @@ export default function ApiDocsPage() {
                 <p className={styles.lead}>
                     ダッシュボードで利用している API エンドポイントの一覧と説明です。必要に応じてクエリパラメータやレスポンスの概要を確認できます。
                 </p>
+                <p className={styles.lead}>
+                    <strong>認証:</strong> Basic認証を有効にしている場合、未ログイン時は /login にリダイレクトされます。ログイン成功後はクッキー（ga4_auth）でセッションが維持され、本ドキュメントの API の多くはそのクッキーがある状態で利用します。/api/auth/login と /api/auth/logout は認証不要で呼び出せます。
+                </p>
             </div>
             <nav className={styles.toc}>
                 <h2 className={styles.tocTitle}>カテゴリ</h2>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ProductProvider } from "@/lib/contexts/ProductContext"
-import AppShell from "@/components/layout/AppShell"
+import LayoutSwitcher from "@/components/layout/LayoutSwitcher"
 
 const inter = Inter({
     subsets: ["latin"],
@@ -26,9 +25,7 @@ export default function RootLayout({
     return (
         <html lang="ja" data-theme="dark">
             <body className={inter.className}>
-                <ProductProvider>
-                    <AppShell>{children}</AppShell>
-                </ProductProvider>
+                <LayoutSwitcher>{children}</LayoutSwitcher>
             </body>
         </html>
     )
