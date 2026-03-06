@@ -258,6 +258,55 @@ export default function AbTestDetailPage() {
                 </div>
             </div>
 
+            {abTest.ga4Config && (
+                <div className={styles.section}>
+                    <h2 className={styles.sectionTitle}>テストしているラベル</h2>
+                    <div className={styles.labelSection}>
+                        {abTest.ga4Config.dimensions && (
+                            <div className={styles.labelBlock}>
+                                <p className={styles.labelBlockTitle}>集計ディメンション</p>
+                                <p className={styles.labelBlockValue}>
+                                    {Array.isArray(abTest.ga4Config.dimensions)
+                                        ? abTest.ga4Config.dimensions.map((d: { name?: string }) => d?.name ?? d).join(', ')
+                                        : String(abTest.ga4Config.dimensions)}
+                                </p>
+                            </div>
+                        )}
+                        {abTest.ga4Config.filter?.dimension && abTest.ga4Config.filter?.expression && (
+                            <div className={styles.labelBlock}>
+                                <p className={styles.labelBlockTitle}>フィルタ条件</p>
+                                <p className={styles.labelBlockValue}>
+                                    {abTest.ga4Config.filter.dimension} {abTest.ga4Config.filter.operator || ''} {String(abTest.ga4Config.filter.expression)}
+                                </p>
+                            </div>
+                        )}
+                        {(['cvrA', 'cvrB', 'cvrC', 'cvrD'] as const).map((key) => {
+                            const cvr = abTest.ga4Config?.[key]
+                            if (!cvr) return null
+                            const denLabels = Array.isArray(cvr.denominatorLabels) ? cvr.denominatorLabels.join(', ') : (cvr.denominatorLabels ?? '')
+                            const numLabels = Array.isArray(cvr.numeratorLabels) ? cvr.numeratorLabels.join(', ') : (cvr.numeratorLabels ?? '')
+                            if (!denLabels && !numLabels) return null
+                            return (
+                                <div key={key} className={styles.labelBlock}>
+                                    <p className={styles.labelBlockTitle}>CVR {key.replace('cvr', '')}</p>
+                                    <p className={styles.labelBlockValue}>
+                                        <span className={styles.labelDenominator}>分母: {denLabels || '-'}</span>
+                                        <span className={styles.labelNumerator}>分子（CV）: {numLabels || '-'}</span>
+                                    </p>
+                                </div>
+                            )
+                        })}
+                        {!abTest.ga4Config.dimensions && !abTest.ga4Config.filter?.dimension &&
+                            !['cvrA', 'cvrB', 'cvrC', 'cvrD'].some((k) => {
+                                const c = abTest.ga4Config?.[k]
+                                return c && (c.denominatorLabels || c.numeratorLabels)
+                            }) && (
+                            <p className={styles.labelEmpty}>ラベル設定がありません</p>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {abTest.scheduleConfig && (
                 <div className={styles.section}>
                     <h2 className={styles.sectionTitle}>スケジュール設定</h2>

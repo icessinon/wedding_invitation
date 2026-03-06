@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from '@/components/Link'
 import BackLink from '@/components/BackLink'
 import CustomSelect from '@/components/CustomSelect'
@@ -16,6 +16,7 @@ import styles from './AbTestPage.module.css'
 function AbTestPageContent() {
     const { currentProduct, products, setCurrentProduct } = useProduct()
     const searchParams = useSearchParams()
+    const router = useRouter()
     const [abTests, setAbTests] = useState<AbTest[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -99,6 +100,7 @@ function AbTestPageContent() {
             }
             setEditingTest(null)
             setShowModal(false)
+            clearEditParam()
             await fetchAbTests(listPage)
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました'
@@ -106,6 +108,7 @@ function AbTestPageContent() {
             setError(errorMessage)
             setEditingTest(null)
             setShowModal(false)
+            clearEditParam()
         }
     }
 
@@ -114,9 +117,19 @@ function AbTestPageContent() {
         setShowModal(true)
     }
 
+    function clearEditParam() {
+        if (searchParams?.get('edit')) {
+            const next = new URLSearchParams(searchParams)
+            next.delete('edit')
+            const q = next.toString()
+            router.replace(q ? `/ab-test?${q}` : '/ab-test')
+        }
+    }
+
     function handleCloseModal() {
         setEditingTest(null)
         setShowModal(false)
+        clearEditParam()
     }
 
     async function handleDelete(id: number) {
@@ -421,7 +434,14 @@ function AbTestPageContent() {
 
 export default function AbTestPage() {
     return (
-        <Suspense fallback={<Loader />}>
+        <Suspense fallback={
+            <div className={styles.container}>
+                <h1 className={styles.title}>ABテスト管理</h1>
+                <div className={styles.loaderContainer}>
+                    <Loader />
+                </div>
+            </div>
+        }>
             <AbTestPageContent />
         </Suspense>
     )

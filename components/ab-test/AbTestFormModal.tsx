@@ -370,13 +370,17 @@ export default function AbTestFormModal({
         }
     }
 
+    const [submitting, setSubmitting] = useState(false)
+    const splitLabels = (s: string | undefined) => (s ?? '').split(',').map((l) => l.trim()).filter(Boolean)
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
-        const ga4ConfigData = {
+        setSubmitting(true)
+        try {
+            const ga4ConfigData = {
             propertyId: ga4Config.propertyId,
-            metrics: ga4Config.metrics.split(',').map((m) => ({ name: m.trim() })),
-            dimensions: ga4Config.dimensions.split(',').map((d) => ({ name: d.trim() })),
+            metrics: (ga4Config.metrics ?? '').split(',').map((m) => ({ name: m.trim() })).filter((x) => x.name),
+            dimensions: (ga4Config.dimensions ?? '').split(',').map((d) => ({ name: d.trim() })).filter((x) => x.name),
             filter: ga4Config.filterDimension ? {
                 dimension: ga4Config.filterDimension,
                 operator: ga4Config.filterOperator,
@@ -385,41 +389,45 @@ export default function AbTestFormModal({
             limit: ga4Config.limit,
             cvrA: {
                 denominatorDimension: ga4Config.cvrA.denominatorDimension,
-                denominatorLabels: ga4Config.cvrA.denominatorLabels.split(',').map((l) => l.trim()),
+                denominatorLabels: splitLabels(ga4Config.cvrA.denominatorLabels),
                 numeratorDimension: ga4Config.cvrA.numeratorDimension,
-                numeratorLabels: ga4Config.cvrA.numeratorLabels.split(',').map((l) => l.trim()),
+                numeratorLabels: splitLabels(ga4Config.cvrA.numeratorLabels),
                 metric: ga4Config.cvrA.metric,
             },
             cvrB: showCvrB && ga4Config.cvrB.denominatorDimension ? {
                 denominatorDimension: ga4Config.cvrB.denominatorDimension,
-                denominatorLabels: ga4Config.cvrB.denominatorLabels.split(',').map((l) => l.trim()),
+                denominatorLabels: splitLabels(ga4Config.cvrB.denominatorLabels),
                 numeratorDimension: ga4Config.cvrB.numeratorDimension,
-                numeratorLabels: ga4Config.cvrB.numeratorLabels.split(',').map((l) => l.trim()),
+                numeratorLabels: splitLabels(ga4Config.cvrB.numeratorLabels),
                 metric: ga4Config.cvrB.metric,
             } : undefined,
             cvrC: showCvrC && ga4Config.cvrC.denominatorDimension ? {
                 denominatorDimension: ga4Config.cvrC.denominatorDimension,
-                denominatorLabels: ga4Config.cvrC.denominatorLabels.split(',').map((l) => l.trim()),
+                denominatorLabels: splitLabels(ga4Config.cvrC.denominatorLabels),
                 numeratorDimension: ga4Config.cvrC.numeratorDimension,
-                numeratorLabels: ga4Config.cvrC.numeratorLabels.split(',').map((l) => l.trim()),
+                numeratorLabels: splitLabels(ga4Config.cvrC.numeratorLabels),
                 metric: ga4Config.cvrC.metric,
             } : undefined,
             cvrD: showCvrD && ga4Config.cvrD.denominatorDimension ? {
                 denominatorDimension: ga4Config.cvrD.denominatorDimension,
-                denominatorLabels: ga4Config.cvrD.denominatorLabels.split(',').map((l) => l.trim()),
+                denominatorLabels: splitLabels(ga4Config.cvrD.denominatorLabels),
                 numeratorDimension: ga4Config.cvrD.numeratorDimension,
-                numeratorLabels: ga4Config.cvrD.numeratorLabels.split(',').map((l) => l.trim()),
+                numeratorLabels: splitLabels(ga4Config.cvrD.numeratorLabels),
                 metric: ga4Config.cvrD.metric,
             } : undefined,
             abTestEvaluationConfig: ga4Config.abTestEvaluationConfig,
             geminiConfig: ga4Config.geminiConfig,
         }
 
-        await onSubmit({
-            ...formData,
-            ga4Config: ga4ConfigData,
-            scheduleConfig: scheduleConfig.enabled ? scheduleConfig : null,
-        })
+            await onSubmit({
+                ...formData,
+                ga4Config: ga4ConfigData,
+                scheduleConfig: scheduleConfig.enabled ? scheduleConfig : null,
+            })
+        } finally {
+            setSubmitting(false)
+            onClose()
+        }
     }
 
     if (!isOpen) return null
@@ -494,20 +502,22 @@ export default function AbTestFormModal({
                                 />
                                 <p className={styles.helpText}>空欄の場合は継続中として扱われます</p>
                             </div>
-                            <div>
-                                <label className={styles.label}>ステータス</label>
-                                <CustomSelect
-                                    value={formData.status}
-                                    onChange={(v) => setFormData({ ...formData, status: v })}
-                                    options={[
-                                        { value: 'running', label: '実行中' },
-                                        { value: 'completed', label: '完了' },
-                                        { value: 'paused', label: '一時停止' },
-                                    ]}
-                                    triggerClassName={styles.input}
-                                    aria-label="ステータス"
-                                />
-                            </div>
+                            {editingTest && (
+                                <div>
+                                    <label className={styles.label}>ステータス</label>
+                                    <CustomSelect
+                                        value={formData.status}
+                                        onChange={(v) => setFormData({ ...formData, status: v })}
+                                        options={[
+                                            { value: 'running', label: '実行中' },
+                                            { value: 'completed', label: '完了' },
+                                            { value: 'paused', label: '一時停止' },
+                                        ]}
+                                        triggerClassName={styles.input}
+                                        aria-label="ステータス"
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -1072,8 +1082,8 @@ export default function AbTestFormModal({
                         <button type="button" onClick={onClose} className={styles.cancelButton}>
                             キャンセル
                         </button>
-                        <button type="submit" className={styles.submitButton}>
-                            {editingTest ? '更新' : '作成'}
+                        <button type="submit" className={styles.submitButton} disabled={submitting}>
+                            {submitting ? (editingTest ? '更新中...' : '作成中...') : (editingTest ? '更新' : '作成')}
                         </button>
                     </div>
                 </form>

@@ -110,8 +110,16 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
     const monthlyCvDomain = monthlyChartData.length > 0 ? calculateDomain(monthlyChartData.map(d => d.cv)) : [0, 100]
     const monthlyCvrDomain = monthlyChartData.length > 0 ? calculateDomain(monthlyChartData.map(d => d.cvr), 0) : [0, 10]
 
-    const textColor = isDarkMode ? '#e5e7eb' : '#374151'
+    const textColor = isDarkMode ? '#9ca3af' : '#374151'
     const gridColor = isDarkMode ? '#374151' : '#e5e7eb'
+    const lineColors = {
+        pv: '#60a5fa',
+        cv: '#34d399',
+        cvr: '#fbbf24',
+        pvMonthly: '#93c5fd',
+        cvMonthly: '#6ee7b7',
+        cvrMonthly: '#fcd34d',
+    }
 
     return (
         <div className={styles.container}>
@@ -164,9 +172,9 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
                                 <Line
                                     type="monotone"
                                     dataKey="pv"
-                                    stroke="#3b82f6"
+                                    stroke={lineColors.pv}
                                     strokeWidth={2}
-                                    dot={{ fill: '#3b82f6', r: 4 }}
+                                    dot={{ fill: lineColors.pv, r: 4 }}
                                     name="PV"
                                 />
                             </LineChart>
@@ -217,9 +225,9 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
                                 <Line
                                     type="monotone"
                                     dataKey="cv"
-                                    stroke="#10b981"
+                                    stroke={lineColors.cv}
                                     strokeWidth={2}
-                                    dot={{ fill: '#10b981', r: 4 }}
+                                    dot={{ fill: lineColors.cv, r: 4 }}
                                     name="CV"
                                 />
                             </LineChart>
@@ -273,9 +281,9 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
                                 <Line
                                     type="monotone"
                                     dataKey="cvr"
-                                    stroke="#f59e0b"
+                                    stroke={lineColors.cvr}
                                     strokeWidth={2}
-                                    dot={{ fill: '#f59e0b', r: 4 }}
+                                    dot={{ fill: lineColors.cvr, r: 4 }}
                                     name="CVR (%)"
                                 />
                             </LineChart>
@@ -319,9 +327,9 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
                                     <Line
                                         type="monotone"
                                         dataKey="pv"
-                                        stroke="#1e40af"
+                                        stroke={lineColors.pvMonthly}
                                         strokeWidth={3}
-                                        dot={{ fill: '#1e40af', r: 6 }}
+                                        dot={{ fill: lineColors.pvMonthly, r: 6 }}
                                         name="PV"
                                     />
                                 </LineChart>
@@ -360,9 +368,9 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
                                     <Line
                                         type="monotone"
                                         dataKey="cv"
-                                        stroke="#047857"
+                                        stroke={lineColors.cvMonthly}
                                         strokeWidth={3}
-                                        dot={{ fill: '#047857', r: 6 }}
+                                        dot={{ fill: lineColors.cvMonthly, r: 6 }}
                                         name="CV"
                                     />
                                 </LineChart>
@@ -401,9 +409,9 @@ export default function TrendChart({ reportName, weeklyResults, monthlyTotal, mo
                                     <Line
                                         type="monotone"
                                         dataKey="cvr"
-                                        stroke="#d97706"
+                                        stroke={lineColors.cvrMonthly}
                                         strokeWidth={3}
-                                        dot={{ fill: '#d97706', r: 6 }}
+                                        dot={{ fill: lineColors.cvrMonthly, r: 6 }}
                                         name="CVR (%)"
                                     />
                                 </LineChart>

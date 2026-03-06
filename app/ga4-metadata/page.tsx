@@ -163,7 +163,11 @@ export default function GA4MetadataPage() {
                 </div>
             )}
 
-            {loading && <Loader />}
+            {loading && (
+                <div className={styles.loaderContainer}>
+                    <Loader />
+                </div>
+            )}
 
             {!loading && metrics.length === 0 && dimensions.length === 0 && !error && (
                 <div className={styles.emptyContainer}>

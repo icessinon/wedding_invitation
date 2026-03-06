@@ -11,6 +11,14 @@ export interface AbTestScheduleConfig {
     }
 }
 
+export interface Ga4CvrConfig {
+    denominatorDimension?: string
+    denominatorLabels?: string | string[]
+    numeratorDimension?: string
+    numeratorLabels?: string | string[]
+    metric?: string
+}
+
 export interface AbTest {
     id: number
     name: string
@@ -20,8 +28,12 @@ export interface AbTest {
     status: string
     winnerVariant?: string | null
     ga4Config?: {
-        cvrC?: { denominatorDimension?: string }
-        cvrD?: { denominatorDimension?: string }
+        dimensions?: string | Array<{ name?: string }>
+        filter?: { dimension?: string; operator?: string; expression?: string }
+        cvrA?: Ga4CvrConfig
+        cvrB?: Ga4CvrConfig
+        cvrC?: Ga4CvrConfig
+        cvrD?: Ga4CvrConfig
     }
     autoExecute?: boolean
     scheduleConfig?: AbTestScheduleConfig | null

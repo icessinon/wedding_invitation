@@ -1,16 +1,18 @@
 .container {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background-color: #1f2937;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    padding: 1.25rem 1.25rem 1.5rem;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .reportName {
-    font-size: 1.25rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    margin-bottom: 1rem;
-    color: #f9fafb;
+    margin-bottom: 1.25rem;
+    color: #64748b;
+    letter-spacing: 0.03em;
 }
 
 .charts {
@@ -29,7 +31,7 @@
 }
 
 .chartSection {
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
 }
 
 .chartSection:last-child {
@@ -37,39 +39,46 @@
 }
 
 .sectionTitle {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #4b5563;
-    color: #f9fafb;
+    border-bottom: 1px solid #334155;
+    color: #e2e8f0;
+    letter-spacing: 0.04em;
 }
 
 .chartTitle {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
     margin-top: 0;
-    padding-bottom: 0.5rem;
-    color: #d1d5db;
+    padding-bottom: 0.25rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 
 .summary {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #374151;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border-radius: 10px;
+    border: 1px solid #334155;
 }
 
 .summaryTitle {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #f9fafb;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: #94a3b8;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .summaryGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 1rem;
 }
 
@@ -77,21 +86,29 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    padding: 0.625rem 0.875rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    border: 1px solid #334155;
 }
 
 .summaryLabel {
-    font-size: 0.875rem;
-    color: #9ca3af;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 
 .summaryValue {
     font-size: 1.25rem;
-    font-weight: 600;
-    color: #f9fafb;
+    font-weight: 700;
+    color: #f1f5f9;
 }
 
 .emptyState {
     padding: 2rem;
     text-align: center;
     color: #9ca3af;
+    font-size: 0.9375rem;
 }

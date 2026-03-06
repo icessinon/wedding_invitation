@@ -113,6 +113,14 @@
     color: #9ca3af;
 }
 
+.loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    padding: 3rem 0;
+}
+
 .content {
     display: flex;
     flex-direction: column;
