@@ -97,6 +97,10 @@ export function calculateNextExecutionDate(
                 case 'weekly': {
                     const daysOfWeek = config.recurringPattern.daysOfWeek || [0]
                     const currentDay = now.getUTCDay()
+                    if (daysOfWeek.includes(currentDay)) {
+                        const todayAtTime = dateAtTimeJST(new Date(now.getTime()), timeStr)
+                        if (todayAtTime >= now) return todayAtTime
+                    }
                     const nextDay = daysOfWeek.find((d: number) => d > currentDay) ?? daysOfWeek[0]
                     const daysUntilNext = nextDay > currentDay
                         ? nextDay - currentDay
@@ -162,18 +166,13 @@ export async function findAbTestsToExecute(): Promise<number[]> {
             let existingExecution = null
             
             if (config.executionType === 'scheduled') {
-                const executionStart = new Date(nextExecution)
-                executionStart.setMinutes(executionStart.getMinutes() - 1)
-                const executionEnd = new Date(nextExecution)
-                executionEnd.setMinutes(executionEnd.getMinutes() + 1)
-                
+                const windowMs = 2 * 60 * 1000
+                const executionStart = new Date(nextExecution.getTime() - windowMs)
+                const executionEnd = new Date(nextExecution.getTime() + windowMs)
                 existingExecution = await prisma.abTestReportExecution.findFirst({
                     where: {
                         abTestId: abTest.id,
-                        createdAt: {
-                            gte: executionStart,
-                            lte: executionEnd,
-                        },
+                        createdAt: { gte: executionStart, lte: executionEnd },
                         status: { in: ['completed', 'running'] },
                     },
                 })

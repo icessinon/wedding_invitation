@@ -40,6 +40,14 @@ export default function AbTestDetailPage() {
         }
     }, [abTest])
 
+    useEffect(() => {
+        const onFocus = () => {
+            if (abTest?.id) loadNextExecutionDate()
+        }
+        window.addEventListener('focus', onFocus)
+        return () => window.removeEventListener('focus', onFocus)
+    }, [abTest?.id])
+
     async function fetchAbTestDetail() {
         try {
             const response = await fetch(`/api/ab-test/${abTestId}`)

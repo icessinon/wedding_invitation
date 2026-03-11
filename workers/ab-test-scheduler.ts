@@ -10,10 +10,13 @@ cron.schedule(cronExpression, async () => {
     try {
         const abTestIds = await findAbTestsToExecute()
         
+        const ts = new Date().toISOString()
         if (abTestIds.length === 0) {
+            console.log(`[AB Test Scheduler] ${ts} チェック完了: 実行対象 0 件`)
             return
         }
 
+        console.log(`[AB Test Scheduler] ${ts} チェック完了: 実行対象 ${abTestIds.length} 件 (ID: ${abTestIds.join(", ")})`)
         // スケジューラーから API を叩くための URL（Docker 時は APP_URL=http://app:3000 を compose で指定）
         const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
         const internalSecret = process.env.INTERNAL_API_SECRET || ''
