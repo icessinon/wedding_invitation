@@ -2,6 +2,9 @@
 # Debian ベース（Prisma が OpenSSL と互換性を取るため）
 FROM node:20-bookworm-slim AS builder
 
+# t3a.medium（4GB）等でビルド時に OOM しないよう Node のヒープ上限を 2GB に（要: docker build --memory=2g 以上）
+ENV NODE_OPTIONS=--max-old-space-size=2048
+
 # Prisma がビルド時の page data 収集で libssl1.1 を必要とするため追加（Bookworm では Bullseye から取得）
 RUN apt-get update -y && apt-get install -y --no-install-recommends ca-certificates && \
     echo "deb http://deb.debian.org/debian bullseye main" > /etc/apt/sources.list.d/bullseye.list && \

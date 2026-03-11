@@ -45,6 +45,7 @@ services:
       HOSTNAME: "0.0.0.0"
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ga4_dashboard?schema=public
       REDIS_URL: redis://redis:6379
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET}
     env_file:
       - .env
     # GA4_SERVICE_ACCOUNT_KEY_PATH を使う場合: プロジェクト直下に service-account-key.json を置く
@@ -70,6 +71,7 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ga4_dashboard?schema=public
       REDIS_URL: redis://redis:6379
       APP_URL: http://app:3000
+      INTERNAL_API_SECRET: ${INTERNAL_API_SECRET}
     env_file:
       - .env
     volumes:

@@ -47,26 +47,26 @@ export function calculateNextExecutionDate(
     endDate: Date | null,
     lastExecutedAt: Date | null
 ): Date | null {
-    if (!config.enabled || !endDate) return null
+    if (!config.enabled) return null
+    if (config.executionType !== 'recurring' && !endDate) return null
 
     const now = new Date()
     const timeStr = config.recurringPattern?.time || '09:00'
 
     switch (config.executionType) {
         case 'on_end':
-            // 期間終了日の指定時刻（JST で解釈）
+            if (!endDate) return null
             const endExecution = dateAtTimeJST(endDate, timeStr)
             return endExecution >= now ? endExecution : null
 
         case 'on_end_delayed':
-            // 期間終了後N日後の指定時刻（JST で解釈）
+            if (!endDate) return null
             const delayedDate = new Date(endDate)
             delayedDate.setUTCDate(delayedDate.getUTCDate() + (config.delayDays || 0))
             const delayedAtJST = dateAtTimeJST(delayedDate, timeStr)
             return delayedAtJST >= now ? delayedAtJST : null
 
         case 'scheduled':
-            // 特定の日時（編集フォームの日時は JST として解釈。Docker(UTC)でも表示と一致）
             if (!config.scheduledDate) return null
             const scheduled = parseScheduledDateAsJST(config.scheduledDate)
             if (!scheduled) {
@@ -75,8 +75,9 @@ export function calculateNextExecutionDate(
             }
             return scheduled
 
-        case 'recurring':
-            // 繰り返し実行（時刻は JST で解釈）
+        case 'recurring': {
+            if (now < startDate) return null
+            if (endDate && now > endDate) return null
             if (!config.recurringPattern) return null
 
             switch (config.recurringPattern.frequency) {
@@ -120,6 +121,7 @@ export function calculateNextExecutionDate(
                 default:
                     return null
             }
+        }
 
         default:
             return null
@@ -156,16 +158,14 @@ export async function findAbTestsToExecute(): Promise<number[]> {
 
         // 実行時刻が現在時刻を過ぎている場合
         if (nextExecution && nextExecution <= now) {
-            // 実行済みチェック（scheduledの場合は時刻も含めてチェック）
             const config = abTest.scheduleConfig as unknown as ScheduleConfig
             let existingExecution = null
             
             if (config.executionType === 'scheduled') {
-                // scheduledの場合は、同じ日時の実行をチェック（時刻も含む）
                 const executionStart = new Date(nextExecution)
-                executionStart.setMinutes(executionStart.getMinutes() - 1) // 1分前から
+                executionStart.setMinutes(executionStart.getMinutes() - 1)
                 const executionEnd = new Date(nextExecution)
-                executionEnd.setMinutes(executionEnd.getMinutes() + 1) // 1分後まで
+                executionEnd.setMinutes(executionEnd.getMinutes() + 1)
                 
                 existingExecution = await prisma.abTestReportExecution.findFirst({
                     where: {
@@ -178,7 +178,6 @@ export async function findAbTestsToExecute(): Promise<number[]> {
                     },
                 })
             } else {
-                // その他の場合は、同じ日でチェック
                 const executionDate = new Date(nextExecution)
                 executionDate.setHours(0, 0, 0, 0)
                 const nextDay = new Date(executionDate)

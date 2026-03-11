@@ -16,14 +16,17 @@ cron.schedule(cronExpression, async () => {
 
         // スケジューラーから API を叩くための URL（Docker 時は APP_URL=http://app:3000 を compose で指定）
         const appUrl = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-        
+        const internalSecret = process.env.INTERNAL_API_SECRET || ''
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+        if (internalSecret) headers['x-internal-secret'] = internalSecret
+
         for (const abTestId of abTestIds) {
             try {
                 const url = `${appUrl}/api/ab-test/execute`
                 
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers,
                     body: JSON.stringify({ abTestId }),
                 })
 

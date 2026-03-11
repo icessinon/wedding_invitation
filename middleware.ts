@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server'
 
 const AUTH_COOKIE = 'ga4_auth'
 
+const INTERNAL_SECRET_HEADER = 'x-internal-secret'
+
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
 
@@ -11,6 +13,13 @@ export function middleware(request: NextRequest) {
     }
     if (pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.includes('.')) {
         return NextResponse.next()
+    }
+
+    if (pathname === '/api/ab-test/execute' && request.method === 'POST') {
+        const secret = request.headers.get(INTERNAL_SECRET_HEADER)
+        if (secret && process.env.INTERNAL_API_SECRET && secret === process.env.INTERNAL_API_SECRET) {
+            return NextResponse.next()
+        }
     }
 
     const hasAuth = request.cookies.get(AUTH_COOKIE)?.value === '1'
