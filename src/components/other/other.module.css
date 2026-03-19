@@ -1,0 +1,205 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg,
+    #e8f6fc 0%,
+    #d4ebf5 25%,
+    #b8dcec 55%,
+    #9ecde3 85%,
+    #8ac4dc 100%
+  );
+  overflow: hidden;
+}
+
+.mainContent {
+  position: relative;
+  width: 80%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  z-index: 1;
+}
+
+.titleSection {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.titleWrapper {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  z-index: 2;
+  overflow: visible;
+}
+
+.titleSvg {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  overflow: visible;
+}
+
+.titleText {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: rgba(44, 82, 110, 0.9);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 6px rgba(255, 255, 255, 0.4));
+  animation: drawChar 1.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+.titleTextHidden {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: rgba(44, 82, 110, 0.9);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes drawChar {
+  0% {
+    stroke-dasharray: 0 500;
+    stroke-dashoffset: 500;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 500 0;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    fill: rgba(44, 82, 110, 0.9);
+  }
+}
+
+.divider {
+  width: 80%;
+  max-width: 400px;
+  height: 0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+  margin: 0.5rem 0;
+}
+
+.sectionTitle {
+  color: rgba(44, 82, 110, 0.95);
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  letter-spacing: 0.12em;
+}
+
+.requestBox {
+  width: 100%;
+  max-width: 560px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 24px rgba(44, 82, 110, 0.12);
+}
+
+.boxHeader {
+  color: rgba(44, 82, 110, 0.95);
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  margin-bottom: 1rem;
+  letter-spacing: 0.08em;
+}
+
+.boxDivider {
+  width: 60%;
+  margin: 0 auto 1.5rem;
+  height: 0;
+  border-bottom: 2px dotted rgba(44, 82, 110, 0.35);
+}
+
+.boxContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.boxContent p {
+  color: rgba(44, 82, 110, 0.9);
+  font-size: 1.1rem;
+  line-height: 1.9;
+  text-align: center;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  font-weight: 400;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1.5rem;
+  }
+
+  .mainContent {
+    width: 90%;
+    gap: 1.5rem;
+  }
+
+  .titleWrapper {
+    height: 65px;
+    margin-bottom: 0.5rem;
+  }
+
+  .titleSvg {
+    max-width: 500px;
+  }
+
+  .titleText,
+  .titleTextHidden {
+    font-size: 65px;
+    stroke-width: 1.5;
+  }
+
+  .sectionTitle {
+    font-size: 1.3rem;
+  }
+
+  .requestBox {
+    padding: 1.5rem;
+  }
+
+  .boxHeader {
+    font-size: 1.1rem;
+  }
+
+  .boxContent p {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}

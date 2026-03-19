@@ -1,0 +1,411 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 60px 0;
+  background: 
+    radial-gradient(ellipse at top, rgba(255, 182, 193, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 20%, rgba(173, 216, 230, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(255, 228, 225, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(230, 230, 250, 0.3) 0%, transparent 50%),
+    linear-gradient(180deg, 
+      rgba(255, 250, 250, 0.95) 0%,
+      rgba(240, 248, 255, 0.9) 30%,
+      rgba(255, 250, 250, 0.95) 60%,
+      rgba(255, 245, 238, 0.9) 100%
+    );
+  background-blend-mode: multiply, screen, overlay, normal;
+  overflow: hidden;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+}
+
+.sparkle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at var(--x) var(--y), gold, transparent 1px);
+  animation: sparkle 5s linear infinite;
+  opacity: 0;
+}
+
+@keyframes sparkle {
+  0% {
+    --x: 50%;
+    --y: 50%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  20% {
+    opacity: 0;
+  }
+  100% {
+    --x: calc(50% + 200% * (rand() - 0.5));
+    --y: calc(50% + 200% * (rand() - 0.5));
+  }
+}
+
+.waveTop,
+.waveBottom {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-repeat: repeat-x;
+  background-size: 1200px 100px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.waveTop {
+  top: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 100'%3E%3Cpath d='M0,50 Q300,20 600,50 T1200,50 L1200,0 L0,0 Z' fill='%23f3f4f6' opacity='0.5'/%3E%3C/svg%3E");
+  animation: wave 20s linear infinite;
+}
+
+.waveBottom {
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 100'%3E%3Cpath d='M0,50 Q300,80 600,50 T1200,50 L1200,100 L0,100 Z' fill='%23f3f4f6' opacity='0.5'/%3E%3C/svg%3E");
+  animation: wave 25s linear infinite reverse;
+}
+
+@keyframes wave {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: 1200px;
+  }
+}
+
+.titleWrapper {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  z-index: 10;
+  overflow: visible;
+}
+
+.titleSvg {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  overflow: visible;
+}
+
+.titleText {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: #1a1a1a;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  animation: drawChar 1.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+.titleTextHidden {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: #1a1a1a;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes drawChar {
+  0% {
+    stroke-dasharray: 0 500;
+    stroke-dashoffset: 500;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 500 0;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    fill: #1a1a1a;
+  }
+}
+
+/* Groom Section */
+.groomSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 6rem auto;
+  padding: 0 3rem;
+  z-index: 2;
+  position: relative;
+  pointer-events: auto;
+}
+
+.groomImageWrapper {
+  flex-shrink: 0;
+}
+
+.groomImageWrapperMobile {
+  display: none;
+}
+
+.groomInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 300px;
+}
+
+/* Bride Section */
+.brideSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 3rem;
+  flex-direction: row;
+  z-index: 2;
+  position: relative;
+  pointer-events: auto;
+}
+
+.brideImageWrapper {
+  flex-shrink: 0;
+}
+
+.brideImageWrapperMobile {
+  display: none;
+}
+
+.brideInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 300px;
+}
+
+/* Image Placeholder */
+.imagePlaceholder {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8e5df 0%, #d4d1cb 100%);
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
+              0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.imageLabel {
+  position: absolute;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Section Title */
+.sectionTitle {
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5rem 0;
+  display: inline-block;
+  font-family: var(--font-dancing-script), cursive;
+  color: #1a1a1a;
+  position: relative;
+}
+
+.groomTitle::before,
+.groomTitle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 1px;
+  background-color: rgba(37, 99, 235, 0.3);
+  transform: translateY(-50%);
+}
+
+.groomTitle::before {
+  left: 80px;
+  display: none;
+}
+
+.groomTitle::after {
+  right: 80px;
+}
+
+.brideTitle::before,
+.brideTitle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 1px;
+  background-color: rgba(236, 72, 153, 0.3);
+  transform: translateY(-50%);
+}
+
+.brideTitle::before {
+  left: 80px;
+  display: none;
+}
+
+.brideTitle::after {
+  right: 80px;
+}
+
+@media (min-width: 769px) {
+  .groomTitle::after {
+    right: 450px;
+  }
+
+  .brideTitle::after {
+    right: 450px;
+  }
+}
+
+/* Name Field */
+.nameField {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.nameText {
+  font-size: 1.8rem;
+  color: rgba(26, 26, 26, 0.85);
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  font-family: var(--font-dancing-script), cursive;
+}
+
+/* Greeting Field */
+.greetingField {
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  min-height: 5rem;
+  display: flex;
+  align-items: center;
+}
+
+.greetingLabel {
+  font-size: 1rem;
+  color: #1a1a1a;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 0;
+  }
+
+  .titleWrapper {
+    height: 80px;
+  }
+
+  .titleSvg {
+    max-width: 500px;
+  }
+
+  .titleText,
+  .titleTextHidden {
+    font-size: 65px;
+    stroke-width: 1.5;
+  }
+
+  .groomSection,
+  .brideSection {
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 0 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .groomImageWrapper,
+  .brideImageWrapper {
+    display: none;
+  }
+
+  .groomImageWrapperMobile,
+  .brideImageWrapperMobile {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  .imagePlaceholder {
+    width: 180px;
+    height: 180px;
+  }
+
+  .groomInfo,
+  .brideInfo {
+    width: 100%;
+    text-align: center;
+    min-width: auto;
+  }
+
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .nameField {
+    text-align: center;
+  }
+
+  .greetingField {
+    text-align: left;
+  }
+
+  .nameText {
+    font-size: 1.5rem;
+  }
+
+  .groomTitle::before,
+  .brideTitle::before {
+    display: block;
+  }
+}
+

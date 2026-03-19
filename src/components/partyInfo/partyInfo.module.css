@@ -1,0 +1,340 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 60px 40px;
+  background: #e8fbff;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+  color: #7caeb9;
+  overflow: hidden;
+}
+
+.header {
+  font-size: 1.2rem;
+  font-weight: 400;
+  text-align: left;
+  margin: 0 0 3rem 0;
+  letter-spacing: 0.05em;
+  color: #7caeb9;
+}
+
+.mainContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 800px;
+  width: 100%;
+  min-width: 0;
+  margin: 0 auto;
+  gap: 3rem;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.titleWrapper {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  z-index: 10;
+  overflow: visible;
+}
+
+.titleSvg {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  overflow: visible;
+}
+
+.titleText {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: #7caeb9;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  animation: drawChar 1.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+.titleTextHidden {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: #7caeb9;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes drawChar {
+  0% {
+    stroke-dasharray: 0 500;
+    stroke-dashoffset: 500;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 500 0;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    fill: #7caeb9;
+  }
+}
+
+.dateSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.dateLabel {
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.08em;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic Medium', 'Meiryo', 'MS PGothic', sans-serif;
+}
+
+.dateValue {
+  font-size: 1.4rem;
+  font-weight: 400;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.05em;
+}
+
+.ceremonyBox {
+  width: 100%;
+  max-width: 600px;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+.venueBox {
+  width: 100%;
+  max-width: 600px;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+.boxTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px dotted rgba(124, 174, 185, 0.45);
+  width: 100%;
+}
+
+.timeRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.timeLabel {
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.05em;
+}
+
+.timeValue {
+  font-size: 1.3rem;
+  font-weight: 400;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.05em;
+}
+
+.timeSeparator {
+  font-size: 1rem;
+  color: #7caeb9;
+  margin: 0 0.3rem;
+}
+
+.venueRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.venueLabel {
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.05em;
+}
+
+.venueValue {
+  font-size: 1.1rem;
+  font-weight: 400;
+  text-align: center;
+  color: #7caeb9;
+  letter-spacing: 0.05em;
+  word-break: break-word;
+}
+
+.venueMap {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.venueMapEmbed {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 220px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.venueMapLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.4rem;
+  background: linear-gradient(135deg, #fff 0%, #faf5f7 100%);
+  border: 1.5px solid #f0d5e0;
+  border-radius: 999px;
+  color: #8b6b7a;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 8px rgba(240, 213, 224, 0.3);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.venueMapLink:hover {
+  box-shadow: 0 4px 14px rgba(240, 213, 224, 0.45);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 20px;
+  }
+
+  .header {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .mainContent {
+    gap: 2rem;
+  }
+
+  .titleWrapper {
+    height: 80px;
+  }
+
+  .titleSvg {
+    max-width: 500px;
+  }
+
+  .titleText,
+  .titleTextHidden {
+    font-size: 65px;
+    stroke-width: 1.5;
+  }
+
+  .dateLabel {
+    font-size: 1.1rem;
+  }
+
+  .dateValue {
+    font-size: 1.2rem;
+  }
+
+  .ceremonyBox {
+    padding: 1.5rem 1rem;
+    gap: 1.2rem;
+  }
+
+  .venueBox {
+    padding: 1.5rem 1rem;
+    gap: 1.2rem;
+    border-radius: 14px;
+  }
+
+  .venueMapEmbed {
+    height: 180px;
+  }
+
+  .boxTitle {
+    font-size: 1.1rem;
+  }
+
+  .timeValue {
+    font-size: 1.1rem;
+  }
+
+  .venueValue {
+    font-size: 1rem;
+  }
+}

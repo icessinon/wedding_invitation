@@ -1,0 +1,322 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    /* Sand grain texture */
+    radial-gradient(rgba(0, 0, 0, 0.15) 1px, transparent 0),
+    /* Sandy beach gradient */
+    linear-gradient(180deg,
+      #fdf5e6 0%,  /* Old Lace - very light sand */
+      #f5deb3 25%, /* Wheat - light sand */
+      #deb887 50%, /* BurlyWood - medium sand */
+      #d2b48c 75%, /* Tan - darker sand */
+      #bc8f8f 100% /* RosyBrown - slightly reddish sand */
+    );
+  background-size: 3px 3px, 100% 100%;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 25vh; /* Initial height of the ocean */
+  background: linear-gradient(180deg, #6a5acd 0%, #87ceeb 100%);
+  z-index: 4; /* Front wave, in front of title */
+  animation: tidePseudoAnimationBefore 10s ease-in-out infinite;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 25vh; /* Initial height of the ocean */
+  background: linear-gradient(180deg, rgba(106, 90, 205, 0.7) 0%, rgba(135, 206, 235, 0.7) 100%);
+  z-index: 3; /* Back wave, in front of title */
+  animation: tidePseudoAnimationAfter 13s ease-in-out infinite;
+}
+
+@keyframes tidePseudoAnimationBefore {
+  0% {
+    height: 35vh;
+  }
+  50% {
+    height: 25vh;
+  }
+  100% {
+    height: 35vh;
+  }
+}
+
+@keyframes tidePseudoAnimationAfter {
+  0% {
+    height: 33vh;
+  }
+  50% {
+    height: 28vh;
+  }
+  100% {
+    height: 33vh;
+  }
+}
+
+/* Remove oceanFlow keyframes as it's no longer used */
+
+.waveTop,
+.waveBottom {
+  display: none; /* Hide wave elements */
+}
+
+.topLines,
+.bottomLines {
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.topLines {
+  top: 2rem;
+}
+
+.bottomLines {
+  bottom: 2rem;
+}
+
+.line {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6); /* Reverted to semi-transparent white */
+  border-radius: 1px;
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.3); /* Lighter shadow for white line */
+}
+
+.messageContent {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1.5rem; /* Increased padding */
+  background-color: rgba(255, 255, 255, 0.1); /* More semi-transparent white background */
+  border: 1px solid rgba(255, 255, 255, 0.4); /* Light border */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  backdrop-filter: blur(5px); /* Frosted glass effect */
+  overflow: hidden;
+  z-index: 5; /* In front of waves */
+}
+
+.messageText {
+  color: #333333; /* Changed to dark grey */
+  font-size: 1.2rem;
+  line-height: 2;
+  text-align: center;
+  margin: 0.4rem 0;
+  text-shadow:
+    0 1px 2px rgba(255, 255, 255, 0.5),
+    0 0.5px 1px rgba(255, 255, 255, 0.3);
+  font-family: 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', 'Yu Mincho', 'YuMincho', 'MS PMincho', serif;
+  font-weight: 500;
+}
+
+.messageTextRight {
+  color: #333333; /* Changed to dark grey */
+  font-size: 1.2rem;
+  line-height: 2;
+  text-align: center;
+  margin: 0.6rem 0 0.4rem 0;
+  text-shadow:
+    0 1px 2px rgba(255, 255, 255, 0.5),
+    0 0.5px 1px rgba(255, 255, 255, 0.3);
+  font-family: 'Hiragino Mincho ProN', 'Hiragino Mincho Pro', 'Yu Mincho', 'YuMincho', 'MS PMincho', serif;
+  font-weight: 500;
+}
+
+.titleWrapper {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  z-index: 2;
+  overflow: visible;
+}
+
+.titleSvg {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  overflow: visible;
+}
+
+.titleText {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.3));
+  animation: drawChar 1.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+.titleTextHidden {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes drawChar {
+  0% {
+    stroke-dasharray: 0 500;
+    stroke-dashoffset: 500;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 500 0;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    fill: rgba(255, 255, 255, 0.95);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1.5rem;
+  }
+
+  .square {
+    width: 90vw;
+    max-width: 450px;
+    height: auto;
+    padding: 2rem 1.5rem;
+  }
+
+  .messageText {
+    font-size: 1rem;
+    line-height: 1.9;
+    margin: 0.3rem 0;
+    color: #ffffff;
+    text-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.5),
+      0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .messageTextRight {
+    font-size: 1rem;
+    line-height: 1.9;
+    margin: 0.5rem 0 0.3rem 0;
+    color: #ffffff;
+    text-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.5),
+      0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .titleWrapper {
+    height: 80px;
+    margin-bottom: 1.5rem;
+  }
+
+  .titleSvg {
+    max-width: 500px;
+  }
+
+  .titleText,
+  .titleTextHidden {
+    font-size: 65px;
+    stroke-width: 1.5;
+  }
+
+  .topLines,
+  .bottomLines {
+    left: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .topLines {
+    top: 1.5rem;
+  }
+
+  .bottomLines {
+    bottom: 1.5rem;
+  }
+}
+
+.thankTurtleImage {
+  position: absolute;
+  bottom: 5%; /* Moved further down */
+  left: 5%;
+  width: 150px;
+  height: auto;
+  opacity: 0.8;
+  z-index: 3; /* Changed from 1 to 3 to bring it to the front */
+  animation: turtleFloat 12s ease-in-out infinite;
+  transform-origin: center center;
+  mix-blend-mode: multiply;
+}
+
+@keyframes turtleFloat {
+  0% {
+    transform: translateY(0) rotate(5deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(-5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(5deg);
+  }
+}
+
+.thankScallopShell {
+  position: absolute;
+  right: 0px; /* Moved further left */
+  top: 20%; /* Moved further down */
+  width: 150px;
+  height: 150px;
+  z-index: 5;
+  opacity: 0.8;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  animation: shellFloat 10s ease-in-out infinite;
+}
+
+@keyframes shellFloat {
+  0% {
+    transform: translateY(0) rotate(15deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(20deg);
+  }
+  100% {
+    transform: translateY(0) rotate(15deg);
+  }
+}
