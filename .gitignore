@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# Google Cloud サービスアカウント鍵（ダウンロード JSON、絶対にコミットしない）
+design-*.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*

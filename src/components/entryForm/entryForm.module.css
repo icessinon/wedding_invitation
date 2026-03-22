@@ -343,7 +343,7 @@
   align-self: center;
 }
 
-/* ご出席・ご欠席・保留 — タイトル帯と同系のスレートブルー（#547c94 / #5a8a9e）フラットトーン */
+/* ご出席・ご欠席 — タイトル帯と同系のスレートブルー（#547c94 / #5a8a9e）フラットトーン */
 .attendanceRadioInputs {
   --attendance-slate: #547c94;
   --attendance-slate-hover: #5a8a9e;

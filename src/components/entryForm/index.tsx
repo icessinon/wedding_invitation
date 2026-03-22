@@ -9,16 +9,14 @@ import { EntryFormTitle } from './EntryFormTitle'
 const ENTRY_TITLE_LINES = ['PRESENCE', 'OR', 'ABSENCE']
 const ENTRY_TITLE_TEXT = ENTRY_TITLE_LINES.join('')
 
-export const EntryForm: React.FC<EntryFormProps> = ({
-  responseDeadline = '2026年○月○日',
-  spreadsheetWebAppUrl,
-}) => {
+export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026年○月○日' }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
   const visibleChars = useTitleAnimation(containerRef, ENTRY_TITLE_TEXT)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitOutcome, setSubmitOutcome] = useState<'attend' | 'absent' | null>(null)
 
   useEffect(() => {
     return () => {
@@ -49,38 +47,33 @@ export const EntryForm: React.FC<EntryFormProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitError(null)
+    setSubmitOutcome(null)
 
     const form = e.currentTarget
     const formData = new FormData(form)
+    const attendance = String(formData.get('attendance') ?? '')
 
-    const data: Record<string, string> = {}
-    formData.forEach((value, key) => {
-      if (key === 'photo' && value instanceof File) {
-        data[key] = value.name ? `（画像: ${value.name}）` : ''
+    setSubmitStatus('sending')
+    try {
+      const res = await fetch('/api/rsvp', {
+        method: 'POST',
+        body: formData,
+      })
+      const payload = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null
+      if (!res.ok || !payload?.ok) {
+        setSubmitStatus('error')
+        setSubmitError(payload?.error ?? '送信に失敗しました')
         return
       }
-      data[key] = String(value)
-    })
-
-    if (spreadsheetWebAppUrl) {
-      setSubmitStatus('sending')
-      try {
-        await fetch(spreadsheetWebAppUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        })
-        setSubmitStatus('ok')
-        form.reset()
-        setImagePreview(null)
-      } catch (err) {
-        setSubmitStatus('error')
-        setSubmitError(err instanceof Error ? err.message : '送信に失敗しました')
+      if (attendance === 'attend' || attendance === 'absent') {
+        setSubmitOutcome(attendance)
       }
-    } else {
-      setSubmitError('スプレッドシート連携のURLが設定されていません。')
+      setSubmitStatus('ok')
+      form.reset()
+      setImagePreview(null)
+    } catch (err) {
       setSubmitStatus('error')
+      setSubmitError(err instanceof Error ? err.message : '送信に失敗しました')
     }
   }
 
@@ -102,11 +95,6 @@ export const EntryForm: React.FC<EntryFormProps> = ({
               出欠のご回答をくださいますよう
               <br />
               お願い申し上げます
-            </p>
-            <p className={styles.introText}>
-              また　期日までのご回答が難しい場合は
-              <br />
-              一度保留でのご回答をお願いいたします
             </p>
             <p className={styles.deadline}>
               <span className={styles.deadlineLabel}>ご回答期限</span>
@@ -339,7 +327,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({
             <div
               className={styles.attendanceRadioInputs}
               role="radiogroup"
-              aria-label="ご出席・ご欠席・保留の選択"
+              aria-label="ご出席・ご欠席の選択"
             >
               <label className={styles.attendanceRadio}>
                 <input
@@ -360,21 +348,24 @@ export const EntryForm: React.FC<EntryFormProps> = ({
                 />
                 <span className={styles.attendanceRadioName}>ご欠席</span>
               </label>
-              <label className={styles.attendanceRadio}>
-                <input
-                  type="radio"
-                  name="attendance"
-                  value="pending"
-                  className={styles.attendanceRadioInput}
-                />
-                <span className={styles.attendanceRadioName}>保留</span>
-              </label>
             </div>
             </fieldset>
           </div>
 
           <div className={styles.submitWrap}>
-            {submitStatus === 'ok' && (
+            {submitStatus === 'ok' && submitOutcome === 'attend' && (
+              <p className={styles.submitMessage} role="status">
+                ご出席とのご回答をいただき、ありがとうございます。
+                <br />
+                当日お会いできることを心よりうれしく思っております。お待ちしております。
+              </p>
+            )}
+            {submitStatus === 'ok' && submitOutcome === 'absent' && (
+              <p className={styles.submitMessage} role="status">
+                ご回答ありがとうございました。
+              </p>
+            )}
+            {submitStatus === 'ok' && !submitOutcome && (
               <p className={styles.submitMessage} role="status">
                 送信が完了しました。ご協力ありがとうございます。
               </p>
