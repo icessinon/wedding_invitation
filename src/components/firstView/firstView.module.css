@@ -5,7 +5,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
@@ -30,78 +30,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.32);
   z-index: 1;
-}
-
-.header {
-  position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 2rem 3rem;
-  z-index: 2;
-  animation: fadeInDown 1s ease-out;
-}
-
-.headerLeft {
-  display: flex;
-  align-items: center;
-}
-
-.firstViewLabel {
-  color: white;
-  font-size: 1rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.headerMenu {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.menuText {
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 300;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transition: opacity 0.3s ease;
-}
-
-.menuText:hover {
-  opacity: 0.7;
-}
-
-.hamburgerMenu {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 24px;
-  height: 18px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.hamburgerMenu span {
-  display: block;
-  width: 100%;
-  height: 2px;
-  background: white;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .mainContent {
@@ -112,155 +42,132 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  animation: fadeInUp 1.5s ease-out;
+  width: 100%;
+  max-width: 100vw;
+  padding: 0 1.25rem;
+  box-sizing: border-box;
 }
 
-.title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-}
-
-.titleLine {
-  display: block;
-  font-size: 5rem;
-  font-weight: 300;
-  font-style: italic;
-  color: #1a1a1a;
-  text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.8);
-  letter-spacing: 0.05em;
-  line-height: 1.2;
-  animation: slideInScale 1.2s ease-out;
-  animation-fill-mode: both;
-}
-
-.titleLine:first-child {
-  animation-delay: 0.2s;
-}
-
-.titleLine:last-child {
-  animation-delay: 0.4s;
-}
-
-.footer {
+.titleWrapper {
   position: relative;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  z-index: 2;
-  animation: fadeIn 2s ease-out;
-}
-
-.date {
-  color: white;
-  font-size: 1.2rem;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.socialIcon {
-  position: absolute;
-  top: 50%;
-  right: 2rem;
-  transform: translateY(-50%);
-  z-index: 2;
-  animation: fadeInRight 1.5s ease-out;
-}
-
-.twitterIcon {
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: #1DA1F2;
-  border-radius: 50%;
-  color: white;
-  font-size: 1.2rem;
-  font-weight: bold;
-  text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: visible;
 }
 
-.twitterIcon:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+.titleSvg {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  overflow: visible;
 }
 
-@keyframes fadeInDown {
-  from {
+.titleText {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.45));
+  animation: drawChar 1.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+.titleTextHidden {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 70px;
+  font-weight: 400;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes drawChar {
+  0% {
+    stroke-dasharray: 0 500;
+    stroke-dashoffset: 500;
     opacity: 0;
-    transform: translateY(-30px);
   }
-  to {
+  30% {
     opacity: 1;
-    transform: translateY(0);
+  }
+  100% {
+    stroke-dasharray: 500 0;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    fill: rgba(255, 255, 255, 0.96);
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.dateBlock {
+  margin-top: 0.25rem;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 1s ease 0.15s,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.dateBlockVisible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateY(-50%) translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-  }
+.dateEyebrow {
+  margin: 0 0 0.35rem;
+  font-family:
+    'Hiragino Sans',
+    'Hiragino Kaku Gothic ProN',
+    'Yu Gothic',
+    'Meiryo',
+    sans-serif;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
 }
 
-@keyframes slideInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.dateMain {
+  display: block;
+  font-family:
+    'Hiragino Sans',
+    'Hiragino Kaku Gothic ProN',
+    'Yu Gothic',
+    'Meiryo',
+    sans-serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.35rem);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
 }
 
 @media (max-width: 768px) {
-  .header {
-    padding: 1.5rem;
+  .titleWrapper {
+    height: 200px;
   }
 
-  .menuText {
-    font-size: 0.8rem;
+  .titleText,
+  .titleTextHidden {
+    font-size: 52px;
   }
 
-  .titleLine {
-    font-size: 3rem;
-  }
-
-  .socialIcon {
-    right: 1rem;
+  .dateEyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
   }
 }
-

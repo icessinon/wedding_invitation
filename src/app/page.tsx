@@ -10,7 +10,10 @@ import { EntryForm } from '../components/entryForm'
 export default function Home() {
   return (
     <div className="min-h-screen border-0 outline-none">
-      <FirstView />
+      <FirstView
+        weddingDate="2026年7月18日（土）"
+        weddingDateTime="2026-07-18"
+      />
       <CountDown />
       <Message />
       <Profile />

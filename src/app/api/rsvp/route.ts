@@ -31,6 +31,67 @@ const HEADERS = [
 
 type HeaderKey = (typeof HEADERS)[number]
 
+/** スプレッドシート 1 行目に書く列名（フォームの name は従来どおり英語キー） */
+const HEADER_LABELS_JA: Record<HeaderKey, string> = {
+  guestSide: 'どちらのゲスト様',
+  relation: 'ご関係（新郎新婦から見た）',
+  relationship: '間柄（新郎新婦から見た）',
+  guestName: 'お名前',
+  guestNameKana: 'フリガナ',
+  gender: '性別',
+  postalCode: '郵便番号',
+  address: 'ご住所',
+  email: 'メールアドレス',
+  allergy: 'アレルギーの有無・種類',
+  transport: '交通手段',
+  trainTransfer: '電車の場合（徒歩・タクシー）',
+  hasChildren: 'お子様の有無',
+  jointName: '夫婦参加時の連名の有無',
+  message: '新郎新婦へメッセージ',
+  photo: 'メッセージ画像（URL）',
+  attendance: 'ご出欠',
+}
+
+function formatCellForSheet(key: HeaderKey, value: string): string {
+  switch (key) {
+    case 'guestSide':
+      if (value === 'groom') return '新郎ゲスト'
+      if (value === 'bride') return '新婦ゲスト'
+      return value
+    case 'gender':
+      if (value === 'male') return '男性'
+      if (value === 'female') return '女性'
+      if (value === 'other') return 'その他'
+      return value
+    case 'transport':
+      if (value === 'train') return '電車'
+      if (value === 'car') return 'お車'
+      if (value === 'taxi') return 'タクシー'
+      if (value === 'other') return 'その他'
+      return value
+    case 'trainTransfer':
+      if (value === 'walk') return '徒歩'
+      if (value === 'taxi') return 'タクシー'
+      if (value === 'na') return '該当なし'
+      return value
+    case 'hasChildren':
+      if (value === 'yes') return 'あり'
+      if (value === 'no') return 'なし'
+      return value
+    case 'jointName':
+      if (value === 'yes') return 'あり'
+      if (value === 'no') return 'なし'
+      if (value === 'na') return '該当なし'
+      return value
+    case 'attendance':
+      if (value === 'attend') return 'ご出席'
+      if (value === 'absent') return 'ご欠席'
+      return value
+    default:
+      return value
+  }
+}
+
 type RsvpGoogleAuth = InstanceType<typeof google.auth.JWT> | InstanceType<typeof google.auth.GoogleAuth>
 type DriveAuth = RsvpGoogleAuth | InstanceType<typeof google.auth.OAuth2>
 
@@ -333,15 +394,16 @@ export async function POST(request: Request) {
       !row0?.length || !row0.some((cell) => String(cell ?? '').trim() !== '')
 
     if (needsHeader) {
+      const headerRow = HEADERS.map((k) => HEADER_LABELS_JA[k])
       await sheets.spreadsheets.values.append({
         spreadsheetId,
         range: `${quoted}!A1`,
         valueInputOption: 'USER_ENTERED',
-        requestBody: { values: [HEADERS.slice()] },
+        requestBody: { values: [headerRow] },
       })
     }
 
-    const row = HEADERS.map((key) => data[key])
+    const row = HEADERS.map((key) => formatCellForSheet(key, data[key]))
     await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `${quoted}!A1`,
