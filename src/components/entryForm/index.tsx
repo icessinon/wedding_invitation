@@ -381,7 +381,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
               <div className={styles.photoUploadCard}>
                 <div className={styles.photoUploadCardTitle}>メッセージ画像登録</div>
                 <div
-                  className={`${styles.photoPreviewArea} ${imageItems.length > 0 ? styles.photoPreviewAreaHasImages : ''}`}
+                  className={`${styles.photoPreviewArea} ${imageItems.length >= 2 ? styles.photoPreviewAreaHasImages : ''}`}
                   onClick={imageItems.length === 0 ? handlePhotoChangeClick : undefined}
                   role={imageItems.length === 0 ? 'button' : undefined}
                   tabIndex={imageItems.length === 0 ? 0 : undefined}
@@ -397,7 +397,26 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
                   }
                   aria-label={imageItems.length === 0 ? '画像を選択' : undefined}
                 >
-                  {imageItems.length > 0 ? (
+                  {imageItems.length === 1 ? (
+                    <div className={styles.photoPreviewSingleWrap}>
+                      <img
+                        src={imageItems[0].previewUrl}
+                        alt="アップロードする画像のプレビュー"
+                        className={styles.photoPreviewSingleImg}
+                      />
+                      <button
+                        type="button"
+                        className={styles.photoThumbRemove}
+                        onClick={(ev) => {
+                          ev.stopPropagation()
+                          removeImageItem(imageItems[0].id)
+                        }}
+                        aria-label="この画像を削除"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ) : imageItems.length >= 2 ? (
                     <div className={styles.photoPreviewGrid}>
                       {imageItems.map((item) => (
                         <div key={item.id} className={styles.photoPreviewThumb}>

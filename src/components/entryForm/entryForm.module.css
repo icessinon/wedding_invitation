@@ -810,6 +810,37 @@
   max-height: none;
 }
 
+/* 1枚だけ：エリア全体を使った大きなプレビュー */
+.photoPreviewSingleWrap {
+  grid-area: 1 / 1;
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.photoPreviewSingleImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photoPreviewSingleWrap .photoThumbRemove {
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  z-index: 2;
+}
+
 .photoPreviewGrid {
   grid-area: 1 / 1;
   z-index: 1;
@@ -818,19 +849,20 @@
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  padding: 10px;
+  gap: 8px;
+  padding: 12px;
   box-sizing: border-box;
-  max-height: 260px;
+  max-height: 280px;
   overflow-y: auto;
 }
 
 .photoPreviewThumb {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   background: #e4eaef;
+  box-shadow: 0 2px 10px rgba(61, 90, 108, 0.12);
 }
 
 .photoPreviewThumbImg {
@@ -867,19 +899,6 @@
 .photoThumbRemove:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
-}
-
-.photoPreviewImg {
-  display: block;
-  grid-area: 1 / 1;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  object-fit: cover;
-  align-self: stretch;
-  justify-self: stretch;
-  z-index: 1;
 }
 
 .photoPreviewActions {
