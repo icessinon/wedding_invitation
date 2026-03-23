@@ -434,7 +434,8 @@ export async function POST(request: Request) {
     })
     const row0 = firstRow.data.values?.[0]
     const needsHeader =
-      !row0?.length || !row0.some((cell) => String(cell ?? '').trim() !== '')
+      !row0?.length ||
+      !row0.some((cell: unknown) => String(cell ?? '').trim() !== '')
 
     if (needsHeader) {
       const headerRow = HEADERS.map((k) => HEADER_LABELS_JA[k])

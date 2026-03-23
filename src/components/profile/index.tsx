@@ -70,7 +70,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
             </div>
           </div>
           <div className={styles.nameField}>
-            <span className={styles.nameText}>新田　菜摘</span>
+            <span className={styles.nameText}>井田　菜摘</span>
           </div>
           <div className={styles.greetingField}>
             <span className={styles.greetingLabel}>いつも支えてくれて本当にありがとうございます！これからも 夫婦共々よろしくお願いいたします</span>
