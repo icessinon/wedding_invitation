@@ -1,3 +1,4 @@
+import { createPrivateKey } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { Readable } from 'node:stream'
 import { google } from 'googleapis'
@@ -106,6 +107,31 @@ const MAX_RSVP_IMAGES = 10
 const QUOTA_HINT =
   'サービスアカウントはマイドライブの容量を持ちません。共有ドライブ上のフォルダを GOOGLE_DRIVE_RSVP_FOLDER_ID に指定するか、.env で GOOGLE_DRIVE_OAUTH_*（ユーザーのDriveに保存）を設定してください。https://developers.google.com/drive/api/guides/about-shareddrives'
 
+function normalizeServiceAccountPrivateKey(raw: string): string {
+  let k = raw.trim()
+  if ((k.startsWith('"') && k.endsWith('"')) || (k.startsWith("'") && k.endsWith("'"))) {
+    k = k.slice(1, -1).trim()
+  }
+  while (k.includes('\\n')) {
+    k = k.replace(/\\n/g, '\n')
+  }
+  k = k.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  if (k.charCodeAt(0) === 0xfeff) {
+    k = k.slice(1)
+  }
+  return k.trim()
+}
+
+function assertDecodablePemPrivateKey(key: string, envName: string): void {
+  try {
+    createPrivateKey({ key, format: 'pem' })
+  } catch {
+    throw new Error(
+      `${envName} を PEM として解釈できません（error:1E08010C など）。JSON の private_key をそのままコピーし、改行は \\n の1行形式にするか、ホストの UI では値の外側に引用符を付けないでください。`
+    )
+  }
+}
+
 function buildServiceAccountAuth(scopes: readonly string[]): RsvpGoogleAuth {
   const keyFile =
     process.env.GOOGLE_SERVICE_ACCOUNT_KEY_FILE?.trim() ||
@@ -128,7 +154,8 @@ function buildServiceAccountAuth(scopes: readonly string[]): RsvpGoogleAuth {
       'GOOGLE_SERVICE_ACCOUNT_KEY_FILE（または GOOGLE_APPLICATION_CREDENTIALS）、もしくは GOOGLE_SERVICE_ACCOUNT_EMAIL + GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY を設定してください'
     )
   }
-  const key = rawKey.replace(/\\n/g, '\n')
+  const key = normalizeServiceAccountPrivateKey(rawKey)
+  assertDecodablePemPrivateKey(key, 'GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY')
   return new google.auth.JWT({
     email,
     key,

@@ -115,6 +115,10 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n....\n-----END 
 - **A を設定しているときは B は不要**です（JSON 内の `client_email` / `private_key` を読みます）。
 - `private_key` を B で使う場合は **1行** にし、改行は `\n` のまま、全体をダブルクォートで囲みます。
 - Vercel など **ファイルパスが使えない環境**では B、またはホストが用意する「JSONを1つの環境変数に載せる」方式にしてください。
+- **本番で `error:1E08010C:DECODER routines::unsupported` が出る場合**は、ほぼ **`GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` の中身が壊れている**ときです。対処:
+  - **Vercel / ダッシュボードの環境変数**では、値フィールドに `-----BEGIN PRIVATE KEY-----` から `-----END PRIVATE KEY-----` までを貼り、**先頭末尾に `"` を付けない**（`.env` 用のクォートをそのままコピーしない）。
+  - 改行は **実改行**でも **`\n` にした1行**でもよい。途中の Base64 が欠けていないか確認する。
+  - 可能なら **JSON ファイル方式（A）**をビルド時シークレットやホストの「ファイルマウント」で渡すとトラブルが少ないです。
 - 画像を **サービスアカウントだけ** で上げる場合は **共有ドライブ内フォルダ** の ID を `GOOGLE_DRIVE_RSVP_FOLDER_ID` にしてください。OAuth（`GOOGLE_DRIVE_OAUTH_*`）を設定しているときは、マイドライブ上のフォルダでも可です。
 
 ## 5. 列について
