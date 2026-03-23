@@ -23,6 +23,7 @@ const HEADERS = [
   'transport',
   'trainTransfer',
   'hasChildren',
+  'childrenCount',
   'jointName',
   'message',
   'photo',
@@ -46,9 +47,10 @@ const HEADER_LABELS_JA: Record<HeaderKey, string> = {
   transport: '交通手段',
   trainTransfer: '電車の場合（徒歩・タクシー）',
   hasChildren: 'お子様の有無',
+  childrenCount: 'お子様の人数',
   jointName: '夫婦参加時の連名の有無',
   message: '新郎新婦へメッセージ',
-  photo: 'メッセージ画像（URL）',
+  photo: 'メッセージ画像（URL・複数は改行）',
   attendance: 'ご出欠',
 }
 
@@ -78,6 +80,9 @@ function formatCellForSheet(key: HeaderKey, value: string): string {
       if (value === 'yes') return 'あり'
       if (value === 'no') return 'なし'
       return value
+    case 'childrenCount':
+      if (!value.trim()) return '—'
+      return `${value.trim()}名`
     case 'jointName':
       if (value === 'yes') return 'あり'
       if (value === 'no') return 'なし'
@@ -96,6 +101,7 @@ type RsvpGoogleAuth = InstanceType<typeof google.auth.JWT> | InstanceType<typeof
 type DriveAuth = RsvpGoogleAuth | InstanceType<typeof google.auth.OAuth2>
 
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024
+const MAX_RSVP_IMAGES = 10
 
 const QUOTA_HINT =
   'サービスアカウントはマイドライブの容量を持ちません。共有ドライブ上のフォルダを GOOGLE_DRIVE_RSVP_FOLDER_ID に指定するか、.env で GOOGLE_DRIVE_OAUTH_*（ユーザーのDriveに保存）を設定してください。https://developers.google.com/drive/api/guides/about-shareddrives'
@@ -173,6 +179,16 @@ function withDriveQuotaHint(message: string): string {
   return message
 }
 
+function parseChildrenCountFromForm(fd: FormData, hasChildren: string): string | null {
+  if (hasChildren === 'no') return ''
+  if (hasChildren !== 'yes') return null
+  const raw = fd.get('childrenCount')
+  if (typeof raw !== 'string' || !raw.trim()) return null
+  const num = parseInt(raw, 10)
+  if (!Number.isFinite(num) || num < 1 || num > 20) return null
+  return String(num)
+}
+
 function parseBody(body: unknown): Record<HeaderKey, string> | null {
   if (!body || typeof body !== 'object') return null
   const o = body as Record<string, unknown>
@@ -183,31 +199,54 @@ function parseBody(body: unknown): Record<HeaderKey, string> | null {
       out[key] = v == null ? '' : String(v)
       continue
     }
+    if (key === 'childrenCount') continue
     if (typeof v !== 'string' || !v.trim()) return null
     out[key] = v.trim()
   }
   if (out.attendance !== 'attend' && out.attendance !== 'absent') return null
+  const hc = out.hasChildren
+  if (hc === 'no') {
+    out.childrenCount = ''
+  } else if (hc === 'yes') {
+    const cc = o.childrenCount
+    if (typeof cc !== 'string' || !cc.trim()) return null
+    const num = parseInt(cc, 10)
+    if (!Number.isFinite(num) || num < 1 || num > 20) return null
+    out.childrenCount = String(num)
+  } else {
+    return null
+  }
   return out as Record<HeaderKey, string>
 }
 
-function parseFormData(fd: FormData): { row: Record<HeaderKey, string>; imageFile: File | null } | null {
+function parseFormData(fd: FormData): { row: Record<HeaderKey, string>; imageFiles: File[] } | null {
   const out: Partial<Record<HeaderKey, string>> = {}
   for (const key of HEADERS) {
-    if (key === 'photo') continue
+    if (key === 'photo' || key === 'childrenCount') continue
     const v = fd.get(key)
     if (typeof v !== 'string' || !v.trim()) return null
     out[key] = v.trim()
   }
   if (out.attendance !== 'attend' && out.attendance !== 'absent') return null
 
-  const photoEntry = fd.get('photo')
-  let imageFile: File | null = null
-  if (photoEntry instanceof File && photoEntry.size > 0) {
-    imageFile = photoEntry
+  const hc = out.hasChildren
+  if (hc !== 'yes' && hc !== 'no') return null
+  const cc = parseChildrenCountFromForm(fd, hc)
+  if (cc === null) return null
+  out.childrenCount = cc
+
+  const rawPhotos = fd.getAll('photo')
+  const imageFiles: File[] = []
+  for (const p of rawPhotos) {
+    if (p instanceof File && p.size > 0) {
+      if (!p.type.startsWith('image/') || p.size > MAX_IMAGE_BYTES) return null
+      imageFiles.push(p)
+    }
   }
+  if (imageFiles.length > MAX_RSVP_IMAGES) return null
 
   out.photo = ''
-  return { row: out as Record<HeaderKey, string>, imageFile }
+  return { row: out as Record<HeaderKey, string>, imageFiles }
 }
 
 function sanitizeGuestFolderName(name: string): string {
@@ -341,9 +380,9 @@ export async function POST(request: Request) {
     if (!parsed) {
       return NextResponse.json({ ok: false, error: '入力内容が不正です' }, { status: 400 })
     }
-    const { row, imageFile } = parsed
+    const { row, imageFiles } = parsed
     data = { ...row }
-    if (imageFile) {
+    if (imageFiles.length > 0) {
       if (!driveFolderId) {
         return NextResponse.json(
           {
@@ -356,7 +395,11 @@ export async function POST(request: Request) {
       }
       try {
         const driveAuth = getDriveAuth()
-        data.photo = await uploadRsvpImage(driveAuth, driveFolderId, data.guestName, imageFile)
+        const urls: string[] = []
+        for (const file of imageFiles) {
+          urls.push(await uploadRsvpImage(driveAuth, driveFolderId, data.guestName, file))
+        }
+        data.photo = urls.join('\n')
       } catch (e) {
         const raw = extractGoogleApiMessage(e)
         const message = withDriveQuotaHint(raw)
