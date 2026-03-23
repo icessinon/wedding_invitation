@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import styles from './entryForm.module.css'
 import type { EntryFormProps } from './types'
 import { RELATIONSHIP_OPTIONS } from './relationshipOptions'
@@ -22,8 +23,11 @@ function newImageItemId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-/** 背景の深海風・常時上昇する小泡の個数 */
-const BUBBLE_SEA_COUNT = 44
+/** 背景の深海風・常時上昇する小泡の個数（かなり多め・画面上端まで届く移動量は CSS 側） */
+const BUBBLE_SEA_COUNT = 240
+
+/** `.env` に `NEXT_PUBLIC_RSVP_DRY_RUN=true` で API を呼ばず UI のみ検証 */
+const RSVP_DRY_RUN = process.env.NEXT_PUBLIC_RSVP_DRY_RUN === 'true'
 
 export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026年○月○日' }) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -34,6 +38,13 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitOutcome, setSubmitOutcome] = useState<'attend' | 'absent' | null>(null)
+  const [letterModalOpen, setLetterModalOpen] = useState(false)
+  /** 封筒タップで手紙を引き出すまで false */
+  const [letterPulledOut, setLetterPulledOut] = useState(false)
+  const [portalReady, setPortalReady] = useState(false)
+  const letterCloseRef = useRef<HTMLButtonElement>(null)
+  const letterRevealRef = useRef<HTMLButtonElement>(null)
+  const letterSendingRef = useRef<HTMLDivElement>(null)
 
   const imageItemsRef = useRef(imageItems)
   imageItemsRef.current = imageItems
@@ -43,6 +54,45 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
       imageItemsRef.current.forEach((item) => URL.revokeObjectURL(item.previewUrl))
     }
   }, [])
+
+  useEffect(() => {
+    setPortalReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (!letterModalOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [letterModalOpen])
+
+  useEffect(() => {
+    if (letterModalOpen) setLetterPulledOut(false)
+  }, [letterModalOpen])
+
+  useEffect(() => {
+    if (!letterModalOpen || submitStatus === 'sending') return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLetterModal()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [letterModalOpen, submitStatus])
+
+  useEffect(() => {
+    if (!letterModalOpen) return
+    if (submitStatus === 'sending') {
+      letterSendingRef.current?.focus()
+      return
+    }
+    if (!letterPulledOut) {
+      letterRevealRef.current?.focus()
+      return
+    }
+    letterCloseRef.current?.focus()
+  }, [letterModalOpen, letterPulledOut, submitStatus])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = e.target.files
@@ -79,6 +129,14 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     if (photoInputRef.current) photoInputRef.current.value = ''
   }
 
+  function closeLetterModal() {
+    setLetterModalOpen(false)
+    setLetterPulledOut(false)
+    setSubmitStatus('idle')
+    setSubmitError(null)
+    setSubmitOutcome(null)
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitError(null)
@@ -90,18 +148,22 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
       formData.append('photo', item.file)
     }
     const attendance = String(formData.get('attendance') ?? '')
-
     setSubmitStatus('sending')
+    setLetterModalOpen(true)
     try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        body: formData,
-      })
-      const payload = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null
-      if (!res.ok || !payload?.ok) {
-        setSubmitStatus('error')
-        setSubmitError(payload?.error ?? '送信に失敗しました')
-        return
+      if (RSVP_DRY_RUN) {
+        await new Promise((r) => setTimeout(r, 1600))
+      } else {
+        const res = await fetch('/api/rsvp', {
+          method: 'POST',
+          body: formData,
+        })
+        const payload = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null
+        if (!res.ok || !payload?.ok) {
+          setSubmitStatus('error')
+          setSubmitError(payload?.error ?? '送信に失敗しました')
+          return
+        }
       }
       if (attendance === 'attend' || attendance === 'absent') {
         setSubmitOutcome(attendance)
@@ -120,15 +182,148 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     }
   }
 
+  /** 手紙を開いたあと（送信完了後のみ表示・ローディングは含めない） */
+  const letterSheetTitle =
+    submitStatus === 'error' ? '送信できませんでした' : '回答ありがとうございます'
+
+  const successMessage =
+    submitOutcome === 'attend' ? (
+      <>
+        来てくれるって返事、すごくうれしかったです。
+        <br />
+        当日はリラックスして楽しんでもらえたらいいなと思っています。お会いできるのを楽しみにしています。
+      </>
+    ) : submitOutcome === 'absent' ? (
+      <>
+        返事ありがとうございます。今回は残念だけど、仕方ないですよね。
+        <br />
+        お祝いの気持ちだけでもとてもうれしいです。また落ち着いたら、ぜひゆっくりお話ししましょう。
+      </>
+    ) : (
+      <>
+        送信ありがとうございます。無事届きました。
+        <br />
+        お手数おかけしました。またどこかでお会いできたらうれしいです。
+      </>
+    )
+
+  const letterModal = letterModalOpen ? (
+      <div className={styles.letterOverlayRoot}>
+        <div
+          className={styles.letterBackdrop}
+          role="presentation"
+          onClick={() => submitStatus !== 'sending' && closeLetterModal()}
+        />
+        <div
+          className={styles.letterDialog}
+          role="dialog"
+          aria-modal="true"
+          {...(submitStatus === 'sending'
+            ? { 'aria-label': 'しばらくお待ちください' }
+            : letterPulledOut
+              ? { 'aria-labelledby': 'rsvp-letter-title' }
+              : { 'aria-label': '手紙を開く' })}
+          onClick={(ev) => ev.stopPropagation()}
+        >
+          <div className={`${styles.letterCard} ${submitStatus === 'sending' ? styles.letterCardSending : ''}`}>
+            <div className={styles.envelopeStage} aria-hidden="true">
+              <img
+                src="/rsvp-envelope/before.png"
+                alt=""
+                className={styles.envelopeBefore}
+                width={530}
+                height={316}
+                decoding="async"
+              />
+              <img
+                src="/rsvp-envelope/after.png"
+                alt=""
+                className={styles.envelopeAfter}
+                width={530}
+                height={260}
+                decoding="async"
+              />
+            </div>
+            {submitStatus === 'sending' && (
+              <div
+                ref={letterSendingRef}
+                id="rsvp-sending-panel"
+                className={styles.letterSendingOverlay}
+                tabIndex={-1}
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <div className={styles.rsvpLoadingContainer}>
+                  <div className={styles.rsvpCubeLoader}>
+                    <div className={styles.rsvpCube} />
+                    <div className={styles.rsvpCube} />
+                    <div className={styles.rsvpCube} />
+                    <div className={styles.rsvpCube} />
+                  </div>
+                </div>
+              </div>
+            )}
+            {submitStatus !== 'sending' && !letterPulledOut && (
+              <>
+                <div id="rsvp-letter-stub" className={styles.letterSheetStub} aria-hidden="true" />
+                <button
+                  ref={letterRevealRef}
+                  type="button"
+                  className={styles.letterRevealHit}
+                  aria-label="手紙を開く"
+                  aria-expanded={false}
+                  aria-controls="rsvp-letter-stub"
+                  onClick={() => setLetterPulledOut(true)}
+                >
+                </button>
+              </>
+            )}
+            {submitStatus !== 'sending' && letterPulledOut && (
+              <div
+                id="rsvp-letter-sheet"
+                tabIndex={-1}
+                className={`${styles.letterSheet} ${styles.letterSheetRevealed}`}
+              >
+                <p id="rsvp-letter-title" className={styles.letterTitle}>
+                  {letterSheetTitle}
+                </p>
+                <div key={`${submitStatus}-${submitOutcome ?? ''}`} className={styles.letterBody}>
+                  {submitStatus === 'ok' && (
+                    <p className={styles.letterMessage} role="status">
+                      {successMessage}
+                    </p>
+                  )}
+                  {submitStatus === 'error' && submitError && (
+                    <p className={styles.letterError} role="alert">
+                      {submitError}
+                    </p>
+                  )}
+                  <button
+                    ref={letterCloseRef}
+                    type="button"
+                    className={styles.letterCloseBtn}
+                    onClick={closeLetterModal}
+                  >
+                    閉じる
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    ) : null
+
   return (
     <section ref={containerRef} className={styles.container} id="entry">
       <div className={styles.bubbleSea} aria-hidden="true">
         {Array.from({ length: BUBBLE_SEA_COUNT }, (_, i) => {
-          const left = ((i * 41 + 11) % 86) + 7
-          const size = 2 + (i % 5) + (i % 7 === 0 ? 1 : 0)
-          /* 上昇時間 約20〜300秒（最大5分） */
-          const duration = 20 + ((i * 53 + (i % 13) * 37) % 281)
-          const delay = -((i * 0.38) % 16)
+          const left = ((i * 43 + 17) % 89) + 5
+          const size = 2 + (i % 5) + (i % 7 === 0 ? 1 : 0) + (i % 11 === 0 ? 1 : 0)
+          /* 上昇時間 約14〜310秒（本数が多いのでやや速い泡も混ぜる） */
+          const duration = 14 + ((i * 53 + (i % 13) * 37) % 296)
+          const delay = -((i * 0.31) % 20)
           return (
             <span
               key={i}
@@ -547,31 +742,15 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
           </div>
 
           <div className={styles.submitWrap}>
-            {submitStatus === 'ok' && submitOutcome === 'attend' && (
-              <p className={styles.submitMessage} role="status">
-                ご出席とのご回答をいただき、ありがとうございます。
-                <br />
-                当日お会いできることを心よりうれしく思っております。お待ちしております。
-              </p>
-            )}
-            {submitStatus === 'ok' && submitOutcome === 'absent' && (
-              <p className={styles.submitMessage} role="status">
-                ご回答ありがとうございました。
-              </p>
-            )}
-            {submitStatus === 'ok' && !submitOutcome && (
-              <p className={styles.submitMessage} role="status">
-                送信が完了しました。ご協力ありがとうございます。
-              </p>
-            )}
-            {submitStatus === 'error' && submitError && (
-              <p className={styles.submitError} role="alert">
-                {submitError}
+            {RSVP_DRY_RUN && (
+              <p className={styles.dryRunHint} role="note">
+                テストモード（API は送信されません・未入力でも送信できます）
               </p>
             )}
             <button
               type="submit"
               className={styles.submitBtn}
+              formNoValidate={RSVP_DRY_RUN}
               disabled={submitStatus === 'sending'}
             >
               {submitStatus === 'sending' ? '送信中…' : '送信'}
@@ -580,6 +759,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
         </form>
         </div>
       </div>
+      {portalReady ? createPortal(letterModal, document.body) : null}
     </section>
   )
 }
