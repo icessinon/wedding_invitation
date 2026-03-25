@@ -1072,7 +1072,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  /* 上パディングを多めにして、封筒まわりを画面の下寄りに */
+  padding: clamp(3rem, 8.5vh + 1.1rem, 7.5rem) 1.25rem clamp(0.25rem, 0.28vh + 0.2rem, 0.55rem);
   box-sizing: border-box;
   pointer-events: auto;
 }
@@ -1160,7 +1161,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 530 / 446;
-  margin: 0 auto;
+  margin: clamp(1.25rem, 4.5vh, 3.25rem) auto 0;
   pointer-events: none;
 }
 
@@ -1211,7 +1212,7 @@
 .letterSheetStub {
   position: absolute;
   left: 50%;
-  bottom: 40%;
+  bottom: 28%;
   z-index: 2;
   width: min(440px, 88%);
   max-width: 100%;
@@ -1233,13 +1234,15 @@
 .letterSheet {
   position: absolute;
   left: 50%;
-  bottom: 40%;
+  bottom: 28%;
   z-index: 2;
   width: min(440px, 88%);
   max-width: 100%;
   box-sizing: border-box;
   padding: 1.5rem 1.5rem 1.35rem;
-  overflow: hidden;
+  /* 横だけ抑え、本文は縦に伸ばして切らない（26em 等で狭幅ではみ出すのも防ぐ） */
+  overflow-x: hidden;
+  overflow-y: visible;
   background:
     linear-gradient(125deg, rgba(255, 255, 255, 0.65) 0%, transparent 38%),
     linear-gradient(180deg, #fdf9f2 0%, #f5efe6 42%, #efe7db 100%);
@@ -1321,6 +1324,8 @@
   z-index: 1;
   margin: 0 0 1rem;
   padding: 0 0.5rem 0.85rem;
+  max-width: 100%;
+  box-sizing: border-box;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.42em;
@@ -1328,6 +1333,7 @@
   text-transform: uppercase;
   color: #547c94;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow-wrap: anywhere;
 }
 
 .letterTitle::before {
@@ -1363,6 +1369,9 @@
 .letterBody {
   position: relative;
   z-index: 1;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   animation: letterBodyFade 0.55s ease-out 0.15s both;
 }
 
@@ -1379,17 +1388,22 @@
 
 .letterMessage {
   margin: 0 auto 1.2rem;
-  max-width: 26em;
+  max-width: min(26em, 100%);
+  box-sizing: border-box;
+  padding: 0 0.2rem;
   font-size: 0.98rem;
   line-height: 1.85;
   letter-spacing: 0.06em;
   text-align: center;
   color: #4a5c68;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .letterError {
   margin: 0 auto 1.1rem;
-  max-width: 26em;
+  max-width: min(26em, 100%);
+  box-sizing: border-box;
   padding: 0.85rem 0.9rem;
   font-size: 0.88rem;
   line-height: 1.65;
@@ -1565,16 +1579,73 @@
   }
 }
 
-@media (max-width: 420px) {
-  .letterSheet {
-    bottom: 36%;
-    width: min(380px, 90%);
-    padding: 1.25rem 1.15rem 1.15rem;
+/* 手紙は封筒ステージ内で absolute のため、はみ出し分がスクロール高さに含まれず上下が切れる。
+   狭い／低い画面ではオーバーレイを上寄せし、カード上に余白を確保して全体をスクロール可能にする */
+@media (max-width: 560px), (max-height: 700px) {
+  .letterOverlayRoot {
+    align-items: flex-start;
+    padding-top: max(
+      calc(1.35rem + 6vh),
+      calc(env(safe-area-inset-top, 0px) + 1.15rem)
+    );
+    padding-bottom: max(0.65rem, env(safe-area-inset-bottom, 0px));
+    padding-left: max(0.65rem, env(safe-area-inset-left, 0px));
+    padding-right: max(0.65rem, env(safe-area-inset-right, 0px));
+  }
+
+  .letterDialog {
+    max-height: min(
+      calc(100vh - 1.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
+      760px
+    );
+    max-height: min(
+      calc(100dvh - 1.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
+      760px
+    );
+  }
+
+  .letterCard {
+    padding-top: clamp(3.5rem, 16vmin, 6.75rem);
+    box-sizing: border-box;
+  }
+
+  .letterSheet,
+  .letterSheetStub {
+    width: min(440px, calc(100% - 12px));
+    max-width: calc(100% - 12px);
+    left: 50%;
+    box-sizing: border-box;
   }
 
   .letterSheetStub {
-    bottom: 36%;
-    width: min(380px, 90%);
+    transform: translateX(-50%) translateY(42px) scale(0.9);
+  }
+
+  @keyframes letterSheetRise {
+    0% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(42px) scale(0.9);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+  }
+}
+
+@media (max-width: 420px) {
+  .letterSheet {
+    bottom: 24%;
+    width: min(380px, calc(100% - 12px));
+    max-width: calc(100% - 12px);
+    padding: 1.25rem 1.1rem 1.15rem;
+  }
+
+  .letterSheetStub {
+    bottom: 24%;
+    width: min(380px, calc(100% - 12px));
+    max-width: calc(100% - 12px);
   }
 
   .letterTitle {
