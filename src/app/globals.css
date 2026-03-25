@@ -17,16 +17,53 @@
   }
 }
 
-html,
-body {
+/* 縦スクロールは html のみ（html/body 両方 overflow-x だと二重スクロールになりやすい） */
+html {
   overflow-x: hidden;
+  overflow-y: auto;
   margin: 0;
   padding: 0;
   border: none;
   outline: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+  /* セクション単位で吸い付く（しすぎて飛ばしにくい）。長いブロックは pageSnapSectionLong で緩める */
+  scroll-snap-type: y proximity;
+}
+
+/* page.tsx の各ブロックラッパー */
+.pageSnapSection {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.pageSnapSectionLong {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  background-color: #547c94;
+}
+
+/* 末尾のわずかな白（セーフエリア・端末の描画端）を同色で埋める */
+.pageSnapSectionLong::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+  background-color: #547c94;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-snap-type: none;
+  }
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  overscroll-behavior-y: none;
   background: #fff;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
