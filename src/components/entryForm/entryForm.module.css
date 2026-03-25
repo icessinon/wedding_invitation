@@ -342,7 +342,30 @@
   flex: 0 1 auto;
   text-align: center;
   max-width: 72%;
+  min-width: 0;
   word-break: keep-all;
+}
+
+@media (max-width: 560px) {
+  .legend {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    letter-spacing: 0.04em;
+  }
+
+  .legend::before,
+  .legend::after {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .legendText {
+    max-width: 100%;
+    padding: 0 0.2rem;
+    line-height: 1.5;
+  }
 }
 
 .surveyIntro {
