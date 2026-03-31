@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { FirstView } from '../components/firstView'
 import { CountDown } from '../components/countDown'
 import { Message } from '../components/message'
@@ -29,16 +30,20 @@ export default function Home() {
         <Album />
       </div>
       <div className="pageSnapSection">
-        <PartyInfo
-          ceremonyStartTime="15:00"
-          receptionStaffTime="14:00"
-          receptionFamilyTime="14:20"
-          receptionGuestTime="14:40"
-          closingTime="18:30"
-        />
+        <Suspense fallback={null}>
+          <PartyInfo
+            ceremonyStartTime="15:00"
+            receptionStaffTime="14:00"
+            receptionFamilyTime="14:20"
+            receptionGuestTime="14:40"
+            closingTime="18:30"
+          />
+        </Suspense>
       </div>
       <div className="pageSnapSection">
-        <Other />
+        <Suspense fallback={null}>
+          <Other />
+        </Suspense>
       </div>
       <div className="pageSnapSectionLong">
         <EntryForm responseDeadline="2026年6月18日" />
