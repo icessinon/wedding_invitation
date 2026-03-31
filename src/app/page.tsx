@@ -29,13 +29,19 @@ export default function Home() {
         <Album />
       </div>
       <div className="pageSnapSection">
-        <PartyInfo />
+        <PartyInfo
+          ceremonyStartTime="15:00"
+          receptionStaffTime="14:00"
+          receptionFamilyTime="14:20"
+          receptionGuestTime="14:40"
+          closingTime="18:30"
+        />
       </div>
       <div className="pageSnapSection">
         <Other />
       </div>
       <div className="pageSnapSectionLong">
-        <EntryForm responseDeadline="2026年○月○日" />
+        <EntryForm responseDeadline="2026年6月18日" />
       </div>
     </div>
   )

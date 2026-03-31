@@ -1,5 +1,6 @@
 'use client'
 import React, { useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import styles from './partyInfo.module.css'
 import type { PartyInfoProps } from './types'
 import { useTitleAnimation } from './hooks/useTitleAnimation'
@@ -11,18 +12,33 @@ const buildMapsEmbedUrl = (query: string) =>
 
 export const PartyInfo: React.FC<PartyInfoProps> = ({
   date = '2026/07/18 (土)',
-  ceremonyStartTime = 'HH : MM',
-  receptionTime = 'HH:MM',
-  endTime = 'HH:MM',
+  ceremonyStartTime = '15:00',
+  receptionStaffTime = '14:00',
+  receptionFamilyTime = '14:20',
+  receptionGuestTime = '14:40',
+  closingTime = '18:30',
   venueName = '指帆亭',
   venueAddress = '〒259-0123 神奈川県中郡二宮町二宮下向浜36',
   venuePhone = '📞 0463-43-1611',
   venueEmbedUrl,
 }) => {
+  const searchParams = useSearchParams()
   const venueMapSrc = venueEmbedUrl ?? buildMapsEmbedUrl(`${venueName} ${venueAddress}`)
   const containerRef = useRef<HTMLDivElement>(null)
   const titleText1 = 'PARTY'
   const titleText2 = 'INFORMATION'
+  // 受付時間は URL で 0/1/2 の3段階だけ切り替える（相手に種類がバレないため文字列キーではなくコード化）
+  // - r=0 => 14:00
+  // - r=1 => 14:20
+  // - r=2 => 14:40（デフォルト）
+  const receptionCodeRaw = searchParams.get('r') ?? searchParams.get('reception') ?? '2'
+  const receptionCode = (receptionCodeRaw ?? '').toString()
+  const receptionTime =
+    receptionCode === '0'
+      ? receptionStaffTime
+      : receptionCode === '1'
+        ? receptionFamilyTime
+        : receptionGuestTime
 
   const partyAnimationDuration = titleText1.length * 100 + 300
   const visibleChars1 = useTitleAnimation(containerRef, titleText1, 0)
@@ -43,15 +59,15 @@ export const PartyInfo: React.FC<PartyInfoProps> = ({
             <div className={styles.dateValue}>{date}</div>
           </div>
           <div className={styles.timeRow}>
-            <span className={styles.timeLabel}>開始時刻</span>
+            <span className={styles.timeLabel}>挙式時間</span>
             <span className={styles.timeValue}>{ceremonyStartTime}</span>
           </div>
           <div className={styles.timeRow}>
-            <span className={styles.timeLabel}>受付</span>
+            <span className={styles.timeLabel}>受付時間</span>
             <span className={styles.timeValue}>{receptionTime}</span>
             <span className={styles.timeSeparator}>/</span>
-            <span className={styles.timeLabel}>終了予定</span>
-            <span className={styles.timeValue}>{endTime}</span>
+            <span className={styles.timeLabel}>お披楽喜</span>
+            <span className={styles.timeValue}>{closingTime}</span>
           </div>
         </div>
         

@@ -22,7 +22,6 @@ const HEADERS = [
   'email',
   'allergy',
   'transport',
-  'trainTransfer',
   'hasChildren',
   'childrenCount',
   'jointName',
@@ -46,7 +45,6 @@ const HEADER_LABELS_JA: Record<HeaderKey, string> = {
   email: 'メールアドレス',
   allergy: 'アレルギーの有無・種類',
   transport: '交通手段',
-  trainTransfer: '電車の場合（徒歩・タクシー）',
   hasChildren: 'お子様の有無',
   childrenCount: 'お子様の人数',
   jointName: '夫婦参加時の連名の有無',
@@ -71,11 +69,6 @@ function formatCellForSheet(key: HeaderKey, value: string): string {
       if (value === 'car') return 'お車'
       if (value === 'taxi') return 'タクシー'
       if (value === 'other') return 'その他'
-      return value
-    case 'trainTransfer':
-      if (value === 'walk') return '徒歩'
-      if (value === 'taxi') return 'タクシー'
-      if (value === 'na') return '該当なし'
       return value
     case 'hasChildren':
       if (value === 'yes') return 'あり'
@@ -212,7 +205,7 @@ function parseChildrenCountFromForm(fd: FormData, hasChildren: string): string |
   const raw = fd.get('childrenCount')
   if (typeof raw !== 'string' || !raw.trim()) return null
   const num = parseInt(raw, 10)
-  if (!Number.isFinite(num) || num < 1 || num > 20) return null
+  if (!Number.isFinite(num) || num < 0 || num > 20) return null
   return String(num)
 }
 
@@ -238,7 +231,7 @@ function parseBody(body: unknown): Record<HeaderKey, string> | null {
     const cc = o.childrenCount
     if (typeof cc !== 'string' || !cc.trim()) return null
     const num = parseInt(cc, 10)
-    if (!Number.isFinite(num) || num < 1 || num > 20) return null
+    if (!Number.isFinite(num) || num < 0 || num > 20) return null
     out.childrenCount = String(num)
   } else {
     return null

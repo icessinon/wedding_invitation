@@ -161,6 +161,89 @@
   margin: 0;
 }
 
+.busInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.busLead {
+  color: rgba(44, 82, 110, 0.9);
+  font-size: 1.02rem;
+  line-height: 1.8;
+  text-align: center;
+  margin: 0;
+}
+
+.busTimeBlock {
+  border: 1px solid rgba(44, 82, 110, 0.18);
+  border-radius: 10px;
+  padding: 0.95rem 0.9rem;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.busTimeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.busLabel {
+  min-width: 2.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(44, 82, 110, 0.95);
+}
+
+.busTimes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.busTimeChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  color: rgba(44, 82, 110, 0.98);
+  background: rgba(232, 246, 252, 0.95);
+  border: 1px solid rgba(44, 82, 110, 0.2);
+}
+
+.busPlace {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(44, 82, 110, 0.9);
+}
+
+.busNote {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: rgba(44, 82, 110, 0.92);
+  background: rgba(255, 255, 255, 0.55);
+  border-left: 3px solid rgba(44, 82, 110, 0.45);
+  border-radius: 6px;
+  padding: 0.55rem 0.65rem;
+}
+
+.busContact {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(44, 82, 110, 0.92);
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 2rem 1.5rem;
@@ -201,5 +284,25 @@
   .boxContent p {
     font-size: 1rem;
     line-height: 1.7;
+  }
+
+  .busLead {
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .busLabel {
+    font-size: 0.9rem;
+  }
+
+  .busTimeChip {
+    font-size: 0.86rem;
+    padding: 0.16rem 0.5rem;
+  }
+
+  .busPlace,
+  .busNote,
+  .busContact {
+    font-size: 0.9rem;
   }
 }

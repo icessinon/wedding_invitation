@@ -11,7 +11,7 @@ export const OtherTitle: React.FC<OtherTitleProps> = ({ titleText, visibleChars 
     <div className={styles.titleWrapper}>
       <svg className={styles.titleSvg} viewBox="0 0 600 120" preserveAspectRatio="xMidYMid meet">
         {titleText.split('').map((char, index) => {
-          const xPosition = 50 + (index - (titleText.length - 1) / 2) * 12
+          const xPosition = 50 + (index - (titleText.length - 1) / 2) * 10
           const shouldAnimate = index < visibleChars && visibleChars > 0
           return (
             <text

@@ -198,6 +198,7 @@ export const Message: React.FC<MessageProps> = (props) => {
           </p>
           <p className={`${styles.messageText} ${isMessageFaded ? styles.messageFaded : ''}`}>
             皆様におかれましては<br />
+            葉桜の候<br />
             ご清祥のこととお慶び申し上げます<br />
             このたび 私たちは結婚式を<br />
             挙げることになりました<br />
@@ -210,6 +211,10 @@ export const Message: React.FC<MessageProps> = (props) => {
           </p>
           <p className={`${styles.messageTextRight} ${isMessageFaded ? styles.messageFaded : ''}`}>
             　　　　　　　　　　　　　　　謹白
+            <br />
+            2026年4月吉日
+            <br />
+            新田　剛志
           </p>
         </div>
         <div className={styles.bottomLines}>

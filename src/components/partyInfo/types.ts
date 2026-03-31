@@ -1,8 +1,10 @@
 export interface PartyInfoProps {
   date?: string; // YYYY/MM/DD ddd形式
   ceremonyStartTime?: string; // HH:MM形式
-  receptionTime?: string; // HH:MM形式
-  endTime?: string; // HH:MM形式
+  receptionStaffTime?: string; // HH:MM形式
+  receptionFamilyTime?: string; // HH:MM形式
+  receptionGuestTime?: string; // HH:MM形式
+  closingTime?: string; // HH:MM形式
   venueName?: string;
   venueAddress?: string;
   venuePhone?: string;

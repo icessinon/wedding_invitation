@@ -384,6 +384,20 @@
   margin-bottom: 0;
 }
 
+.fieldNote {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fieldError {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #ffe0e0;
+}
+
 .field label,
 .labelText {
   display: block;
@@ -1012,6 +1026,16 @@
   line-height: 1.6;
   background: #f8fafb;
   border-top: 1px solid rgba(61, 90, 108, 0.08);
+}
+
+.photoUploadError {
+  margin: 0;
+  padding: 0.6rem 1rem 1rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #b03a3a;
+  text-align: center;
+  background: #f8fafb;
 }
 
 .submitWrap {

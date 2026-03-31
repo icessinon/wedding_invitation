@@ -27,19 +27,14 @@ html {
   outline: none;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: none;
-  /* セクション単位で吸い付く（しすぎて飛ばしにくい）。長いブロックは pageSnapSectionLong で緩める */
-  scroll-snap-type: y proximity;
+  scroll-snap-type: none;
 }
 
 /* page.tsx の各ブロックラッパー */
 .pageSnapSection {
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .pageSnapSectionLong {
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
   background-color: #547c94;
 }
 
