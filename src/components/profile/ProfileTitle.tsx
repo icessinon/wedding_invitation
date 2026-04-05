@@ -26,7 +26,7 @@ export const ProfileTitle: React.FC<ProfileTitleProps> = ({ titleText, visibleCh
               style={shouldAnimate ? {
                 strokeDasharray: "500",
                 strokeDashoffset: "0",
-                animationDelay: `${index * 0.15}s`,
+                animationDelay: `${index * 0.4}s`,
               } : {
                 strokeDasharray: "0",
                 strokeDashoffset: "500",
