@@ -70,7 +70,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
           <h3 className={`${styles.sectionTitle} ${styles.brideTitle}`}>Bride</h3>
           <div className={styles.brideImageWrapperMobile}>
             <img
-              src="/images/profile/natsumi.jpg"
+              src="/images/profile/na.jpg"
               alt="新婦の画像"
               className={styles.profileImage}
             />
@@ -84,7 +84,7 @@ export const Profile: React.FC<ProfileProps> = (props) => {
         </div>
         <div className={styles.brideImageWrapper}>
           <img
-            src="/images/profile/natsumi.jpg"
+            src="/images/profile/na.jpg"
             alt="新婦の画像"
             className={styles.profileImage}
           />
