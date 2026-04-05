@@ -13,12 +13,17 @@ export const Album: React.FC<AlbumProps> = ({ images = [] }) => {
   const defaultImages = images.length > 0 
     ? images 
     : [
-        'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=600&fit=crop',
-        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=600&fit=crop',
+        '/images/album/kage.jpg',
+        '/images/album/hurt.jpg',
+        '/images/album/hand.jpg',
+        '/images/album/five.jpg',
+        '/images/album/riku.jpg',
+        '/images/album/sora.jpg',
+        '/images/album/hana.jpg',
+        '/images/album/naki.jpg',
+        '/images/album/sleep.jpg',
+        '/images/album/sanpo.jpg',
+        '/images/album/sakura.jpg',
       ]
 
   const duplicatedImages = [...defaultImages, ...defaultImages]

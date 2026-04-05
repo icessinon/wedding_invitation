@@ -1,18 +1,26 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './entryForm.module.css'
 import type { EntryFormProps } from './types'
 import { RELATIONSHIP_OPTIONS } from './relationshipOptions'
 import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
 import { EntryFormTitle } from './EntryFormTitle'
+import {
+  ENVELOPE_OPEN_HINT_FIXED,
+  parseLetterUrlHints,
+  resolveLetterBody,
+  type LetterUrlHints,
+} from './envelopeOpenHint'
 
 const ENTRY_TITLE_LINES = ['PRESENCE', 'OR', 'ABSENCE']
 const ENTRY_TITLE_TEXT = ENTRY_TITLE_LINES.join('')
 
 const MAX_RSVP_PHOTOS = 10
 const MAX_PHOTO_BYTES = 15 * 1024 * 1024
+const MAX_JOINT_PARTNER_NAMES = 10
+const MAX_JOINT_PARTNER_NAME_LEN = 80
 
 type ImageItem = { id: string; file: File; previewUrl: string }
 
@@ -23,11 +31,19 @@ function newImageItemId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`
 }
 
-/** 背景の深海風・常時上昇する小泡の個数（かなり多め・画面上端まで届く移動量は CSS 側） */
 const BUBBLE_SEA_COUNT = 240
 
-/** `.env` に `NEXT_PUBLIC_RSVP_DRY_RUN=true` で API を呼ばず UI のみ検証 */
 const RSVP_DRY_RUN = process.env.NEXT_PUBLIC_RSVP_DRY_RUN === 'true'
+
+function letterTextToNodes(text: string): React.ReactNode {
+  const lines = text.split('\n')
+  return lines.map((line, i) => (
+    <React.Fragment key={i}>
+      {i > 0 ? <br /> : null}
+      {line}
+    </React.Fragment>
+  ))
+}
 
 export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026年○月○日' }) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -41,12 +57,31 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitOutcome, setSubmitOutcome] = useState<'attend' | 'absent' | null>(null)
   const [letterModalOpen, setLetterModalOpen] = useState(false)
-  /** 封筒タップで手紙を引き出すまで false */
   const [letterPulledOut, setLetterPulledOut] = useState(false)
   const [portalReady, setPortalReady] = useState(false)
   const letterCloseRef = useRef<HTMLButtonElement>(null)
   const letterRevealRef = useRef<HTMLButtonElement>(null)
   const letterSendingRef = useRef<HTMLDivElement>(null)
+
+  const [letterUrlHints, setLetterUrlHints] = useState<LetterUrlHints>({
+    urlAttend: false,
+    letterCode: null,
+    urlLetter: null,
+    urlLetterAttend: null,
+    urlLetterAbsent: null,
+  })
+
+  useEffect(() => {
+    setLetterUrlHints(parseLetterUrlHints(window.location.search))
+  }, [])
+
+  const letterBodyCustom = useMemo(
+    () => resolveLetterBody(submitOutcome, submitStatus, letterUrlHints),
+    [submitOutcome, submitStatus, letterUrlHints]
+  )
+
+  const [jointNameChoice, setJointNameChoice] = useState<'yes' | 'no' | ''>('')
+  const [jointPartnerRows, setJointPartnerRows] = useState<string[]>([])
 
   const imageItemsRef = useRef(imageItems)
   imageItemsRef.current = imageItems
@@ -159,12 +194,13 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     setSubmitStatus('idle')
     setSubmitError(null)
     setSubmitOutcome(null)
+    setJointNameChoice('')
+    setJointPartnerRows([])
   }
 
   const validateGuestNameKana = (value: string): string | null => {
     const trimmed = value.trim()
     if (!trimmed) return 'フリガナを入力してください'
-    // 全角カタカナ・長音・スペースのみ許可
     const kanaRe = /^[ァ-ンヴー\s　]+$/
     if (!kanaRe.test(trimmed)) return 'フリガナは全角カタカナでご入力ください'
     return null
@@ -178,16 +214,26 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     const form = e.currentTarget
     const guestNameKana = (form.guestNameKana as HTMLInputElement | undefined)?.value ?? ''
 
-    // フリガナのクライアントバリデーション
-    const kanaError = validateGuestNameKana(guestNameKana)
-    if (kanaError) {
-      setFieldErrors((prev) => ({ ...prev, guestNameKana: kanaError }))
-      setSubmitError('入力内容をご確認ください（フリガナ欄）。')
-      return
+    if (!RSVP_DRY_RUN) {
+      const kanaError = validateGuestNameKana(guestNameKana)
+      if (kanaError) {
+        setFieldErrors((prev) => ({ ...prev, guestNameKana: kanaError }))
+        setSubmitError('入力内容をご確認ください（フリガナ欄）。')
+        return
+      }
     }
     setFieldErrors((prev) => ({ ...prev, guestNameKana: undefined }))
 
     const formData = new FormData(form)
+    const jointNameVal = String(formData.get('jointName') ?? '')
+    if (jointNameVal === 'yes') {
+      const parts = jointPartnerRows.map((s) => s.trim()).filter(Boolean)
+      if (!RSVP_DRY_RUN && parts.length === 0) {
+        setSubmitError('連名ありの場合は、連名の方のお名前を1名以上入力してください')
+        return
+      }
+      parts.forEach((p) => formData.append('jointPartnerName', p))
+    }
     for (const item of imageItems) {
       formData.append('photo', item.file)
     }
@@ -214,6 +260,8 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
       }
       setSubmitStatus('ok')
       setHasChildrenChoice('')
+      setJointNameChoice('')
+      setJointPartnerRows([])
       setImageItems((prev) => {
         prev.forEach((item) => URL.revokeObjectURL(item.previewUrl))
         return []
@@ -226,11 +274,10 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     }
   }
 
-  /** 手紙を開いたあと（送信完了後のみ表示・ローディングは含めない） */
   const letterSheetTitle =
     submitStatus === 'error' ? '送信できませんでした' : '回答ありがとうございます'
 
-  const successMessage =
+  const successMessageDefault =
     submitOutcome === 'attend' ? (
       <>
         来てくれるって返事、すごくうれしかったです。
@@ -251,6 +298,9 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
       </>
     )
 
+  const successMessage =
+    letterBodyCustom != null ? letterTextToNodes(letterBodyCustom) : successMessageDefault
+
   const letterModal = letterModalOpen ? (
       <div className={styles.letterOverlayRoot}>
         <div
@@ -266,7 +316,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
             ? { 'aria-label': 'しばらくお待ちください' }
             : letterPulledOut
               ? { 'aria-labelledby': 'rsvp-letter-title' }
-              : { 'aria-label': '手紙を開く' })}
+              : { 'aria-label': ENVELOPE_OPEN_HINT_FIXED })}
           onClick={(ev) => ev.stopPropagation()}
         >
           <div className={`${styles.letterCard} ${submitStatus === 'sending' ? styles.letterCardSending : ''}`}>
@@ -311,11 +361,14 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
             {submitStatus !== 'sending' && !letterPulledOut && (
               <>
                 <div id="rsvp-letter-stub" className={styles.letterSheetStub} aria-hidden="true" />
+                <p className={styles.letterOpenHint} aria-hidden="true">
+                  {ENVELOPE_OPEN_HINT_FIXED}
+                </p>
                 <button
                   ref={letterRevealRef}
                   type="button"
                   className={styles.letterRevealHit}
-                  aria-label="手紙を開く"
+                  aria-label={ENVELOPE_OPEN_HINT_FIXED}
                   aria-expanded={false}
                   aria-controls="rsvp-letter-stub"
                   onClick={() => setLetterPulledOut(true)}
@@ -365,7 +418,6 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
         {Array.from({ length: BUBBLE_SEA_COUNT }, (_, i) => {
           const left = ((i * 43 + 17) % 89) + 5
           const size = 2 + (i % 5) + (i % 7 === 0 ? 1 : 0) + (i % 11 === 0 ? 1 : 0)
-          /* 上昇時間 約14〜310秒（本数が多いのでやや速い泡も混ぜる） */
           const duration = 14 + ((i * 53 + (i % 13) * 37) % 296)
           const delay = -((i * 0.31) % 20)
           return (
@@ -408,7 +460,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
             </p>
           </div>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit} noValidate={RSVP_DRY_RUN}>
           <div className={styles.fieldsetBox}>
             <fieldset className={styles.fieldset}>
               <legend className={styles.legend}>
@@ -599,19 +651,75 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
               <span className={styles.labelText}>夫婦参加の場合　連名の有無</span>
               <div className={styles.radioRow}>
                 <label className={styles.radioLabel}>
-                  <input type="radio" name="jointName" value="yes" required />
+                  <input
+                    type="radio"
+                    name="jointName"
+                    value="yes"
+                    required
+                    checked={jointNameChoice === 'yes'}
+                    onChange={() => {
+                      setJointNameChoice('yes')
+                      setJointPartnerRows((r) => (r.length > 0 ? r : ['']))
+                    }}
+                  />
                   あり
                 </label>
                 <label className={styles.radioLabel}>
-                  <input type="radio" name="jointName" value="no" />
+                  <input
+                    type="radio"
+                    name="jointName"
+                    value="no"
+                    checked={jointNameChoice === 'no'}
+                    onChange={() => {
+                      setJointNameChoice('no')
+                      setJointPartnerRows([])
+                    }}
+                  />
                   なし
-                </label>
-                <label className={styles.radioLabel}>
-                  <input type="radio" name="jointName" value="na" />
-                  該当なし
                 </label>
               </div>
             </div>
+            {jointNameChoice === 'yes' && (
+              <div className={styles.field}>
+                <span className={styles.labelText}>連名の方のお名前</span>
+                {jointPartnerRows.map((val, i) => (
+                  <div key={i} className={styles.jointPartnerRow}>
+                    <input
+                      type="text"
+                      className={styles.jointPartnerInput}
+                      value={val}
+                      onChange={(e) => {
+                        const next = [...jointPartnerRows]
+                        next[i] = e.target.value.slice(0, MAX_JOINT_PARTNER_NAME_LEN)
+                        setJointPartnerRows(next)
+                      }}
+                      placeholder={i === 0 ? '例：山田 花子' : 'お名前をご入力ください'}
+                      autoComplete="name"
+                      aria-label={`連名 ${i + 1}人目`}
+                    />
+                    {jointPartnerRows.length > 1 && (
+                      <button
+                        type="button"
+                        className={styles.jointPartnerRemoveBtn}
+                        onClick={() => setJointPartnerRows(jointPartnerRows.filter((_, j) => j !== i))}
+                        aria-label={`連名 ${i + 1}人目を削除`}
+                      >
+                        削除
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {jointPartnerRows.length < MAX_JOINT_PARTNER_NAMES && (
+                  <button
+                    type="button"
+                    className={styles.jointPartnerAddBtn}
+                    onClick={() => setJointPartnerRows([...jointPartnerRows, ''])}
+                  >
+                    名前を追加
+                  </button>
+                )}
+              </div>
+            )}
             <div className={styles.field}>
               <label htmlFor="message">新郎新婦へメッセージ</label>
               <textarea
@@ -805,12 +913,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
                 テストモード（API は送信されません・未入力でも送信できます）
               </p>
             )}
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              formNoValidate={RSVP_DRY_RUN}
-              disabled={submitStatus === 'sending'}
-            >
+            <button type="submit" className={styles.submitBtn} disabled={submitStatus === 'sending'}>
               {submitStatus === 'sending' ? '送信中…' : '送信'}
             </button>
           </div>

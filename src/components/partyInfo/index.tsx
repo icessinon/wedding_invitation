@@ -6,7 +6,6 @@ import type { PartyInfoProps } from './types'
 import { useTitleAnimation } from './hooks/useTitleAnimation'
 import { PartyTitle } from './PartyTitle'
 
-/** 住所から地図埋め込み用URLを生成（venueEmbedUrl が無いときに使用） */
 const buildMapsEmbedUrl = (query: string) =>
   `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`
 
@@ -27,10 +26,6 @@ export const PartyInfo: React.FC<PartyInfoProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const titleText1 = 'PARTY'
   const titleText2 = 'INFORMATION'
-  // 受付時間は URL で 0/1/2 の3段階だけ切り替える（相手に種類がバレないため文字列キーではなくコード化）
-  // - r=0 => 14:00
-  // - r=1 => 14:20
-  // - r=2 => 14:40（デフォルト）
   const receptionCodeRaw = searchParams.get('r') ?? searchParams.get('reception') ?? '2'
   const receptionCode = (receptionCodeRaw ?? '').toString()
   const receptionTime =

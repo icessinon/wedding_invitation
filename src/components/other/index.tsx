@@ -13,7 +13,6 @@ export const Other: React.FC<OtherProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const titleText = 'INFORMATION'
   const visibleChars = useTitleAnimation(containerRef, titleText)
-  // PartyInfo と同じ r=0/1/2 のルールで受付時間を決定し、それを挙式参列のお願いの時刻としても使う
   const receptionCodeRaw = searchParams.get('r') ?? searchParams.get('reception') ?? '2'
   const receptionCode = (receptionCodeRaw ?? '').toString()
   const derivedArrivalTime =

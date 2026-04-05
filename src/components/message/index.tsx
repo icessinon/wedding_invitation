@@ -214,7 +214,7 @@ export const Message: React.FC<MessageProps> = (props) => {
             <br />
             2026年4月吉日
             <br />
-            新田　剛志
+            新田剛志  井田菜摘
           </p>
         </div>
         <div className={styles.bottomLines}>

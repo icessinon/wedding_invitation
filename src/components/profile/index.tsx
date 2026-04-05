@@ -41,16 +41,20 @@ export const Profile: React.FC<ProfileProps> = (props) => {
 
       <div className={styles.groomSection}>
         <div className={styles.groomImageWrapper}>
-          <div className={styles.imagePlaceholder}>
-            <span className={styles.imageLabel}>写真</span>
-          </div>
+          <img
+            src="/images/profile/takeshi.jpg"
+            alt="新郎の画像"
+            className={styles.profileImage}
+          />
         </div>
         <div className={styles.groomInfo}>
           <h3 className={`${styles.sectionTitle} ${styles.groomTitle}`}>Groom</h3>
           <div className={styles.groomImageWrapperMobile}>
-            <div className={styles.imagePlaceholder}>
-              <span className={styles.imageLabel}>写真</span>
-            </div>
+            <img
+              src="/images/profile/takeshi.jpg"
+              alt="新郎の画像"
+              className={styles.profileImage}
+            />
           </div>
           <div className={styles.nameField}>
             <span className={styles.nameText}>新田　剛志</span>
@@ -65,9 +69,11 @@ export const Profile: React.FC<ProfileProps> = (props) => {
         <div className={styles.brideInfo}>
           <h3 className={`${styles.sectionTitle} ${styles.brideTitle}`}>Bride</h3>
           <div className={styles.brideImageWrapperMobile}>
-            <div className={styles.imagePlaceholder}>
-              <span className={styles.imageLabel}>写真</span>
-            </div>
+            <img
+              src="/images/profile/natsumi.jpg"
+              alt="新婦の画像"
+              className={styles.profileImage}
+            />
           </div>
           <div className={styles.nameField}>
             <span className={styles.nameText}>井田　菜摘</span>
@@ -77,9 +83,11 @@ export const Profile: React.FC<ProfileProps> = (props) => {
           </div>
         </div>
         <div className={styles.brideImageWrapper}>
-          <div className={styles.imagePlaceholder}>
-            <span className={styles.imageLabel}>写真</span>
-          </div>
+          <img
+            src="/images/profile/natsumi.jpg"
+            alt="新婦の画像"
+            className={styles.profileImage}
+          />
         </div>
       </div>
 

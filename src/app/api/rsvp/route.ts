@@ -25,6 +25,7 @@ const HEADERS = [
   'hasChildren',
   'childrenCount',
   'jointName',
+  'jointPartnerNames',
   'message',
   'photo',
   'attendance',
@@ -48,6 +49,7 @@ const HEADER_LABELS_JA: Record<HeaderKey, string> = {
   hasChildren: 'お子様の有無',
   childrenCount: 'お子様の人数',
   jointName: '夫婦参加時の連名の有無',
+  jointPartnerNames: '連名の方のお名前',
   message: '新郎新婦へメッセージ',
   photo: 'メッセージ画像（URL・複数は改行）',
   attendance: 'ご出欠',
@@ -80,7 +82,9 @@ function formatCellForSheet(key: HeaderKey, value: string): string {
     case 'jointName':
       if (value === 'yes') return 'あり'
       if (value === 'no') return 'なし'
-      if (value === 'na') return '該当なし'
+      return value
+    case 'jointPartnerNames':
+      if (!value.trim()) return '—'
       return value
     case 'attendance':
       if (value === 'attend') return 'ご出席'
@@ -209,6 +213,29 @@ function parseChildrenCountFromForm(fd: FormData, hasChildren: string): string |
   return String(num)
 }
 
+const MAX_JOINT_PARTNER_NAMES = 10
+const MAX_JOINT_PARTNER_NAME_LEN = 80
+
+function parseJointPartnerNamesFromBody(o: Record<string, unknown>, jointName: string): string | null {
+  if (jointName !== 'yes' && jointName !== 'no') return null
+  if (jointName === 'no') return ''
+  const raw = o.jointPartnerNames
+  let parts: string[] = []
+  if (Array.isArray(raw)) {
+    parts = raw.map((x) => String(x).trim()).filter(Boolean)
+  } else if (typeof raw === 'string' && raw.trim()) {
+    parts = raw
+      .split(/\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  }
+  if (parts.length === 0 || parts.length > MAX_JOINT_PARTNER_NAMES) return null
+  for (const p of parts) {
+    if (p.length > MAX_JOINT_PARTNER_NAME_LEN) return null
+  }
+  return parts.join('\n')
+}
+
 function parseBody(body: unknown): Record<HeaderKey, string> | null {
   if (!body || typeof body !== 'object') return null
   const o = body as Record<string, unknown>
@@ -219,7 +246,7 @@ function parseBody(body: unknown): Record<HeaderKey, string> | null {
       out[key] = v == null ? '' : String(v)
       continue
     }
-    if (key === 'childrenCount') continue
+    if (key === 'childrenCount' || key === 'jointPartnerNames') continue
     if (typeof v !== 'string' || !v.trim()) return null
     out[key] = v.trim()
   }
@@ -236,13 +263,18 @@ function parseBody(body: unknown): Record<HeaderKey, string> | null {
   } else {
     return null
   }
+  const jn = out.jointName
+  if (jn !== 'yes' && jn !== 'no') return null
+  const jp = parseJointPartnerNamesFromBody(o, jn)
+  if (jp === null) return null
+  out.jointPartnerNames = jp
   return out as Record<HeaderKey, string>
 }
 
 function parseFormData(fd: FormData): { row: Record<HeaderKey, string>; imageFiles: File[] } | null {
   const out: Partial<Record<HeaderKey, string>> = {}
   for (const key of HEADERS) {
-    if (key === 'photo' || key === 'childrenCount') continue
+    if (key === 'photo' || key === 'childrenCount' || key === 'jointPartnerNames') continue
     const v = fd.get(key)
     if (typeof v !== 'string' || !v.trim()) return null
     out[key] = v.trim()
@@ -254,6 +286,23 @@ function parseFormData(fd: FormData): { row: Record<HeaderKey, string>; imageFil
   const cc = parseChildrenCountFromForm(fd, hc)
   if (cc === null) return null
   out.childrenCount = cc
+
+  const jn = out.jointName
+  if (jn !== 'yes' && jn !== 'no') return null
+  const parts = fd
+    .getAll('jointPartnerName')
+    .filter((x): x is string => typeof x === 'string')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  if (jn === 'yes') {
+    if (parts.length === 0 || parts.length > MAX_JOINT_PARTNER_NAMES) return null
+    for (const p of parts) {
+      if (p.length > MAX_JOINT_PARTNER_NAME_LEN) return null
+    }
+    out.jointPartnerNames = parts.join('\n')
+  } else {
+    out.jointPartnerNames = ''
+  }
 
   const rawPhotos = fd.getAll('photo')
   const imageFiles: File[] = []
