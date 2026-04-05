@@ -11,43 +11,27 @@ import { EntryForm } from '../components/entryForm'
 export default function Home() {
   return (
     <div className="min-h-screen border-0 outline-none">
-      <div className="pageSnapSection">
-        <FirstView
-          weddingDate="2026年7月18日（土）"
-          weddingDateTime="2026-07-18"
+      <FirstView
+        weddingDate="2026年7月18日（土）"
+        weddingDateTime="2026-07-18"
+      />
+      <CountDown />
+      <Message />
+      <Profile />
+      <Album />
+      <Suspense fallback={null}>
+        <PartyInfo
+          ceremonyStartTime="15:00"
+          receptionStaffTime="14:00"
+          receptionFamilyTime="14:20"
+          receptionGuestTime="14:40"
+          closingTime="18:30"
         />
-      </div>
-      <div className="pageSnapSection">
-        <CountDown />
-      </div>
-      <div className="pageSnapSection">
-        <Message />
-      </div>
-      <div className="pageSnapSection">
-        <Profile />
-      </div>
-      <div className="pageSnapSection">
-        <Album />
-      </div>
-      <div className="pageSnapSection">
-        <Suspense fallback={null}>
-          <PartyInfo
-            ceremonyStartTime="15:00"
-            receptionStaffTime="14:00"
-            receptionFamilyTime="14:20"
-            receptionGuestTime="14:40"
-            closingTime="18:30"
-          />
-        </Suspense>
-      </div>
-      <div className="pageSnapSection">
-        <Suspense fallback={null}>
-          <Other />
-        </Suspense>
-      </div>
-      <div className="pageSnapSectionLong">
-        <EntryForm responseDeadline="2026年6月18日" />
-      </div>
+      </Suspense>
+      <Suspense fallback={null}>
+        <Other />
+      </Suspense>
+      <EntryForm responseDeadline="2026年6月18日" />
     </div>
   )
 }
