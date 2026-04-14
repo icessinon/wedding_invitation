@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react'
 import styles from './message.module.css'
 import type { MessageProps } from './types'
-import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { MessageTitle } from './MessageTitle'
 import { ShellDecoration } from '../other/ShellDecoration'
 import turtleImage from '../../image/turtle1.jpg'
@@ -31,7 +31,7 @@ export const Message: React.FC<MessageProps> = (props) => {
   const [turtlePosition, setTurtlePosition] = useState({ left: 5, bottom: 5 })
   const [isBorn, setIsBorn] = useState(false)
   const [footprints, setFootprints] = useState<Array<{ id: number; left: number; isLeft: boolean; isMan: boolean; bottom: number; footOffset: number }>>([])
-  const [footprintIdCounter, setFootprintIdCounter] = useState(0)
+  const footprintIdRef = useRef(0)
   const [isWalking, setIsWalking] = useState(false)
   const [isMessageFaded, setIsMessageFaded] = useState(false)
 
@@ -130,7 +130,7 @@ export const Message: React.FC<MessageProps> = (props) => {
         }
         
         const isLeftFoot = i % 2 === 0
-        const manFootprintId = Date.now() + i * 2
+        const manFootprintId = ++footprintIdRef.current
         const manFootprint = {
           id: manFootprintId,
           left: isLeftFoot ? centerLeft - horizontalSpacing : centerLeft + horizontalSpacing,
@@ -139,8 +139,8 @@ export const Message: React.FC<MessageProps> = (props) => {
           bottom: isLeftFoot ? 58 : 54,
           footOffset: 0
         }
-        
-        const womanFootprintId = Date.now() + i * 2 + 1
+
+        const womanFootprintId = ++footprintIdRef.current
         const womanFootprint = {
           id: womanFootprintId,
           left: isLeftFoot ? centerLeft - horizontalSpacing : centerLeft + horizontalSpacing,
@@ -168,7 +168,6 @@ export const Message: React.FC<MessageProps> = (props) => {
       })
       
       setTimeout(() => {
-        setFootprintIdCounter(prev => prev + footprintIds.length)
         setIsWalking(false)
         setFootprints([])
         setIsMessageFaded(false)

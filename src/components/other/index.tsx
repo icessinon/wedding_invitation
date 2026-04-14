@@ -3,7 +3,7 @@ import React, { useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import styles from './other.module.css'
 import type { OtherProps } from './types'
-import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { OtherTitle } from './OtherTitle'
 
 export const Other: React.FC<OtherProps> = ({

@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-/**
- * ファーストビュー用。画面内に入ったら文字アニメを開始（ページ先頭でも初回から動く）
- */
-export const useHeroTitleAnimation = (
+export const useTitleAnimation = (
   containerRef: React.RefObject<HTMLDivElement | null>,
   titleText: string,
   delay = 0
@@ -25,7 +22,7 @@ export const useHeroTitleAnimation = (
       })
     }
 
-    const obs = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.1) {
@@ -36,8 +33,8 @@ export const useHeroTitleAnimation = (
       { threshold: 0.1, rootMargin: '0px' }
     )
 
-    obs.observe(el)
-    return () => obs.disconnect()
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [containerRef, titleText, delay])
 
   return visibleChars

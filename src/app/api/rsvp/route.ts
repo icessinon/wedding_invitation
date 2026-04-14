@@ -464,10 +464,9 @@ export async function POST(request: Request) {
       }
       try {
         const driveAuth = getDriveAuth()
-        const urls: string[] = []
-        for (const file of imageFiles) {
-          urls.push(await uploadRsvpImage(driveAuth, driveFolderId, data.guestName, file))
-        }
+        const urls = await Promise.all(
+          imageFiles.map((file) => uploadRsvpImage(driveAuth, driveFolderId, data.guestName, file))
+        )
         data.photo = urls.join('\n')
       } catch (e) {
         const raw = extractGoogleApiMessage(e)

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import styles from './firstView.module.css'
 import type { FirstViewProps } from './types'
-import { useHeroTitleAnimation } from './hooks/useHeroTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { FirstViewTitle } from './FirstViewTitle'
 
 const TITLE_LINES = ['Wedding', 'Invitation'] as const
@@ -16,7 +16,7 @@ export const FirstView: React.FC<FirstViewProps> = ({
 }) => {
   const [scrollY, setScrollY] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
-  const visibleChars = useHeroTitleAnimation(containerRef, TITLE_TEXT)
+  const visibleChars = useTitleAnimation(containerRef, TITLE_TEXT)
 
   useEffect(() => {
     const handleScroll = () => {

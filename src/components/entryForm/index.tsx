@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import styles from './entryForm.module.css'
 import type { EntryFormProps } from './types'
 import { RELATIONSHIP_OPTIONS } from './relationshipOptions'
-import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { EntryFormTitle } from './EntryFormTitle'
 import {
   ENVELOPE_OPEN_HINT_FIXED,
@@ -278,23 +278,25 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     submitStatus === 'error' ? '送信できませんでした' : '回答ありがとうございます'
 
   const successMessageDefault =
-    submitOutcome === 'attend' ? (
+    submitOutcome === 'absent' ? (
       <>
-        来てくれるって返事、すごくうれしかったです。
+        ご連絡いただきありがとうございます。
         <br />
-        当日はリラックスして楽しんでもらえたらいいなと思っています。お会いできるのを楽しみにしています。
-      </>
-    ) : submitOutcome === 'absent' ? (
-      <>
-        返事ありがとうございます。今回は残念だけど、仕方ないですよね。
+        当日お会いできないのはとても残念ですが、
         <br />
-        お祝いの気持ちだけでもとてもうれしいです。また落ち着いたら、ぜひゆっくりお話ししましょう。
+        温かいお気持ちだけでもとても嬉しいです。
+        <br />
+        またいつかゆっくりお話しできる日を楽しみにしています。
       </>
     ) : (
       <>
-        送信ありがとうございます。無事届きました。
+        このたびは私たちの結婚式に際し
         <br />
-        お手数おかけしました。またどこかでお会いできたらうれしいです。
+        ご多用中のところご出席のお返事賜りまして
+        <br />
+        誠にありがとうございます。
+        <br />
+        当日にお会いできるのを心待ちにしております♪
       </>
     )
 

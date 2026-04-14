@@ -3,7 +3,7 @@ import React, { useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import styles from './partyInfo.module.css'
 import type { PartyInfoProps } from './types'
-import { useTitleAnimation } from './hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { PartyTitle } from './PartyTitle'
 
 const buildMapsEmbedUrl = (query: string) =>

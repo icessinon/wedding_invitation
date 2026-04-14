@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+*:Zone.Identifier
 
 # Google Cloud サービスアカウント鍵（ダウンロード JSON、絶対にコミットしない）
 design-*.json

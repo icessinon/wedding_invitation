@@ -3,7 +3,7 @@
 import React, { useRef } from 'react'
 import styles from './thank.module.css'
 import type { ThankProps } from './types'
-import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { ThankTitle } from './ThankTitle'
 import turtleImage from '../../image/turtle1.jpg'
 import Image from 'next/image'

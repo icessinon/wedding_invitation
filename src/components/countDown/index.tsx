@@ -5,11 +5,11 @@ import styles from './countDown.module.css'
 import type { CountDownProps } from './types'
 import { BubbleBackground } from './BubbleBackground'
 import { CountDownTitle } from './CountDownTitle'
-import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 
 const TARGET_DATE = new Date('2026-07-17T00:00:00')
 
-export const CountDown: React.FC<CountDownProps> = (props) => {
+export const CountDown: React.FC<CountDownProps> = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,

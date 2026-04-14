@@ -9,11 +9,7 @@ export type GuestLetterByCode = {
   letterAbsent?: string
 }
 
-export const GUEST_LETTER_BY_CODE: Record<string, GuestLetterByCode> = {
-  '1': {
-    letterAttend: 'あなた向けの出席メッセージ\n2行目',
-  },
-}
+export const GUEST_LETTER_BY_CODE: Record<string, GuestLetterByCode> = {}
 
 export type LetterUrlHints = {
   urlAttend: boolean

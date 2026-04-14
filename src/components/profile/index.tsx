@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import styles from './profile.module.css'
 import type { ProfileProps } from './types'
-import { useTitleAnimation } from '../album/hooks/useTitleAnimation'
+import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { ProfileTitle } from './ProfileTitle'
 
 export const Profile: React.FC<ProfileProps> = (props) => {
