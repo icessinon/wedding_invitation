@@ -40,6 +40,9 @@ export const FirstView: React.FC<FirstViewProps> = ({
 
   useEffect(() => {
     if (sessionStorage.getItem('rsvp_done') === '1') setSubmitted(true)
+    const onDone = () => setSubmitted(true)
+    window.addEventListener('rsvp-done', onDone)
+    return () => window.removeEventListener('rsvp-done', onDone)
   }, [])
 
   const titleComplete = visibleChars >= TITLE_TEXT.length
@@ -109,18 +112,15 @@ export const FirstView: React.FC<FirstViewProps> = ({
       )}
 
       <div className={`${styles.mainContent} ${vortexActive ? styles.mainContentSwallowed : ''}`}>
-        <FirstViewTitle titleLines={[...TITLE_LINES]} visibleChars={visibleChars} />
+        <FirstViewTitle
+          titleLines={submitted ? ['Thank', 'You'] : [...TITLE_LINES]}
+          visibleChars={visibleChars}
+        />
         <div className={`${styles.dateBlock} ${titleComplete ? styles.dateBlockVisible : ''}`}>
-          {submitted ? (
-            <p className={styles.dateMain}>Thank You So Much</p>
-          ) : (
-            <>
-              <p className={styles.dateEyebrow}>{dateLabel}</p>
-              <time className={styles.dateMain} dateTime={weddingDateTime}>
-                {weddingDate}
-              </time>
-            </>
-          )}
+          <p className={styles.dateEyebrow}>{dateLabel}</p>
+          <time className={styles.dateMain} dateTime={weddingDateTime}>
+            {weddingDate}
+          </time>
         </div>
       </div>
 

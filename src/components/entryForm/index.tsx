@@ -82,6 +82,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
   const [hasChildrenChoice, setHasChildrenChoice] = useState<'yes' | 'no' | ''>('')
   const [fieldErrors, setFieldErrors] = useState<{ guestNameKana?: string }>({})
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
+  const [formSubmitted, setFormSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitOutcome, setSubmitOutcome] = useState<'attend' | 'absent' | null>(null)
   const [letterModalOpen, setLetterModalOpen] = useState(false)
@@ -221,6 +222,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
   function closeLetterModal() {
     if (wasSuccessfulRef.current) {
       sessionStorage.setItem('rsvp_done', '1')
+      window.dispatchEvent(new CustomEvent('rsvp-done'))
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
     setLetterModalOpen(false)
@@ -308,6 +310,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
         setSubmitOutcome(attendance)
       }
       wasSuccessfulRef.current = true
+      setFormSubmitted(true)
       setSubmitStatus('ok')
       setHasChildrenChoice('')
       setJointNameChoice('')
@@ -966,7 +969,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
               </p>
             )}
             <button type="submit" className={styles.submitBtn} disabled={submitStatus === 'sending'}>
-              {submitStatus === 'sending' ? '送信中…' : '送信'}
+              {submitStatus === 'sending' ? '送信中…' : formSubmitted ? '送信されました' : '送信'}
             </button>
           </div>
         </form>
