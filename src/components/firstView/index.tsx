@@ -113,7 +113,7 @@ export const FirstView: React.FC<FirstViewProps> = ({
 
       <div className={`${styles.mainContent} ${vortexActive ? styles.mainContentSwallowed : ''}`}>
         <FirstViewTitle
-          titleLines={submitted ? ['Thank', 'You'] : [...TITLE_LINES]}
+          titleLines={submitted ? ['Thank You', 'So Much'] : [...TITLE_LINES]}
           visibleChars={visibleChars}
         />
         <div className={`${styles.dateBlock} ${titleComplete ? styles.dateBlockVisible : ''}`}>
