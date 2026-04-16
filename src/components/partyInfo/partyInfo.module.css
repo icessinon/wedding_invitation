@@ -2,6 +2,7 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
+  min-height: 100svh;
   padding: 60px 40px;
   background: #e8fbff;
   font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;

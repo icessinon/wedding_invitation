@@ -5,56 +5,54 @@ import styles from './countDown.module.css'
 import type { CountDownProps } from './types'
 import { BubbleBackground } from './BubbleBackground'
 import { CountDownTitle } from './CountDownTitle'
+import { WeddingDayScreen } from './WeddingDayScreen'
 import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 
 const TARGET_DATE = new Date('2026-07-17T00:00:00')
+const WEDDING_DATE = '2026-07-18'
 
 export const CountDown: React.FC<CountDownProps> = () => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  })
+  const [isWeddingDay, setIsWeddingDay] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const dateSectionRef = useRef<HTMLDivElement>(null)
+  const titleText = 'COUNTDOWN'
+  const visibleChars = useTitleAnimation(dateSectionRef, titleText)
+
+  useEffect(() => {
+    const now = new Date()
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    setIsWeddingDay(today === WEDDING_DATE)
+  }, [])
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const now = new Date().getTime()
-      const target = TARGET_DATE.getTime()
-      const difference = target - now
-
+      const difference = TARGET_DATE.getTime() - Date.now()
       if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
-
-        setTimeLeft({ days, hours, minutes, seconds })
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000),
+        })
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
       }
     }
-
     calculateTimeLeft()
     const interval = setInterval(calculateTimeLeft, 1000)
-
     return () => clearInterval(interval)
   }, [])
 
-  const formatNumber = (num: number): string => {
-    return num.toString().padStart(2, '0')
-  }
+  const formatNumber = (num: number) => num.toString().padStart(2, '0')
 
-  const dateSectionRef = useRef<HTMLDivElement>(null)
-  const titleText = 'COUNTDOWN'
-  const visibleChars = useTitleAnimation(dateSectionRef, titleText)
+  if (isWeddingDay) return <WeddingDayScreen />
 
   return (
     <div className={styles.container}>
       <div className={styles.waveTop}></div>
       <div className={styles.waveBottom}></div>
       <BubbleBackground />
-      
+
       <div className={styles.mainContent}>
         <CountDownTitle titleText={titleText} visibleChars={visibleChars} />
         <div className={styles.topSection}>
@@ -84,4 +82,3 @@ export const CountDown: React.FC<CountDownProps> = () => {
     </div>
   )
 }
-

@@ -2,77 +2,51 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
+  min-height: 100svh;
   padding: 4rem 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, 
-    #006994 0%, 
-    #0080a3 20%, 
-    #0099b3 40%, 
+  background: linear-gradient(180deg,
+    #006994 0%,
+    #0080a3 20%,
+    #0099b3 40%,
     #00b3c3 60%,
     #0080a3 80%,
     #006994 100%
   );
   overflow: hidden;
-  animation: oceanFlow 15s ease-in-out infinite;
-}
-
-@keyframes oceanFlow {
-  0%, 100% {
-    background: linear-gradient(180deg, 
-      #006994 0%, 
-      #0080a3 20%, 
-      #0099b3 40%, 
-      #00b3c3 60%,
-      #0080a3 80%,
-      #006994 100%
-    );
-  }
-  50% {
-    background: linear-gradient(180deg, 
-      #0078a0 0%, 
-      #0088b0 20%, 
-      #00a0c0 40%, 
-      #00b8d0 60%,
-      #0088b0 80%,
-      #0078a0 100%
-    );
-  }
 }
 
 .waveTop,
 .waveBottom {
   position: absolute;
   left: 0;
-  width: 100%;
+  width: 200%;
   height: 120px;
   background-repeat: repeat-x;
   background-size: 1200px 120px;
   z-index: 1;
   pointer-events: none;
+  will-change: transform;
 }
 
 .waveTop {
   top: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 Q300,30 600,60 T1200,60 L1200,0 L0,0 Z' fill='%23ffffff' opacity='0.15'/%3E%3C/svg%3E");
-  animation: wave 20s linear infinite;
+  animation: waveScroll 20s linear infinite;
 }
 
 .waveBottom {
   bottom: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 Q300,90 600,60 T1200,60 L1200,120 L0,120 Z' fill='%23ffffff' opacity='0.15'/%3E%3C/svg%3E");
-  animation: wave 25s linear infinite reverse;
+  animation: waveScroll 25s linear infinite reverse;
 }
 
-@keyframes wave {
-  0% {
-    background-position-x: 0;
-  }
-  100% {
-    background-position-x: 1200px;
-  }
+@keyframes waveScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .bubbleContainer {
@@ -103,6 +77,39 @@
   max-width: 900px;
   height: 100%;
   overflow: visible;
+}
+
+/* 魚の大群アニメーション */
+.fishSchool {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.fishItem {
+  position: absolute;
+  left: 0;
+  animation: fishSwimX 5s linear var(--fish-delay, 0s) both;
+  will-change: transform;
+}
+
+.fishSvg {
+  display: block;
+  animation: fishBob 0.7s ease-in-out infinite;
+  filter:
+    drop-shadow(0 0 6px rgba(60, 180, 255, 0.65))
+    drop-shadow(0 0 14px rgba(120, 220, 80, 0.35));
+}
+
+@keyframes fishSwimX {
+  0%   { transform: translateX(-15vw); }
+  100% { transform: translateX(112vw); }
+}
+
+@keyframes fishBob {
+  0%, 100% { transform: translateY(-4px); }
+  50%       { transform: translateY(4px); }
 }
 
 .titleText {

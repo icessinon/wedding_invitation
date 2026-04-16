@@ -49,30 +49,20 @@ export const useSwipeHandlers = (
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0]
-    if (touch) {
-      e.preventDefault()
-      handleStart(touch.clientX)
-    }
+    if (touch) handleStart(touch.clientX)
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDraggingRef.current) return
     const touch = e.touches[0]
-    if (touch) {
-      e.preventDefault()
-      e.stopPropagation()
-      handleMove(touch.clientX)
-    }
+    if (touch) handleMove(touch.clientX)
   }
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const handleTouchEnd = () => {
     handleEnd()
   }
 
-  const handleTouchCancel = (e: React.TouchEvent) => {
-    e.preventDefault()
+  const handleTouchCancel = () => {
     handleEnd()
   }
 

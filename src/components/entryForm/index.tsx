@@ -103,6 +103,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
     setLetterUrlHints(parseLetterUrlHints(window.location.search))
   }, [])
 
+
   const letterBodyCustom = useMemo(
     () => resolveLetterBody(submitOutcome, submitStatus, letterUrlHints),
     [submitOutcome, submitStatus, letterUrlHints]
@@ -244,9 +245,23 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
 
     if (!RSVP_DRY_RUN) {
       const kanaError = validateGuestNameKana(guestNameKana)
-      if (kanaError) {
-        setFieldErrors((prev) => ({ ...prev, guestNameKana: kanaError }))
-        setSubmitError('入力内容をご確認ください（フリガナ欄）。')
+
+      const requiredFields = Array.from(
+        form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+          'input[required], select[required], textarea[required]'
+        )
+      )
+      let firstInvalid: HTMLElement | null = null
+      for (const field of requiredFields) {
+        if (!field.checkValidity() || (field.id === 'guestNameKana' && !!kanaError)) {
+          firstInvalid = field
+          break
+        }
+      }
+      if (firstInvalid) {
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        firstInvalid.focus()
+        if (kanaError) setFieldErrors((prev) => ({ ...prev, guestNameKana: kanaError }))
         return
       }
     }

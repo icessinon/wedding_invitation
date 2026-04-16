@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Dancing_Script } from "next/font/google";
 import "./globals.css";
+import { LineExternalBrowser } from "../components/LineExternalBrowser";
 
 const dancingScript = Dancing_Script({
   variable: "--font-dancing-script",
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body
         className={`${dancingScript.variable} antialiased`}
       >
+        <LineExternalBrowser />
         {children}
       </body>
     </html>

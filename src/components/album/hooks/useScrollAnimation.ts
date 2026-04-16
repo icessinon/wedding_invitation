@@ -11,6 +11,7 @@ export const useScrollAnimation = (
   useEffect(() => {
     const animate = (currentTime: number) => {
       if (isDraggingRef.current) {
+        lastTimeRef.current = currentTime
         animationRef.current = requestAnimationFrame(animate)
         return
       }

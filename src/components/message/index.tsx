@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import styles from './message.module.css'
-import type { MessageProps } from './types'
 import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { MessageTitle } from './MessageTitle'
 import { ShellDecoration } from '../other/ShellDecoration'
@@ -20,7 +19,15 @@ interface Egg {
   isHatching: boolean
 }
 
-export const Message: React.FC<MessageProps> = (props) => {
+interface Footprint {
+  id: number
+  left: number
+  isLeft: boolean
+  isMan: boolean
+  bottom: number
+}
+
+export const Message: React.FC = () => {
   const titleText = 'MESSAGE'
   const titleWrapperRef = useRef<HTMLDivElement>(null)
   const visibleChars = useTitleAnimation(titleWrapperRef, titleText)
@@ -30,18 +37,29 @@ export const Message: React.FC<MessageProps> = (props) => {
   const [eggIdCounter, setEggIdCounter] = useState(0)
   const [turtlePosition, setTurtlePosition] = useState({ left: 5, bottom: 5 })
   const [isBorn, setIsBorn] = useState(false)
-  const [footprints, setFootprints] = useState<Array<{ id: number; left: number; isLeft: boolean; isMan: boolean; bottom: number; footOffset: number }>>([])
+  const [footprints, setFootprints] = useState<Footprint[]>([])
   const footprintIdRef = useRef(0)
   const [isWalking, setIsWalking] = useState(false)
   const [isMessageFaded, setIsMessageFaded] = useState(false)
+  const timerIds = useRef<ReturnType<typeof setTimeout>[]>([])
 
-  const handleTurtleClick = () => {
+  useEffect(() => {
+    return () => { timerIds.current.forEach(clearTimeout) }
+  }, [])
+
+  const schedule = useCallback((fn: () => void, ms: number) => {
+    const id = setTimeout(fn, ms)
+    timerIds.current.push(id)
+    return id
+  }, [])
+
+  const handleTurtleClick = useCallback(() => {
     if (isMoving || !showTurtle) return
-    
+
     const currentPosition = { ...turtlePosition }
     setIsMoving(true)
-    
-    setTimeout(() => {
+
+    schedule(() => {
       setEggs([{
         id: eggIdCounter,
         left: currentPosition.left,
@@ -50,51 +68,47 @@ export const Message: React.FC<MessageProps> = (props) => {
       }])
       setEggIdCounter(prev => prev + 1)
     }, 500)
-    
-    setTimeout(() => {
+
+    schedule(() => {
       setIsMoving(false)
       setShowTurtle(false)
     }, 10000)
-  }
+  }, [isMoving, showTurtle, turtlePosition, eggIdCounter, schedule])
 
-  const handleEggClick = (eggId: number) => {
+  const handleEggClick = useCallback((eggId: number) => {
     const clickedEgg = eggs.find(egg => egg.id === eggId)
     if (!clickedEgg) return
-    
-    setEggs(prev => prev.map(egg => 
+
+    setEggs(prev => prev.map(egg =>
       egg.id === eggId ? { ...egg, isHatching: true } : egg
     ))
-    
-    setTimeout(() => {
+
+    schedule(() => {
       setEggs(prev => prev.filter(egg => egg.id !== eggId))
       setTurtlePosition({ left: clickedEgg.left, bottom: clickedEgg.bottom })
       setIsBorn(true)
       setShowTurtle(true)
       setIsMoving(false)
-      
-      setTimeout(() => {
-        setIsBorn(false)
-      }, 1000)
-    }, 1000)
-  }
 
-  const handleShellClick = () => {
+      schedule(() => { setIsBorn(false) }, 1000)
+    }, 1000)
+  }, [eggs, schedule])
+
+  const handleShellClick = useCallback(() => {
     if (isWalking) return
     setIsWalking(true)
     setFootprints([])
-    
     setIsMessageFaded(true)
-    
+
     const startLeft = 10
     const endLeft = 90
     const totalDistance = endLeft - startLeft
-    
+
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
     const horizontalSpacing = isMobile ? 4 : 2
-    
     const closeStepRatio = isMobile ? 0.15 : 0.1
     const gapRatio = isMobile ? 0.85 : 0.65
-    
+
     const pairDistance = totalDistance / 5
     const closeStepDistance = pairDistance * closeStepRatio
     const gapDistance = pairDistance * gapRatio
@@ -102,78 +116,52 @@ export const Message: React.FC<MessageProps> = (props) => {
     const maxPairs = Math.ceil(totalDistance / pairTotalDistance)
     const stepCount = maxPairs * 2
     const stepInterval = 500
-    
+
     const footprintIds: number[] = []
-    
+
     for (let i = 0; i < stepCount; i++) {
       const pairIndex = Math.floor(i / 2)
       const stepInPair = i % 2
-      
-      setTimeout(() => {
-        let centerLeft
-        if (stepInPair === 0) {
-          let accumulatedDistance = 0
-          for (let p = 0; p < pairIndex; p++) {
-            accumulatedDistance += closeStepDistance + gapDistance
-          }
-          centerLeft = startLeft + accumulatedDistance
-        } else {
-          let accumulatedDistance = 0
-          for (let p = 0; p < pairIndex; p++) {
-            accumulatedDistance += closeStepDistance + gapDistance
-          }
-          centerLeft = startLeft + accumulatedDistance + closeStepDistance
-        }
-        
-        if (centerLeft > endLeft) {
-          return
-        }
-        
-        const isLeftFoot = i % 2 === 0
-        const manFootprintId = ++footprintIdRef.current
-        const manFootprint = {
-          id: manFootprintId,
-          left: isLeftFoot ? centerLeft - horizontalSpacing : centerLeft + horizontalSpacing,
-          isLeft: isLeftFoot,
-          isMan: true,
-          bottom: isLeftFoot ? 58 : 54,
-          footOffset: 0
-        }
 
-        const womanFootprintId = ++footprintIdRef.current
-        const womanFootprint = {
-          id: womanFootprintId,
-          left: isLeftFoot ? centerLeft - horizontalSpacing : centerLeft + horizontalSpacing,
-          isLeft: isLeftFoot,
-          isMan: false,
-          bottom: isLeftFoot ? 46 : 42,
-          footOffset: 0
+      schedule(() => {
+        let accumulatedDistance = 0
+        for (let p = 0; p < pairIndex; p++) {
+          accumulatedDistance += closeStepDistance + gapDistance
         }
-        
-        footprintIds.push(manFootprintId, womanFootprintId)
-        
-        setFootprints(prev => [...prev, manFootprint, womanFootprint])
+        const centerLeft = startLeft + accumulatedDistance + (stepInPair === 1 ? closeStepDistance : 0)
+
+        if (centerLeft > endLeft) return
+
+        const isLeftFoot = i % 2 === 0
+        const manId = ++footprintIdRef.current
+        const womanId = ++footprintIdRef.current
+        footprintIds.push(manId, womanId)
+
+        setFootprints(prev => [...prev,
+          { id: manId,   left: isLeftFoot ? centerLeft - horizontalSpacing : centerLeft + horizontalSpacing, isLeft: isLeftFoot, isMan: true,  bottom: isLeftFoot ? 58 : 54 },
+          { id: womanId, left: isLeftFoot ? centerLeft - horizontalSpacing : centerLeft + horizontalSpacing, isLeft: isLeftFoot, isMan: false, bottom: isLeftFoot ? 46 : 42 },
+        ])
       }, i * stepInterval)
     }
-    
+
     const totalDisplayTime = stepCount * stepInterval
     const fadeOutStartDelay = totalDisplayTime * 0.6
     const fadeOutInterval = 200
-    
-    setTimeout(() => {
-      footprintIds.forEach((footprintId, index) => {
-        setTimeout(() => {
-          setFootprints(prev => prev.filter(fp => fp.id !== footprintId))
+
+    schedule(() => {
+      footprintIds.forEach((id, index) => {
+        schedule(() => {
+          setFootprints(prev => prev.filter(fp => fp.id !== id))
         }, fadeOutStartDelay + index * fadeOutInterval)
       })
-      
-      setTimeout(() => {
+
+      schedule(() => {
         setIsWalking(false)
         setFootprints([])
         setIsMessageFaded(false)
       }, fadeOutStartDelay + footprintIds.length * fadeOutInterval)
     }, fadeOutStartDelay)
-  }
+  }, [isWalking, schedule])
 
   return (
     <div className={styles.container}>
@@ -182,7 +170,7 @@ export const Message: React.FC<MessageProps> = (props) => {
         <div className={styles.wave} style={{ animationDelay: '0.5s' }}></div>
         <div className={styles.wave} style={{ animationDelay: '1s' }}></div>
       </div>
-      
+
       <div ref={titleWrapperRef}>
         <MessageTitle titleText={titleText} visibleChars={visibleChars} />
       </div>
@@ -201,7 +189,8 @@ export const Message: React.FC<MessageProps> = (props) => {
             ご清祥のこととお慶び申し上げます<br />
             このたび 私たちは結婚式を<br />
             挙げることになりました<br />
-            つきましては 日頃お世話になっている皆様に<br />
+            つきましては 日頃お世話になっている<br />
+            皆様に<br />
             お集まりいただきささやかな披露宴を<br />
             催したいと存じます<br />
             ご多用中 誠に恐縮ではございますが<br />
@@ -222,19 +211,19 @@ export const Message: React.FC<MessageProps> = (props) => {
         </div>
       </div>
       {showTurtle && (
-        <Image 
-          src={turtleImage} 
-          alt="Sea Turtle" 
+        <Image
+          src={turtleImage}
+          alt="Sea Turtle"
           className={`${styles.turtleImage} ${isMoving ? styles.turtleMoving : ''} ${isBorn ? styles.turtleBorn : ''}`}
           onClick={handleTurtleClick}
-          style={{ 
+          style={{
             cursor: 'pointer',
             left: `${turtlePosition.left}%`,
             bottom: `${turtlePosition.bottom}%`
           }}
         />
       )}
-      
+
       {eggs.map(egg => (
         <div
           key={egg.id}
@@ -246,8 +235,8 @@ export const Message: React.FC<MessageProps> = (props) => {
           onClick={() => handleEggClick(egg.id)}
         />
       ))}
-      
-      <div 
+
+      <div
         className={styles.shellDecoration}
         onClick={handleShellClick}
         onTouchStart={(e) => {
@@ -259,15 +248,12 @@ export const Message: React.FC<MessageProps> = (props) => {
       >
         <ShellDecoration />
       </div>
-      
+
       {footprints.map(footprint => {
-        let footprintImage
-        if (footprint.isMan) {
-          footprintImage = footprint.isLeft ? footprintManLeftImage : footprintManRightImage
-        } else {
-          footprintImage = footprint.isLeft ? footprintGirlLeftImage : footprintGirlRightImage
-        }
-        
+        const footprintImage = footprint.isMan
+          ? (footprint.isLeft ? footprintManLeftImage : footprintManRightImage)
+          : (footprint.isLeft ? footprintGirlLeftImage : footprintGirlRightImage)
+
         return (
           <div
             key={footprint.id}
@@ -290,4 +276,3 @@ export const Message: React.FC<MessageProps> = (props) => {
     </div>
   )
 }
-

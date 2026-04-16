@@ -1,4 +1,1 @@
-export interface ProfileProps {
-  // Add props here
-}
-
+export interface ProfileProps {}

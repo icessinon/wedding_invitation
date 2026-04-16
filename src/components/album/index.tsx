@@ -13,9 +13,9 @@ export const Album: React.FC<AlbumProps> = ({ images = [] }) => {
   const defaultImages = images.length > 0 
     ? images 
     : [
+        '/images/album/ring.jpg',
         '/images/album/kage.jpg',
         '/images/album/hurt.jpg',
-        '/images/album/hand.jpg',
         '/images/album/five.jpg',
         '/images/album/riku.jpg',
         '/images/album/sora.jpg',

@@ -57,6 +57,99 @@
   /* =============================================
      2. 画像枠 (Fixed Frame)
      ============================================= */
+/* 波紋＋テキストトグル */
+.rippleWrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  animation: rippleOut 1.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleOut {
+  0%   { transform: scale(0); opacity: 0.7; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+.bioText {
+  animation: fadeSwitch 0.35s ease;
+}
+
+@keyframes fadeSwitch {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.greetingField {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+}
+
+.greetingLabel {
+  display: block;
+  width: 100%;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #444;
+}
+
+/* バイオカード */
+.bioCard {
+  width: 100%;
+  background: linear-gradient(135deg, #fff5f8 0%, #fef9f0 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(220, 160, 180, 0.25);
+  overflow: hidden;
+}
+
+.bioCardAnimate {
+  animation: fadeSwitch 0.35s ease;
+}
+
+.bioRow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  border-bottom: 1px solid rgba(220, 160, 180, 0.15);
+}
+
+.bioRow:last-child {
+  border-bottom: none;
+}
+
+.bioIcon {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.bioLabel {
+  font-size: 0.78rem;
+  color: #b07080;
+  letter-spacing: 0.05em;
+  width: 5.5rem;
+  flex-shrink: 0;
+}
+
+.bioValue {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+  flex: 1;
+}
+
   .groomImageWrapper,
   .brideImageWrapper,
   .groomImageWrapperMobile,
@@ -117,18 +210,18 @@
     gap: 4rem;
     width: 100%;
     max-width: 1000px;
-    margin: 0 auto 6rem auto;
+    margin: 0 auto 2rem auto;
     padding: 0 3rem;
     z-index: 2;
     position: relative;
   }
   
   .groomInfo, .brideInfo {
-    flex: 1;
+    flex: 0 0 380px;
+    width: 380px;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    min-width: 300px;
   }
   
   .sectionTitle {
@@ -155,6 +248,11 @@
       padding: 0 1.5rem;
     }
   
+    .groomInfo, .brideInfo {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+
     .groomImageWrapper, .brideImageWrapper { display: none; }
   
     .groomImageWrapperMobile, .brideImageWrapperMobile {
