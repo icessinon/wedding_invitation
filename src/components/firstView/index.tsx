@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useCallback } from 'react'
+import React, { useRef, useState, useCallback, useEffect } from 'react'
 import styles from './firstView.module.css'
 import type { FirstViewProps } from './types'
 import { useTitleAnimation } from '../../hooks/useTitleAnimation'
@@ -34,8 +34,13 @@ export const FirstView: React.FC<FirstViewProps> = ({
   const [splashes, setSplashes] = useState<Splash[]>([])
   const [vortexActive, setVortexActive] = useState(false)
   const [vortexTextActive, setVortexTextActive] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
   const lastSplashRef = useRef(0)
   const splashCountRef = useRef(0)
+
+  useEffect(() => {
+    if (sessionStorage.getItem('rsvp_done') === '1') setSubmitted(true)
+  }, [])
 
   const titleComplete = visibleChars >= TITLE_TEXT.length
 
@@ -106,10 +111,16 @@ export const FirstView: React.FC<FirstViewProps> = ({
       <div className={`${styles.mainContent} ${vortexActive ? styles.mainContentSwallowed : ''}`}>
         <FirstViewTitle titleLines={[...TITLE_LINES]} visibleChars={visibleChars} />
         <div className={`${styles.dateBlock} ${titleComplete ? styles.dateBlockVisible : ''}`}>
-          <p className={styles.dateEyebrow}>{dateLabel}</p>
-          <time className={styles.dateMain} dateTime={weddingDateTime}>
-            {weddingDate}
-          </time>
+          {submitted ? (
+            <p className={styles.dateMain}>Thank You So Much</p>
+          ) : (
+            <>
+              <p className={styles.dateEyebrow}>{dateLabel}</p>
+              <time className={styles.dateMain} dateTime={weddingDateTime}>
+                {weddingDate}
+              </time>
+            </>
+          )}
         </div>
       </div>
 

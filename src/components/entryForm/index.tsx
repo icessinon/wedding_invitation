@@ -90,6 +90,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026å¹
   const letterCloseRef = useRef<HTMLButtonElement>(null)
   const letterRevealRef = useRef<HTMLButtonElement>(null)
   const letterSendingRef = useRef<HTMLDivElement>(null)
+  const wasSuccessfulRef = useRef(false)
 
   const [letterUrlHints, setLetterUrlHints] = useState<LetterUrlHints>({
     urlAttend: false,
@@ -218,6 +219,10 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026å¹
   }
 
   function closeLetterModal() {
+    if (wasSuccessfulRef.current) {
+      sessionStorage.setItem('rsvp_done', '1')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
     setLetterModalOpen(false)
     setLetterPulledOut(false)
     setSubmitStatus('idle')
@@ -302,6 +307,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026å¹
       if (attendance === 'attend' || attendance === 'absent') {
         setSubmitOutcome(attendance)
       }
+      wasSuccessfulRef.current = true
       setSubmitStatus('ok')
       setHasChildrenChoice('')
       setJointNameChoice('')
