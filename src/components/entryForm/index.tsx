@@ -35,6 +35,34 @@ const BUBBLE_SEA_COUNT = 240
 
 const RSVP_DRY_RUN = process.env.NEXT_PUBLIC_RSVP_DRY_RUN === 'true'
 
+async function compressImage(file: File, maxSidePx = 1920, quality = 0.82): Promise<File> {
+  if (file.size < 500 * 1024) return file
+  return new Promise((resolve) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const scale = Math.min(1, maxSidePx / Math.max(img.width, img.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { resolve(file); return }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      canvas.toBlob(
+        (blob) => {
+          if (!blob || blob.size >= file.size) { resolve(file); return }
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' }))
+        },
+        'image/jpeg',
+        quality,
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file) }
+    img.src = url
+  })
+}
+
 function letterTextToNodes(text: string): React.ReactNode {
   const lines = text.split('\n')
   return lines.map((line, i) => (
@@ -235,7 +263,8 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026å¹
       parts.forEach((p) => formData.append('jointPartnerName', p))
     }
     for (const item of imageItems) {
-      formData.append('photo', item.file)
+      const compressed = await compressImage(item.file)
+      formData.append('photo', compressed)
     }
     const attendance = String(formData.get('attendance') ?? '')
     setSubmitStatus('sending')
