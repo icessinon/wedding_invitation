@@ -125,7 +125,9 @@ export const FirstView: React.FC<FirstViewProps> = ({
       </div>
 
       {vortexTextActive && (
-        <p className={styles.vortexText}>Let&apos;s Enjoy Together</p>
+        <p className={styles.vortexText}>
+          {submitted ? "Can\u2019t Get Enough?" : "Let\u2019s Enjoy Together"}
+        </p>
       )}
     </div>
   )
