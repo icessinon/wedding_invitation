@@ -339,7 +339,9 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
         <br />
         温かいお気持ちだけでもとても嬉しいです。
         <br />
-        またいつかゆっくりお話しできる日を楽しみにしています。
+        またいつかゆっくり
+        <br />
+        お話しできる日を楽しみにしています。
       </>
     ) : (
       <>
@@ -349,7 +351,9 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
         <br />
         誠にありがとうございます。
         <br />
-        当日にお会いできるのを心待ちにしております♪
+        当日にお会いできるのを
+        <br />
+        心待ちにしております♪
       </>
     )
 
