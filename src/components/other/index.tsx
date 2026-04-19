@@ -45,7 +45,7 @@ export const Other: React.FC<OtherProps> = ({
         <div className={styles.requestBox}>
           {receptionCode === '0' ? (
             <>
-              <div className={styles.receptionBadge}>お受付担当のご依頼</div>
+              <div className={styles.boxHeader}>お受付担当のご依頼</div>
               <div className={styles.boxDivider}></div>
               <div className={styles.boxContent}>
                 <p>当日はお受付担当をお願いしたく</p>
