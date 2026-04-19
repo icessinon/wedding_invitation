@@ -55,7 +55,7 @@ export const Other: React.FC<OtherProps> = ({
             </>
           ) : (
             <>
-              <div className={styles.boxHeader}>挙式参列のお願い</div>
+              <div className={styles.boxHeader}>＜挙式参列のお願い＞</div>
               <div className={styles.boxDivider}></div>
               <div className={styles.boxContent}>
                 <p>誠に恐れ入りますが</p>
