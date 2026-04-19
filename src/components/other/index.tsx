@@ -81,7 +81,7 @@ export const Other: React.FC<OtherProps> = ({
               </div>
             </div>
 
-            <p className={styles.busNote}>※バスは定刻になりましたら発車いたしますので、乗り遅れのないようご注意くださいませ</p>
+            <p className={styles.busNote}>※バスは定刻になりましたら発車いたしますので 乗り遅れのないようご注意くださいませ</p>
             <p className={styles.busContact}>当日ご不明点等ございましたら式場までご連絡ください（0463-43-1611）</p>
           </div>
         </div>

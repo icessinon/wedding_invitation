@@ -184,8 +184,7 @@ export const Message: React.FC = () => {
             謹啓
           </p>
           <p className={`${styles.messageText} ${isMessageFaded ? styles.messageFaded : ''}`}>
-            皆様におかれましては<br />
-            葉桜の候<br />
+            葉桜の候 皆様におかれましては<br />
             ご清祥のこととお慶び申し上げます<br />
             このたび 私たちは結婚式を<br />
             挙げることになりました<br />

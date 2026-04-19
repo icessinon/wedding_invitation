@@ -618,7 +618,7 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
               <input id="email" name="email" type="email" autoComplete="email" required />
             </div>
             <div className={styles.field}>
-              <label htmlFor="allergy">アレルギーの有無、また種類</label>
+              <label htmlFor="allergy">アレルギーの有無 また種類</label>
               <textarea
                 id="allergy"
                 name="allergy"
@@ -627,13 +627,13 @@ export const EntryForm: React.FC<EntryFormProps> = ({ responseDeadline = '2026�
                 required
               />
               <p className={styles.fieldNote}>
-                ※可能な限りご対応をさせていただきますが、内容によってはご対応出来かねる場合がございます。
+                ※可能な限りご対応をさせていただきますが 内容によってはご対応出来かねる場合がございます
               </p>
               <p className={styles.fieldNote}>
-                ※苦手食材のご対応はいたしかねますのでご了承ください。
+                ※苦手食材のご対応はいたしかねますのでご了承ください
               </p>
               <p className={styles.fieldNote}>
-                ※式場よりゲスト様へ直接ご連絡させて頂く場合がございます。
+                ※式場よりゲスト様へ直接ご連絡させて頂く場合がございます
               </p>
             </div>
             </fieldset>
