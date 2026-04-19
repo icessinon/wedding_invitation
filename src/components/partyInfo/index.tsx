@@ -66,6 +66,27 @@ export const PartyInfo: React.FC<PartyInfoProps> = ({
           </div>
         </div>
         
+        {receptionCode === '0' ? (
+          <div className={styles.requestBox}>
+            <div className={styles.requestBadge}>お受付担当のご依頼</div>
+            <p className={styles.requestText}>
+              当日はお受付担当をお願いしたく<br />
+              誠に恐縮ですが{receptionStaffTime}までに<br />
+              お越しいただきますようお願い申し上げます
+            </p>
+          </div>
+        ) : (
+          <div className={styles.requestBox}>
+            <p className={styles.requestText}>
+              誠に恐れ入りますが<br />
+              挙式にもご列席賜りたく<br />
+              当日は{receptionTime}迄に<br />
+              ご光来のほど<br />
+              よろしくお願い申し上げます
+            </p>
+          </div>
+        )}
+
         <div className={styles.venueBox}>
           <div className={styles.boxTitle}>会場情報</div>
           <div className={styles.venueRow}>
