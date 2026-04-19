@@ -23,7 +23,7 @@ export default function Home() {
         <PartyInfo
           ceremonyStartTime="15:00"
           receptionStaffTime="14:00"
-          receptionFamilyTime="14:20"
+          receptionFamilyTime="14:15"
           receptionGuestTime="14:40"
           closingTime="18:30"
         />
