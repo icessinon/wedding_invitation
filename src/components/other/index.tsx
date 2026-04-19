@@ -19,7 +19,7 @@ export const Other: React.FC<OtherProps> = ({
     receptionCode === '0'
       ? '14:00'
       : receptionCode === '1'
-        ? '14:20'
+        ? '14:15'
         : '14:40'
   const effectiveArrivalTime = arrivalTime ?? derivedArrivalTime
   const displayArrivalTime = (() => {
