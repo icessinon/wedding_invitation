@@ -29,8 +29,8 @@ const BRIDE_GREETING = 'いつも支えてくれて本当にありがとうご�
 const BRIDE_BIO: BioData = {
   birthday: '1996年4月13日',
   blood: 'A型',
-  job: '鍼灸・あん摩マッサージ指圧師 ',
-  hobby: '掃除',
+  job: 'リラクゼーション',
+  hobby: 'アニメ・ちい活・YouTube鑑賞',
   cookingSpecialty: 'ミートスパゲティ',
   favoriteFood: 'ハンバーグ',
 }
