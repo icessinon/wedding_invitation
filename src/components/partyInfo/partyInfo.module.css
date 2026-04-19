@@ -276,51 +276,6 @@
   transform: translateY(-1px);
 }
 
-.requestBox {
-  width: 100%;
-  max-width: 600px;
-  min-width: 0;
-  border: 1px solid rgba(124, 174, 185, 0.35);
-  border-top: 3px solid #7caeb9;
-  border-radius: 12px;
-  padding: 2rem 1.5rem;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.requestBadge {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  color: #5a9dac;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  white-space: nowrap;
-}
-
-.requestBadge::before,
-.requestBadge::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: rgba(124, 174, 185, 0.45);
-}
-
-.requestText {
-  text-align: center;
-  line-height: 2.2;
-  color: #7caeb9;
-  font-size: 0.95rem;
-  letter-spacing: 0.06em;
-  margin: 0;
-}
-
 @media (max-width: 768px) {
   .container {
     padding: 40px 20px;

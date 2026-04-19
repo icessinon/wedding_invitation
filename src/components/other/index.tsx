@@ -43,15 +43,29 @@ export const Other: React.FC<OtherProps> = ({
         <div className={styles.divider}></div>
         
         <div className={styles.requestBox}>
-          <div className={styles.boxHeader}>挙式参列のお願い</div>
-          <div className={styles.boxDivider}></div>
-          <div className={styles.boxContent}>
-            <p>誠に恐れ入りますが</p>
-            <p>挙式にもご列席賜りたく</p>
-            <p>当日は{displayArrivalTime}迄に</p>
-            <p>ご光来のほど</p>
-            <p>よろしくお願い申し上げます</p>
-          </div>
+          {receptionCode === '0' ? (
+            <>
+              <div className={styles.receptionBadge}>お受付担当のご依頼</div>
+              <div className={styles.boxDivider}></div>
+              <div className={styles.boxContent}>
+                <p>当日はお受付担当をお願いしたく</p>
+                <p>誠に恐縮ですが14:00までに</p>
+                <p>お越しいただきますようお願い申し上げます</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.boxHeader}>挙式参列のお願い</div>
+              <div className={styles.boxDivider}></div>
+              <div className={styles.boxContent}>
+                <p>誠に恐れ入りますが</p>
+                <p>挙式にもご列席賜りたく</p>
+                <p>当日は{displayArrivalTime}迄に</p>
+                <p>ご光来のほど</p>
+                <p>よろしくお願い申し上げます</p>
+              </div>
+            </>
+          )}
         </div>
 
         <div className={styles.requestBox}>

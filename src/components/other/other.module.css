@@ -138,6 +138,29 @@
   letter-spacing: 0.08em;
 }
 
+.receptionBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: rgba(44, 82, 110, 0.95);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.1em;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  margin-bottom: 1rem;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.receptionBadge::before,
+.receptionBadge::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: rgba(44, 82, 110, 0.3);
+}
+
 .boxDivider {
   width: 60%;
   margin: 0 auto 1.5rem;
