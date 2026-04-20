@@ -18,9 +18,7 @@ export const Other: React.FC<OtherProps> = ({
   const derivedArrivalTime =
     receptionCode === '0'
       ? '14:00'
-      : receptionCode === '1'
-        ? '14:15'
-        : '14:40'
+      : '14:40'
   const effectiveArrivalTime = arrivalTime ?? derivedArrivalTime
   const displayArrivalTime = (() => {
     const matched = effectiveArrivalTime.match(/^(\d{1,2}):(\d{2})$/)
