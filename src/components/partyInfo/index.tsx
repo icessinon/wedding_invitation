@@ -1,6 +1,5 @@
 'use client'
 import React, { useRef } from 'react'
-import { useSearchParams } from 'next/navigation'
 import styles from './partyInfo.module.css'
 import type { PartyInfoProps } from './types'
 import { useTitleAnimation } from '../../hooks/useTitleAnimation'
@@ -21,20 +20,10 @@ export const PartyInfo: React.FC<PartyInfoProps> = ({
   venuePhone = '📞 0463-43-1611',
   venueEmbedUrl,
 }) => {
-  const searchParams = useSearchParams()
   const venueMapSrc = venueEmbedUrl ?? buildMapsEmbedUrl(`${venueName} ${venueAddress}`)
   const containerRef = useRef<HTMLDivElement>(null)
   const titleText1 = 'PARTY'
   const titleText2 = 'INFORMATION'
-  const receptionCodeRaw = searchParams.get('r') ?? searchParams.get('reception') ?? '2'
-  const receptionCode = (receptionCodeRaw ?? '').toString()
-  const receptionTime =
-    receptionCode === '0'
-      ? receptionStaffTime
-      : receptionCode === '1'
-        ? receptionFamilyTime
-        : receptionGuestTime
-
   const partyAnimationDuration = titleText1.length * 100 + 300
   const visibleChars1 = useTitleAnimation(containerRef, titleText1, 0)
   const visibleChars2 = useTitleAnimation(containerRef, titleText2, partyAnimationDuration)
@@ -59,7 +48,7 @@ export const PartyInfo: React.FC<PartyInfoProps> = ({
           </div>
           <div className={styles.timeRow}>
             <span className={styles.timeLabel}>受付時間</span>
-            <span className={styles.timeValue}>{receptionTime}</span>
+            <span className={styles.timeValue}>{receptionFamilyTime}</span>
             <span className={styles.timeSeparator}>/</span>
             <span className={styles.timeLabel}>お披楽喜</span>
             <span className={styles.timeValue}>{closingTime}</span>
