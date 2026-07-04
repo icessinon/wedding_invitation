@@ -8,7 +8,7 @@ import { CountDownTitle } from './CountDownTitle'
 import { WeddingDayScreen } from './WeddingDayScreen'
 import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 
-const TARGET_DATE = new Date('2026-07-17T00:00:00')
+const TARGET_DATE = new Date('2026-07-18T00:00:00+09:00')
 const WEDDING_DATE = '2026-07-18'
 
 export const CountDown: React.FC<CountDownProps> = () => {
@@ -19,9 +19,13 @@ export const CountDown: React.FC<CountDownProps> = () => {
   const visibleChars = useTitleAnimation(dateSectionRef, titleText)
 
   useEffect(() => {
-    const now = new Date()
-    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-    setIsWeddingDay(today === WEDDING_DATE)
+    const checkWeddingDay = () => {
+      const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Tokyo' })
+      setIsWeddingDay(today === WEDDING_DATE)
+    }
+    checkWeddingDay()
+    const interval = setInterval(checkWeddingDay, 1000)
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
