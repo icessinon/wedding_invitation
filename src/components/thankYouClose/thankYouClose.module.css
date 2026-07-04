@@ -1,0 +1,116 @@
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  padding: 4.5rem 1.5rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  background: #547c94;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  color: #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.bubbleSea {
+  position: absolute;
+  top: -140vh;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bubbleSeaParticle {
+  position: absolute;
+  bottom: -12vh;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 30%,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(220, 240, 252, 0.35) 42%,
+    rgba(255, 255, 255, 0.06) 68%,
+    transparent 78%
+  );
+  box-shadow:
+    0 0 4px rgba(255, 255, 255, 0.25),
+    0 0 10px rgba(180, 220, 240, 0.12);
+  animation: bubbleSeaRise linear infinite;
+  will-change: transform, opacity;
+}
+
+.bubbleSeaParticle:nth-child(odd)  { --bubble-drift: 18px; }
+.bubbleSeaParticle:nth-child(even) { --bubble-drift: -14px; }
+.bubbleSeaParticle:nth-child(3n)   { --bubble-drift: 6px; }
+.bubbleSeaParticle:nth-child(5n)   { --bubble-drift: -22px; }
+.bubbleSeaParticle:nth-child(7n)   { --bubble-drift: 26px; }
+.bubbleSeaParticle:nth-child(11n)  { --bubble-drift: -9px; }
+
+@keyframes bubbleSeaRise {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.2; }
+  8%   { opacity: 0.55; }
+  88%  { opacity: 0.45; }
+  97%  { opacity: 0.32; }
+  100% { transform: translate3d(var(--bubble-drift, 10px), -620vh, 0) scale(0.16); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubbleSea { display: none; }
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+}
+
+.divider {
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.6em;
+  font-size: 0.95rem;
+}
+
+.thanksLine {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  letter-spacing: 0.18em;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.mainMessage {
+  font-size: 1.4rem;
+  line-height: 2.2;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: #fff;
+  font-weight: 300;
+}
+
+.subMessage {
+  font-size: 1.05rem;
+  line-height: 2.1;
+  letter-spacing: 0.06em;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 300;
+}
+
+.signature {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  letter-spacing: 0.24em;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}

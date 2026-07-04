@@ -6,7 +6,7 @@ import { Profile } from '../components/profile'
 import { Album } from '../components/album'
 import { PartyInfo } from '../components/partyInfo'
 import { Other } from '../components/other'
-import { EntryForm } from '../components/entryForm'
+import { ThankYouClose } from '../components/thankYouClose'
 
 export default function Home() {
   return (
@@ -31,7 +31,7 @@ export default function Home() {
       <Suspense fallback={null}>
         <Other />
       </Suspense>
-      <EntryForm responseDeadline="2026年6月18日" />
+      <ThankYouClose />
     </div>
   )
 }
