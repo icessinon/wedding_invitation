@@ -71,7 +71,8 @@ export const OceanMemories: React.FC = () => {
   const placedRef = useRef<Placed[]>([])
   const keyRef = useRef(0)
   const zRef = useRef(1)
-  const nextIndexRef = useRef(0)
+  /** シャッフル済みの「山札」。引き切ったら再シャッフル */
+  const deckRef = useRef<number[]>([])
   const timersRef = useRef<Set<number>>(new Set())
 
   useEffect(() => {
@@ -106,6 +107,25 @@ export const OceanMemories: React.FC = () => {
     photos.slice(0, 20).forEach((p) => {
       new Image().src = p.url
     })
+
+    deckRef.current = []
+
+    /** フォルダ順に偏らないよう、シャッフルした山札からランダムに引く */
+    const drawPhotoIndex = (): number => {
+      if (deckRef.current.length === 0) {
+        const deck = photos.map((_, i) => i)
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[deck[i], deck[j]] = [deck[j], deck[i]]
+        }
+        deckRef.current = deck
+      }
+      // いま表示中の写真はできるだけ避ける
+      const visible = new Set(placedRef.current.map((p) => p.photoIndex))
+      const pos = deckRef.current.findIndex((i) => !visible.has(i))
+      if (pos >= 0) return deckRef.current.splice(pos, 1)[0]
+      return deckRef.current.shift() ?? 0
+    }
 
     const later = (fn: () => void, ms: number) => {
       const id = window.setTimeout(() => {
@@ -150,8 +170,7 @@ export const OceanMemories: React.FC = () => {
         return
       }
 
-      const photoIndex = nextIndexRef.current % photos.length
-      nextIndexRef.current++
+      const photoIndex = drawPhotoIndex()
       // フェードイン時にちらつかないよう先読み
       new Image().src = photos[photoIndex].url
 
