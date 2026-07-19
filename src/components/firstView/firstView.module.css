@@ -12,17 +12,16 @@
 
 .backgroundImage {
   position: absolute;
-  top: -20%;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 120%;
-  background-image: url('https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+  height: 100%;
+  /* 挙式当日、指帆亭の鐘を鳴らすふたり */
+  background-image: url('/images/hero/first-view.jpg');
   background-size: cover;
-  background-position: center;
-  filter: blur(3px);
+  /* 縦画面ではふたりが写る右寄りを見せる */
+  background-position: 62% 38%;
   z-index: 0;
-  will-change: transform;
-  transition: transform 0.1s ease-out;
 }
 
 .overlay {
@@ -48,11 +47,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* 写真のふたりに文字が重ならないよう、空のエリア（上部）に寄せる */
+  justify-content: flex-start;
+  padding-top: 9svh;
   flex: 1;
   width: 100%;
   max-width: 100vw;
-  padding: 0 1.25rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   box-sizing: border-box;
 }
 
