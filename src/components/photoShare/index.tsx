@@ -265,6 +265,10 @@ export const PhotoShare: React.FC = () => {
         私たちの宝物になります
       </p>
 
+      <p className={styles.updateNote}>
+        <span aria-hidden="true">✦</span> カメラマンの写真も 8月頃 追加予定
+      </p>
+
       {/* ---- 投稿パネル ---- */}
       <div className={styles.uploadPanel}>
         <div className={styles.uploadRow}>

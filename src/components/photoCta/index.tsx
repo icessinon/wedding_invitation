@@ -15,6 +15,10 @@ export const PhotoCta: React.FC = () => (
         <br />
         皆様の写真も ぜひお送りください
       </p>
+      <p className={styles.updateNote}>
+        <span className={styles.updateNoteMark} aria-hidden="true">✦</span>
+        カメラマンの写真も 8月頃 追加予定
+      </p>
       <Link href="/photos" className={styles.button}>
         <span className={styles.buttonIcon} aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
