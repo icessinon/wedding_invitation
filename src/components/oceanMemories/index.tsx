@@ -55,6 +55,9 @@ export const OceanMemories: React.FC = () => {
   const [hiddenSlot, setHiddenSlot] = useState(-1)
   /** スロットごとの大きさ・傾き・位置のゆらぎ */
   const [variants, setVariants] = useState<SlotVariant[]>(() => SLOTS.map(neutralVariant))
+  /** 新しく置かれた写真ほど上に重なるようにする重ね順 */
+  const [zOrder, setZOrder] = useState<number[]>(() => SLOTS.map((s) => s.z))
+  const zTopRef = useRef(SLOTS.length + 4)
   const nextIndexRef = useRef(SLOTS.length)
   const tickSlotRef = useRef(0)
 
@@ -109,6 +112,13 @@ export const OceanMemories: React.FC = () => {
           next[slot] = makeVariant()
           return next
         })
+        // アルバムに重ねて置くように、新しい写真を一番前へ
+        zTopRef.current += 1
+        setZOrder((prev) => {
+          const next = [...prev]
+          next[slot] = zTopRef.current
+          return next
+        })
         setHiddenSlot(-1)
       }, FADE_MS)
     }, SWAP_INTERVAL)
@@ -144,7 +154,7 @@ export const OceanMemories: React.FC = () => {
                 {
                   left: slot.left,
                   top: slot.top,
-                  zIndex: slot.z,
+                  zIndex: zOrder[i] ?? slot.z,
                   '--rot': `${slot.rot + v.rot}deg`,
                   '--dx': `${v.dx}%`,
                   '--dy': `${v.dy}%`,
