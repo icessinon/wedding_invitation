@@ -670,14 +670,25 @@ export const PhotoShare: React.FC = () => {
               <img src={lightboxItem.viewUrl} alt="" className={styles.lightboxImage} />
             )}
             <div className={styles.lightboxBar}>
+              {lightboxItem.kind === 'video' && currentList.length > 1 && (
+                <button type="button" className={styles.barNav} onClick={showPrev} aria-label="前へ">
+                  ‹
+                </button>
+              )}
               <span className={styles.lightboxCaption}>
                 {lightboxItem.uploader ? `by ${lightboxItem.uploader}` : ''}
               </span>
               <a className={styles.lightboxDownload} href={lightboxItem.downloadUrl}>
                 ダウンロード
               </a>
+              {lightboxItem.kind === 'video' && currentList.length > 1 && (
+                <button type="button" className={styles.barNav} onClick={showNext} aria-label="次へ">
+                  ›
+                </button>
+              )}
             </div>
-            {currentList.length > 1 && (
+            {/* 写真のときだけ左右の矢印を重ねる（動画はプレイヤーの操作と被るためバー側に） */}
+            {lightboxItem.kind !== 'video' && currentList.length > 1 && (
               <>
                 <button
                   type="button"
@@ -699,7 +710,9 @@ export const PhotoShare: React.FC = () => {
             )}
             <button
               type="button"
-              className={styles.lightboxClose}
+              className={`${styles.lightboxClose} ${
+                lightboxItem.kind === 'video' ? styles.lightboxCloseVideo : ''
+              }`}
               onClick={closeLightbox}
               aria-label="閉じる"
             >
