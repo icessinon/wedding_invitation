@@ -43,15 +43,15 @@
 
 /* 大きさに変化をつけてアルバムのように */
 .sizeL {
-  width: clamp(150px, 44%, 320px);
+  width: clamp(140px, 38%, 290px);
 }
 
 .sizeM {
-  width: clamp(120px, 34%, 250px);
+  width: clamp(112px, 30%, 230px);
 }
 
 .sizeS {
-  width: clamp(95px, 26%, 190px);
+  width: clamp(90px, 24%, 180px);
 }
 
 /* ポラロイド風フレーム */

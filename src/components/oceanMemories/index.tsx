@@ -34,16 +34,18 @@ interface Placed {
   top: number
   rot: number
   sizeClass: 'sizeL' | 'sizeM' | 'sizeS'
-  /** 幅（ステージに対する%）— 重なり判定に使う */
+  /** 幅・高さ（ステージに対する%）— 重なり判定に使う */
   w: number
+  h: number
   z: number
   visible: boolean
 }
 
+/** hf = 高さ/幅の概算比（ステージの縦横比込み） */
 const SIZE_DEFS = [
-  { cls: 'sizeL', w: 44 },
-  { cls: 'sizeM', w: 34 },
-  { cls: 'sizeS', w: 26 },
+  { cls: 'sizeL', w: 38, hf: 0.62 },
+  { cls: 'sizeM', w: 30, hf: 0.62 },
+  { cls: 'sizeS', w: 24, hf: 0.85 },
 ] as const
 
 function pickSize() {
@@ -51,6 +53,16 @@ function pickSize() {
   if (r < 0.3) return SIZE_DEFS[0]
   if (r < 0.7) return SIZE_DEFS[1]
   return SIZE_DEFS[2]
+}
+
+/** 矩形同士の重なり面積 */
+function overlapArea(
+  a: { left: number; top: number; w: number; h: number },
+  b: { left: number; top: number; w: number; h: number }
+): number {
+  const x = Math.min(a.left + a.w, b.left + b.w) - Math.max(a.left, b.left)
+  const y = Math.min(a.top + a.h, b.top + b.h) - Math.max(a.top, b.top)
+  return Math.max(0, x) * Math.max(0, y)
 }
 
 export const OceanMemories: React.FC = () => {
@@ -107,27 +119,35 @@ export const OceanMemories: React.FC = () => {
       if (placedRef.current.length >= MAX_VISIBLE) return
 
       const size = pickSize()
-      // 数か所の候補から、既存の写真から一番離れた場所を選ぶ（固まりすぎ防止）
+      const h = size.w * size.hf
+      const cardArea = size.w * h
+      // 候補をたくさん試して「既存の写真との重なり面積」が最小の場所を選ぶ
       const existing = placedRef.current
-      let best = { left: Math.random() * (96 - size.w), top: Math.random() * (96 - size.w) }
-      let bestScore = -1
-      for (let t = 0; t < 6; t++) {
+      let best: { left: number; top: number } | null = null
+      let bestOverlap = Infinity
+      for (let t = 0; t < 20; t++) {
         const c = {
           left: Math.random() * (96 - size.w),
-          top: Math.random() * Math.max(4, 96 - size.w * 0.95),
+          top: Math.random() * Math.max(4, 96 - h),
+          w: size.w,
+          h,
         }
-        const cx = c.left + size.w / 2
-        const cy = c.top + size.w * 0.45
-        let minD = 200
+        let total = 0
         for (const p of existing) {
-          const px = p.left + p.w / 2
-          const py = p.top + p.w * 0.45
-          minD = Math.min(minD, Math.hypot(cx - px, cy - py))
+          total += overlapArea(c, p)
+          if (total >= bestOverlap) break
         }
-        if (minD > bestScore) {
-          bestScore = minD
+        if (total < bestOverlap) {
+          bestOverlap = total
           best = c
         }
+        if (total === 0) break // 完全に空いている場所が見つかった
+      }
+
+      // どこに置いても2割以上かぶってしまう混み具合なら、少し待ってから置き直す
+      if (!best || (bestOverlap > cardArea * 0.2 && existing.length >= 5)) {
+        later(spawn, 900 + Math.random() * 900)
+        return
       }
 
       const photoIndex = nextIndexRef.current % photos.length
@@ -143,6 +163,7 @@ export const OceanMemories: React.FC = () => {
         rot: (Math.random() - 0.5) * 16,
         sizeClass: size.cls,
         w: size.w,
+        h,
         z: ++zRef.current, // あとから置かれた写真ほど前へ
         visible: false,
       }
