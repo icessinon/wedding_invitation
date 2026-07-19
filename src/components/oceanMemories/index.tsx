@@ -9,9 +9,9 @@ import type { PhotosApiResponse } from '../photoShare/types'
 /** 使うゲスト写真の最大数 */
 const MAX_PHOTOS = 60
 /** 1枚が入れ替わる間隔（ms） */
-const SWAP_INTERVAL = 2600
+const SWAP_INTERVAL = 4200
 /** フェードアウトにかける時間（ms）— CSS の transition と合わせる */
-const FADE_MS = 650
+const FADE_MS = 1200
 
 interface DriftPhoto {
   url: string
