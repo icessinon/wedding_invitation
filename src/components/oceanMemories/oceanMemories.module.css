@@ -27,7 +27,8 @@
 /* 写真の置き場所。ふわっと現れて消える */
 .slot {
   position: absolute;
-  transform: rotate(var(--rot, 0deg));
+  transform: translate(var(--dx, 0%), var(--dy, 0%)) rotate(var(--rot, 0deg))
+    scale(var(--scale, 1));
   opacity: 1;
   transition:
     opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1),
@@ -36,7 +37,8 @@
 
 .slotHidden {
   opacity: 0;
-  transform: rotate(calc(var(--rot, 0deg) + 4deg)) scale(0.94) translateY(10px);
+  transform: translate(var(--dx, 0%), calc(var(--dy, 0%) + 10px))
+    rotate(calc(var(--rot, 0deg) + 4deg)) scale(calc(var(--scale, 1) * 0.94));
 }
 
 /* 大きさに変化をつけてアルバムのように */

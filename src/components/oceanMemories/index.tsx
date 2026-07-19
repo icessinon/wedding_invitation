@@ -18,6 +18,23 @@ interface DriftPhoto {
   uploader: string
 }
 
+/** スロットごとの「ゆらぎ」。写真が入れ替わるたびに引き直す */
+interface SlotVariant {
+  rot: number
+  dx: number
+  dy: number
+  scale: number
+}
+
+const neutralVariant = (): SlotVariant => ({ rot: 0, dx: 0, dy: 0, scale: 1 })
+
+const makeVariant = (): SlotVariant => ({
+  rot: (Math.random() - 0.5) * 12, // 基本の傾きに ±6deg
+  dx: (Math.random() - 0.5) * 7, // ±3.5%
+  dy: (Math.random() - 0.5) * 6, // ±3%
+  scale: 0.88 + Math.random() * 0.28, // 0.88〜1.16倍
+})
+
 /** アルバムのように散りばめる配置（%座標・傾き・サイズ・重なり） */
 const SLOTS = [
   { left: '2%', top: '2%', rot: -7, size: 'sizeL', z: 3 },
@@ -36,8 +53,15 @@ export const OceanMemories: React.FC = () => {
   const [slotAssign, setSlotAssign] = useState<number[]>(SLOTS.map((_, i) => i))
   /** いまフェードアウト中のスロット */
   const [hiddenSlot, setHiddenSlot] = useState(-1)
+  /** スロットごとの大きさ・傾き・位置のゆらぎ */
+  const [variants, setVariants] = useState<SlotVariant[]>(() => SLOTS.map(neutralVariant))
   const nextIndexRef = useRef(SLOTS.length)
   const tickSlotRef = useRef(0)
+
+  // 初回表示からレイアウトにゆらぎをつける（マウント後なのでSSRと衝突しない）
+  useEffect(() => {
+    setVariants(SLOTS.map(makeVariant))
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -79,6 +103,12 @@ export const OceanMemories: React.FC = () => {
           next[slot] = nextIndex
           return next
         })
+        // 新しい写真は大きさ・傾き・位置も変えて現れる
+        setVariants((prev) => {
+          const next = [...prev]
+          next[slot] = makeVariant()
+          return next
+        })
         setHiddenSlot(-1)
       }, FADE_MS)
     }, SWAP_INTERVAL)
@@ -103,6 +133,7 @@ export const OceanMemories: React.FC = () => {
       <div className={styles.stage}>
         {SLOTS.map((slot, i) => {
           const photo = photos[(slotAssign[i] ?? i) % photos.length]
+          const v = variants[i] ?? neutralVariant()
           return (
             <div
               key={i}
@@ -114,7 +145,10 @@ export const OceanMemories: React.FC = () => {
                   left: slot.left,
                   top: slot.top,
                   zIndex: slot.z,
-                  '--rot': `${slot.rot}deg`,
+                  '--rot': `${slot.rot + v.rot}deg`,
+                  '--dx': `${v.dx}%`,
+                  '--dy': `${v.dy}%`,
+                  '--scale': v.scale,
                   '--bob-delay': `-${i * 1.3}s`,
                 } as React.CSSProperties
               }
