@@ -657,13 +657,16 @@ export const PhotoShare: React.FC = () => {
             onTouchEnd={handleTouchEnd}
           >
             {lightboxItem.kind === 'video' ? (
-              <iframe
-                src={lightboxItem.viewUrl}
+              <video
+                key={lightboxItem.id}
+                src={`/api/photos/stream/${lightboxItem.id}`}
                 className={styles.lightboxVideo}
                 style={videoFrameStyle}
-                allow="autoplay; fullscreen"
-                allowFullScreen
-                title="動画の再生"
+                controls
+                playsInline
+                autoPlay
+                preload="metadata"
+                poster={lightboxItem.thumbUrl}
               />
             ) : (
               /* eslint-disable-next-line @next/next/no-img-element */

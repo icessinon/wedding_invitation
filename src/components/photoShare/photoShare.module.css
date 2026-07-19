@@ -628,6 +628,7 @@
 .lightboxVideo {
   width: min(94vw, 920px);
   height: min(72svh, 820px);
+  object-fit: contain;
   border: none;
   border-radius: 6px;
   background: #000;
