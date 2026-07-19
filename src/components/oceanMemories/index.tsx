@@ -8,63 +8,63 @@ import type { PhotosApiResponse } from '../photoShare/types'
 
 /** 使うゲスト写真の最大数 */
 const MAX_PHOTOS = 60
-/** 1枚が入れ替わる間隔（ms） */
-const SWAP_INTERVAL = 4200
-/** フェードアウトにかける時間（ms）— CSS の transition と合わせる */
+/** フェードの時間（ms）— CSS の transition と合わせる */
 const FADE_MS = 1200
+/** 同時に見える枚数の上限（下は寿命と出現ペースの揺らぎで自然に変動する） */
+const MAX_VISIBLE = 9
+/** 最初にばらまく枚数 */
+const INITIAL_COUNT = 6
+/** 1枚の表示寿命（ms）: 8〜16秒でランダム */
+const LIFETIME_MIN = 8000
+const LIFETIME_RANGE = 8000
+/** 新しい写真が置かれる間隔（ms）: 0.7〜2.5秒でランダム */
+const SPAWN_MIN = 700
+const SPAWN_RANGE = 1800
 
 interface DriftPhoto {
   url: string
   uploader: string
 }
 
-/** スロットごとの「ゆらぎ」。写真が入れ替わるたびに引き直す */
-interface SlotVariant {
+interface Placed {
+  key: number
+  photoIndex: number
+  /** ステージ内の位置（%） */
+  left: number
+  top: number
   rot: number
-  dx: number
-  dy: number
-  scale: number
+  sizeClass: 'sizeL' | 'sizeM' | 'sizeS'
+  /** 幅（ステージに対する%）— 重なり判定に使う */
+  w: number
+  z: number
+  visible: boolean
 }
 
-const neutralVariant = (): SlotVariant => ({ rot: 0, dx: 0, dy: 0, scale: 1 })
-
-const makeVariant = (): SlotVariant => ({
-  rot: (Math.random() - 0.5) * 12, // 基本の傾きに ±6deg
-  dx: (Math.random() - 0.5) * 7, // ±3.5%
-  dy: (Math.random() - 0.5) * 6, // ±3%
-  scale: 0.88 + Math.random() * 0.28, // 0.88〜1.16倍
-})
-
-/** アルバムのように散りばめる配置（%座標・傾き・サイズ・重なり） */
-const SLOTS = [
-  { left: '2%', top: '2%', rot: -7, size: 'sizeL', z: 3 },
-  { left: '58%', top: '6%', rot: 6, size: 'sizeM', z: 2 },
-  { left: '38%', top: '0%', rot: 3, size: 'sizeS', z: 1 },
-  { left: '42%', top: '30%', rot: 5, size: 'sizeL', z: 4 },
-  { left: '2%', top: '38%', rot: -5, size: 'sizeM', z: 2 },
-  { left: '74%', top: '36%', rot: -8, size: 'sizeS', z: 3 },
-  { left: '16%', top: '63%', rot: 7, size: 'sizeM', z: 3 },
-  { left: '58%', top: '66%', rot: -4, size: 'sizeS', z: 2 },
+const SIZE_DEFS = [
+  { cls: 'sizeL', w: 44 },
+  { cls: 'sizeM', w: 34 },
+  { cls: 'sizeS', w: 26 },
 ] as const
+
+function pickSize() {
+  const r = Math.random()
+  if (r < 0.3) return SIZE_DEFS[0]
+  if (r < 0.7) return SIZE_DEFS[1]
+  return SIZE_DEFS[2]
+}
 
 export const OceanMemories: React.FC = () => {
   const [photos, setPhotos] = useState<DriftPhoto[]>([])
-  /** 各スロットに表示している写真のインデックス */
-  const [slotAssign, setSlotAssign] = useState<number[]>(SLOTS.map((_, i) => i))
-  /** いまフェードアウト中のスロット */
-  const [hiddenSlot, setHiddenSlot] = useState(-1)
-  /** スロットごとの大きさ・傾き・位置のゆらぎ */
-  const [variants, setVariants] = useState<SlotVariant[]>(() => SLOTS.map(neutralVariant))
-  /** 新しく置かれた写真ほど上に重なるようにする重ね順 */
-  const [zOrder, setZOrder] = useState<number[]>(() => SLOTS.map((s) => s.z))
-  const zTopRef = useRef(SLOTS.length + 4)
-  const nextIndexRef = useRef(SLOTS.length)
-  const tickSlotRef = useRef(0)
+  const [placed, setPlaced] = useState<Placed[]>([])
+  const placedRef = useRef<Placed[]>([])
+  const keyRef = useRef(0)
+  const zRef = useRef(1)
+  const nextIndexRef = useRef(0)
+  const timersRef = useRef<Set<number>>(new Set())
 
-  // 初回表示からレイアウトにゆらぎをつける（マウント後なのでSSRと衝突しない）
   useEffect(() => {
-    setVariants(SLOTS.map(makeVariant))
-  }, [])
+    placedRef.current = placed
+  }, [placed])
 
   useEffect(() => {
     let cancelled = false
@@ -86,45 +86,104 @@ export const OceanMemories: React.FC = () => {
     }
   }, [])
 
-  // 一定間隔で1枚ずつ「消えて → 別の写真が現れる」
+  // ランダムな場所に写真が生まれ、寿命が来たら消えていくループ
   useEffect(() => {
-    if (photos.length <= 1) return
-    let fadeTimer: number | undefined
-    const interval = window.setInterval(() => {
-      const slot = tickSlotRef.current % SLOTS.length
-      tickSlotRef.current++
+    if (photos.length === 0) return
 
-      const nextIndex = nextIndexRef.current % photos.length
+    // 表示に使うサムネイルを先読みしておく（フェードイン時の白抜け防止）
+    photos.slice(0, 20).forEach((p) => {
+      new Image().src = p.url
+    })
+
+    const later = (fn: () => void, ms: number) => {
+      const id = window.setTimeout(() => {
+        timersRef.current.delete(id)
+        fn()
+      }, ms)
+      timersRef.current.add(id)
+    }
+
+    const spawn = () => {
+      if (placedRef.current.length >= MAX_VISIBLE) return
+
+      const size = pickSize()
+      // 数か所の候補から、既存の写真から一番離れた場所を選ぶ（固まりすぎ防止）
+      const existing = placedRef.current
+      let best = { left: Math.random() * (96 - size.w), top: Math.random() * (96 - size.w) }
+      let bestScore = -1
+      for (let t = 0; t < 6; t++) {
+        const c = {
+          left: Math.random() * (96 - size.w),
+          top: Math.random() * Math.max(4, 96 - size.w * 0.95),
+        }
+        const cx = c.left + size.w / 2
+        const cy = c.top + size.w * 0.45
+        let minD = 200
+        for (const p of existing) {
+          const px = p.left + p.w / 2
+          const py = p.top + p.w * 0.45
+          minD = Math.min(minD, Math.hypot(cx - px, cy - py))
+        }
+        if (minD > bestScore) {
+          bestScore = minD
+          best = c
+        }
+      }
+
+      const photoIndex = nextIndexRef.current % photos.length
       nextIndexRef.current++
       // フェードイン時にちらつかないよう先読み
-      new Image().src = photos[nextIndex].url
+      new Image().src = photos[photoIndex].url
 
-      setHiddenSlot(slot)
-      fadeTimer = window.setTimeout(() => {
-        setSlotAssign((prev) => {
-          const next = [...prev]
-          next[slot] = nextIndex
-          return next
-        })
-        // 新しい写真は大きさ・傾き・位置も変えて現れる
-        setVariants((prev) => {
-          const next = [...prev]
-          next[slot] = makeVariant()
-          return next
-        })
-        // アルバムに重ねて置くように、新しい写真を一番前へ
-        zTopRef.current += 1
-        setZOrder((prev) => {
-          const next = [...prev]
-          next[slot] = zTopRef.current
-          return next
-        })
-        setHiddenSlot(-1)
-      }, FADE_MS)
-    }, SWAP_INTERVAL)
+      const item: Placed = {
+        key: ++keyRef.current,
+        photoIndex,
+        left: best.left,
+        top: best.top,
+        rot: (Math.random() - 0.5) * 16,
+        sizeClass: size.cls,
+        w: size.w,
+        z: ++zRef.current, // あとから置かれた写真ほど前へ
+        visible: false,
+      }
+
+      setPlaced((prev) => [...prev, item])
+      later(() => {
+        setPlaced((prev) => prev.map((p) => (p.key === item.key ? { ...p, visible: true } : p)))
+      }, 50)
+
+      const lifetime = LIFETIME_MIN + Math.random() * LIFETIME_RANGE
+      later(() => {
+        setPlaced((prev) => prev.map((p) => (p.key === item.key ? { ...p, visible: false } : p)))
+        later(() => {
+          setPlaced((prev) => prev.filter((p) => p.key !== item.key))
+          // 消えたぶんは少し間を置いて別の場所に補充（枚数が減りすぎないように）
+          later(spawn, 400 + Math.random() * 1400)
+        }, FADE_MS + 80)
+      }, lifetime)
+    }
+
+    // 最初は少しずつばらまく
+    for (let i = 0; i < INITIAL_COUNT; i++) {
+      later(spawn, 150 + i * 380)
+    }
+
+    let stopped = false
+    const loop = () => {
+      if (stopped) return
+      later(() => {
+        spawn()
+        loop()
+      }, SPAWN_MIN + Math.random() * SPAWN_RANGE)
+    }
+    loop()
+
+    const timers = timersRef.current
     return () => {
-      window.clearInterval(interval)
-      if (fadeTimer !== undefined) window.clearTimeout(fadeTimer)
+      stopped = true
+      timers.forEach((id) => window.clearTimeout(id))
+      timers.clear()
+      setPlaced([])
     }
   }, [photos])
 
@@ -141,25 +200,21 @@ export const OceanMemories: React.FC = () => {
       <SailingHorizon />
 
       <div className={styles.stage}>
-        {SLOTS.map((slot, i) => {
-          const photo = photos[(slotAssign[i] ?? i) % photos.length]
-          const v = variants[i] ?? neutralVariant()
+        {placed.map((p) => {
+          const photo = photos[p.photoIndex % photos.length]
           return (
             <div
-              key={i}
-              className={`${styles.slot} ${styles[slot.size]} ${
-                hiddenSlot === i ? styles.slotHidden : ''
+              key={p.key}
+              className={`${styles.slot} ${styles[p.sizeClass]} ${
+                p.visible ? '' : styles.slotHidden
               }`}
               style={
                 {
-                  left: slot.left,
-                  top: slot.top,
-                  zIndex: zOrder[i] ?? slot.z,
-                  '--rot': `${slot.rot + v.rot}deg`,
-                  '--dx': `${v.dx}%`,
-                  '--dy': `${v.dy}%`,
-                  '--scale': v.scale,
-                  '--bob-delay': `-${i * 1.3}s`,
+                  left: `${p.left}%`,
+                  top: `${p.top}%`,
+                  zIndex: p.z,
+                  '--rot': `${p.rot}deg`,
+                  '--bob-delay': `-${(p.key % 7) * 0.9}s`,
                 } as React.CSSProperties
               }
             >
@@ -168,7 +223,6 @@ export const OceanMemories: React.FC = () => {
                 <img
                   src={photo.url}
                   alt=""
-                  loading="lazy"
                   draggable={false}
                   className={styles.slotImage}
                 />
