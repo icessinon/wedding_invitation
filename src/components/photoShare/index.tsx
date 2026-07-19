@@ -15,11 +15,57 @@ const PAGE_SIZE = 24
 const MAX_SELECT_DOWNLOAD = 100
 /** スワイプ判定のしきい値（px） */
 const SWIPE_THRESHOLD = 48
+/** 動画の上限サイズ */
+const MAX_VIDEO_BYTES = 512 * 1024 * 1024
+
+type Tab = 'image' | 'video'
 
 interface PendingFile {
   key: string
   file: File
   previewUrl: string
+  isVideo: boolean
+}
+
+/** Drive の再開可能アップロード URL へ進捗つきで PUT する */
+function putWithProgress(
+  url: string,
+  file: File,
+  onProgress: (fraction: number) => void
+): Promise<{ id?: string }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', url)
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(e.loaded / e.total)
+    }
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolve(JSON.parse(xhr.responseText))
+        } catch {
+          reject(new Error('アップロード結果の解析に失敗しました'))
+        }
+      } else {
+        reject(new Error(`動画の送信に失敗しました（HTTP ${xhr.status}）`))
+      }
+    }
+    xhr.onerror = () => reject(new Error('動画の送信に失敗しました（通信エラー）'))
+    xhr.send(file)
+  })
+}
+
+function formatDuration(ms: number | null | undefined): string {
+  if (!ms || ms <= 0) return ''
+  const total = Math.round(ms / 1000)
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${m}:${String(s).padStart(2, '0')}`
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes >= 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024 / 1024).toFixed(1)}GB`
+  return `${Math.max(1, Math.round(bytes / 1024 / 1024))}MB`
 }
 
 export const PhotoShare: React.FC = () => {
@@ -30,9 +76,11 @@ export const PhotoShare: React.FC = () => {
   const [pending, setPending] = useState<PendingFile[]>([])
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState({ done: 0, total: 0 })
+  const [fileProgress, setFileProgress] = useState(0)
   const [uploadError, setUploadError] = useState('')
   const [justUploaded, setJustUploaded] = useState(false)
 
+  const [tab, setTab] = useState<Tab>('image')
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [page, setPage] = useState(0)
   /** 選択ダウンロード用に選ばれている写真ID */
@@ -78,21 +126,40 @@ export const PhotoShare: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const images = useMemo(() => (photos ?? []).filter((p) => p.kind !== 'video'), [photos])
+  const videos = useMemo(() => (photos ?? []).filter((p) => p.kind === 'video'), [photos])
+  const currentList = tab === 'image' ? images : videos
+
+  const switchTab = useCallback((next: Tab) => {
+    setTab(next)
+    setPage(0)
+    setLightboxIndex(null)
+  }, [])
+
   const handleFilesChosen = useCallback((list: FileList | null) => {
     if (!list || list.length === 0) return
     setUploadError('')
     setJustUploaded(false)
+    let tooBigVideo = false
     setPending((prev) => {
       const next = [...prev]
       for (const file of Array.from(list)) {
-        if (!file.type.startsWith('image/')) continue
+        const isVideo = file.type.startsWith('video/')
+        if (!file.type.startsWith('image/') && !isVideo) continue
+        if (isVideo && file.size > MAX_VIDEO_BYTES) {
+          tooBigVideo = true
+          continue
+        }
         if (next.length >= MAX_SELECT_FILES) break
         const key = `${file.name}_${file.size}_${file.lastModified}`
         if (next.some((p) => p.key === key)) continue
-        next.push({ key, file, previewUrl: URL.createObjectURL(file) })
+        next.push({ key, file, previewUrl: URL.createObjectURL(file), isVideo })
       }
       return next
     })
+    if (tooBigVideo) {
+      setUploadError(`動画は ${formatBytes(MAX_VIDEO_BYTES)} 以下にしてください`)
+    }
   }, [])
 
   const removePending = useCallback((key: string) => {
@@ -109,6 +176,7 @@ export const PhotoShare: React.FC = () => {
     setUploadError('')
     setJustUploaded(false)
     setProgress({ done: 0, total: pending.length })
+    setFileProgress(0)
 
     try {
       localStorage.setItem(UPLOADER_NAME_KEY, uploaderName.trim())
@@ -121,26 +189,57 @@ export const PhotoShare: React.FC = () => {
     let firstError = ''
 
     for (const item of pending) {
+      setFileProgress(0)
       try {
-        const prepared = await prepareImageForUpload(item.file)
-        const fd = new FormData()
-        fd.set('uploaderName', uploaderName.trim())
-        fd.append('photo', prepared.blob, prepared.fileName)
-        const res = await fetch('/api/photos', { method: 'POST', body: fd })
-        let json: PhotosApiResponse | null = null
-        try {
-          json = await res.json()
-        } catch {
-          // ホスティング側のエラー（413等）は JSON でないことがある
+        if (item.isVideo) {
+          // 動画: Drive へ直接アップロード（ホスティングのサイズ上限を通らない）
+          const sessRes = await fetch('/api/photos/upload-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: item.file.name,
+              mimeType: item.file.type,
+              size: item.file.size,
+              uploaderName: uploaderName.trim(),
+            }),
+          })
+          const sess = await sessRes.json()
+          if (!sess.ok || !sess.uploadUrl) {
+            throw new Error(sess.error || 'アップロードの準備に失敗しました')
+          }
+          const created = await putWithProgress(sess.uploadUrl, item.file, setFileProgress)
+          if (!created.id) throw new Error('アップロード結果を取得できませんでした')
+          const finRes = await fetch('/api/photos/finalize', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileId: created.id }),
+          })
+          const fin: PhotosApiResponse = await finRes.json()
+          if (!fin.ok || !fin.photos?.length) {
+            throw new Error(fin.error || '共有設定に失敗しました')
+          }
+          uploaded.push(...fin.photos)
+        } else {
+          const prepared = await prepareImageForUpload(item.file)
+          const fd = new FormData()
+          fd.set('uploaderName', uploaderName.trim())
+          fd.append('photo', prepared.blob, prepared.fileName)
+          const res = await fetch('/api/photos', { method: 'POST', body: fd })
+          let json: PhotosApiResponse | null = null
+          try {
+            json = await res.json()
+          } catch {
+            // ホスティング側のエラー（413等）は JSON でないことがある
+          }
+          if (!res.ok || !json?.ok || !json.photos?.length) {
+            const fallback =
+              res.status === 413
+                ? '画像サイズが大きすぎます'
+                : `送信に失敗しました（HTTP ${res.status}）`
+            throw new Error(json?.error || fallback)
+          }
+          uploaded.push(...json.photos)
         }
-        if (!res.ok || !json?.ok || !json.photos?.length) {
-          const fallback =
-            res.status === 413
-              ? '画像サイズが大きすぎます'
-              : `送信に失敗しました（HTTP ${res.status}）`
-          throw new Error(json?.error || fallback)
-        }
-        uploaded.push(...json.photos)
         URL.revokeObjectURL(item.previewUrl)
       } catch (e) {
         failed.push(item)
@@ -148,6 +247,7 @@ export const PhotoShare: React.FC = () => {
           firstError = e instanceof Error ? e.message : 'アップロードに失敗しました'
         }
       }
+      setFileProgress(1)
       setProgress((prev) => ({ ...prev, done: prev.done + 1 }))
     }
 
@@ -157,7 +257,7 @@ export const PhotoShare: React.FC = () => {
     setPending(failed)
     if (failed.length > 0) {
       setUploadError(
-        `${failed.length}枚のアップロードに失敗しました（${firstError}）。もう一度お試しください。`
+        `${failed.length}件のアップロードに失敗しました（${firstError}）。もう一度お試しください。`
       )
     } else {
       setJustUploaded(true)
@@ -170,11 +270,15 @@ export const PhotoShare: React.FC = () => {
   const closeLightbox = useCallback(() => setLightboxIndex(null), [])
 
   const showPrev = useCallback(() => {
-    setLightboxIndex((i) => (i === null || !photos?.length ? i : (i - 1 + photos.length) % photos.length))
-  }, [photos])
+    setLightboxIndex((i) =>
+      i === null || currentList.length === 0 ? i : (i - 1 + currentList.length) % currentList.length
+    )
+  }, [currentList])
   const showNext = useCallback(() => {
-    setLightboxIndex((i) => (i === null || !photos?.length ? i : (i + 1) % photos.length))
-  }, [photos])
+    setLightboxIndex((i) =>
+      i === null || currentList.length === 0 ? i : (i + 1) % currentList.length
+    )
+  }, [currentList])
 
   useEffect(() => {
     if (lightboxIndex === null) return
@@ -192,15 +296,15 @@ export const PhotoShare: React.FC = () => {
     }
   }, [lightboxIndex, closeLightbox, showPrev, showNext])
 
-  const lightboxPhoto = useMemo(
-    () => (lightboxIndex !== null && photos ? photos[lightboxIndex] : null),
-    [lightboxIndex, photos]
+  const lightboxItem = useMemo(
+    () => (lightboxIndex !== null ? currentList[lightboxIndex] ?? null : null),
+    [lightboxIndex, currentList]
   )
 
-  const totalPages = photos ? Math.max(1, Math.ceil(photos.length / PAGE_SIZE)) : 1
-  const pagedPhotos = useMemo(
-    () => (photos ? photos.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : []),
-    [photos, page]
+  const totalPages = Math.max(1, Math.ceil(currentList.length / PAGE_SIZE))
+  const pagedItems = useMemo(
+    () => currentList.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
+    [currentList, page]
   )
 
   const changePage = useCallback(
@@ -252,15 +356,18 @@ export const PhotoShare: React.FC = () => {
     [showPrev, showNext]
   )
 
+  const overallProgress =
+    progress.total > 0 ? ((progress.done + Math.min(fileProgress, 0.99)) / progress.total) * 100 : 0
+
   return (
     <section className={styles.container}>
       <RisingBubbles count={24} />
       <SectionTitle en="Memories" ja="みんなの写真" />
 
       <p className={styles.lead}>
-        当日の写真をぜひ共有してください
+        当日の写真や動画をぜひ共有してください
         <br />
-        皆様が撮ってくださった一枚一枚が
+        皆様が残してくださった一枚一枚が
         <br />
         私たちの宝物になります
       </p>
@@ -287,12 +394,12 @@ export const PhotoShare: React.FC = () => {
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
           >
-            スマホから写真を選ぶ
+            スマホから写真・動画を選ぶ
           </button>
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             multiple
             hidden
             onChange={(e) => handleFilesChosen(e.target.files)}
@@ -301,7 +408,7 @@ export const PhotoShare: React.FC = () => {
 
         {pending.length === 0 && !justUploaded && (
           <p className={styles.uploadHint}>
-            カメラロールから複数枚まとめて選べます
+            カメラロールから複数まとめて選べます（動画もOK）
           </p>
         )}
 
@@ -310,13 +417,20 @@ export const PhotoShare: React.FC = () => {
             <div className={styles.previewGrid}>
               {pending.map((p) => (
                 <div key={p.key} className={styles.previewItem}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.previewUrl} alt="" className={styles.previewImage} />
+                  {p.isVideo ? (
+                    <div className={styles.previewVideo}>
+                      <span className={styles.previewVideoIcon} aria-hidden="true">▶</span>
+                      <span className={styles.previewVideoSize}>{formatBytes(p.file.size)}</span>
+                    </div>
+                  ) : (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={p.previewUrl} alt="" className={styles.previewImage} />
+                  )}
                   {!uploading && (
                     <button
                       type="button"
                       className={styles.previewRemove}
-                      aria-label="この写真を取り消す"
+                      aria-label="これを取り消す"
                       onClick={() => removePending(p.key)}
                     >
                       ×
@@ -333,32 +447,48 @@ export const PhotoShare: React.FC = () => {
             >
               {uploading
                 ? `送信中… ${Math.min(progress.done + 1, progress.total)} / ${progress.total}`
-                : `この${pending.length}枚を共有する`}
+                : `この${pending.length}件を共有する`}
             </button>
           </>
         )}
 
         {uploading && (
           <div className={styles.progressTrack} aria-hidden="true">
-            <div
-              className={styles.progressBar}
-              style={{ width: `${progress.total ? (progress.done / progress.total) * 100 : 0}%` }}
-            />
+            <div className={styles.progressBar} style={{ width: `${overallProgress}%` }} />
           </div>
         )}
 
         {uploadError && <p className={styles.errorText}>{uploadError}</p>}
         {justUploaded && (
-          <p className={styles.thanksText}>写真をありがとうございます！ギャラリーに追加しました</p>
+          <p className={styles.thanksText}>ありがとうございます！ギャラリーに追加しました</p>
         )}
       </div>
 
+      {/* ---- タブ ---- */}
+      <div className={styles.tabs} ref={galleryTopRef}>
+        <button
+          type="button"
+          className={`${styles.tabButton} ${tab === 'image' ? styles.tabButtonOn : ''}`}
+          onClick={() => switchTab('image')}
+        >
+          写真{photos !== null ? `（${images.length}）` : ''}
+        </button>
+        <button
+          type="button"
+          className={`${styles.tabButton} ${tab === 'video' ? styles.tabButtonOn : ''}`}
+          onClick={() => switchTab('video')}
+        >
+          動画{photos !== null ? `（${videos.length}）` : ''}
+        </button>
+      </div>
+
       {/* ---- ギャラリー ---- */}
-      <div className={styles.galleryHeader} ref={galleryTopRef}>
+      <div className={styles.galleryHeader}>
         <span className={styles.galleryCount}>
-          {photos === null ? '' : photos.length > 0 ? `${photos.length}枚の思い出` : ''}
+          {tab === 'image' && images.length > 0 ? `${images.length}枚の思い出` : ''}
+          {tab === 'video' && videos.length > 0 ? `${videos.length}本の思い出` : ''}
         </span>
-        {photos !== null && photos.length > 0 && (
+        {tab === 'image' && images.length > 0 && (
           <a className={styles.bulkDownload} href="/api/photos/zip">
             まとめてダウンロード
           </a>
@@ -368,7 +498,7 @@ export const PhotoShare: React.FC = () => {
       {photos === null && (
         <div className={styles.stateBox}>
           <span className={styles.spinner} aria-hidden="true" />
-          <p>写真を読み込んでいます…</p>
+          <p>読み込んでいます…</p>
         </div>
       )}
 
@@ -381,54 +511,79 @@ export const PhotoShare: React.FC = () => {
         </div>
       )}
 
-      {photos !== null && !loadError && photos.length === 0 && (
+      {photos !== null && !loadError && currentList.length === 0 && (
         <div className={styles.stateBox}>
-          <p>
-            まだ写真がありません
-            <br />
-            最初の一枚をぜひ共有してください
-          </p>
+          {tab === 'image' ? (
+            <p>
+              まだ写真がありません
+              <br />
+              最初の一枚をぜひ共有してください
+            </p>
+          ) : (
+            <p>
+              まだ動画がありません
+              <br />
+              動画もぜひ共有してください
+            </p>
+          )}
         </div>
       )}
 
-      {photos !== null && photos.length > 0 && (
+      {currentList.length > 0 && (
         <>
           <div className={styles.gallery}>
-            {pagedPhotos.map((photo, i) => {
+            {pagedItems.map((item, i) => {
               const globalIndex = page * PAGE_SIZE + i
-              const isSelected = selectedIds.has(photo.id)
+              const isVideo = item.kind === 'video'
+              const isSelected = selectedIds.has(item.id)
               return (
                 <figure
-                  key={photo.id}
+                  key={item.id}
                   className={`${styles.galleryItem} ${isSelected ? styles.galleryItemSelected : ''}`}
                 >
                   <button
                     type="button"
                     className={styles.galleryButton}
                     onClick={() => openLightbox(globalIndex)}
-                    aria-label="写真を拡大表示"
+                    aria-label={isVideo ? '動画を再生' : '写真を拡大表示'}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={photo.thumbUrl}
-                      alt={photo.uploader ? `${photo.uploader}さんの写真` : '当日の写真'}
+                      src={item.thumbUrl}
+                      alt={item.uploader ? `${item.uploader}さんの${isVideo ? '動画' : '写真'}` : ''}
                       loading="lazy"
                       className={styles.galleryImage}
-                      width={photo.width ?? undefined}
-                      height={photo.height ?? undefined}
+                      width={item.width ?? undefined}
+                      height={item.height ?? undefined}
+                      onError={(e) => {
+                        // サムネイル生成前の動画などは黒地+▶で表示
+                        e.currentTarget.style.visibility = 'hidden'
+                      }}
                     />
+                    {isVideo && (
+                      <span className={styles.playOverlay} aria-hidden="true">
+                        <span className={styles.playIcon}>▶</span>
+                        {item.durationMs ? (
+                          <span className={styles.durationBadge}>
+                            {formatDuration(item.durationMs)}
+                          </span>
+                        ) : null}
+                      </span>
+                    )}
                   </button>
-                  <button
-                    type="button"
-                    className={`${styles.selectToggle} ${isSelected ? styles.selectToggleOn : ''}`}
-                    onClick={() => toggleSelected(photo.id)}
-                    aria-label={isSelected ? '選択を外す' : 'この写真を選択'}
-                    aria-pressed={isSelected}
-                  >
-                    ✓
-                  </button>
-                  {photo.uploader && (
-                    <figcaption className={styles.galleryCaption}>{photo.uploader}</figcaption>
+                  {!isVideo && (
+                    <button
+                      type="button"
+                      className={`${styles.selectToggle} ${isSelected ? styles.selectToggleOn : ''}`}
+                      onClick={() => toggleSelected(item.id)}
+                      aria-label={isSelected ? '選択を外す' : 'この写真を選択'}
+                      aria-pressed={isSelected}
+                    >
+                      ✓
+                    </button>
+                  )}
+                  {item.uploader && (
+                    <figcaption className={styles.galleryCaption}>{item.uploader}</figcaption>
                   )}
                 </figure>
               )
@@ -481,7 +636,7 @@ export const PhotoShare: React.FC = () => {
       )}
 
       {/* ---- ライトボックス ---- */}
-      {lightboxPhoto && (
+      {lightboxItem && (
         <div className={styles.lightbox} role="dialog" aria-modal="true" onClick={closeLightbox}>
           <div
             className={styles.lightboxInner}
@@ -489,23 +644,33 @@ export const PhotoShare: React.FC = () => {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={lightboxPhoto.viewUrl} alt="" className={styles.lightboxImage} />
+            {lightboxItem.kind === 'video' ? (
+              <iframe
+                src={lightboxItem.viewUrl}
+                className={styles.lightboxVideo}
+                allow="autoplay; fullscreen"
+                allowFullScreen
+                title="動画の再生"
+              />
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={lightboxItem.viewUrl} alt="" className={styles.lightboxImage} />
+            )}
             <div className={styles.lightboxBar}>
               <span className={styles.lightboxCaption}>
-                {lightboxPhoto.uploader ? `photo by ${lightboxPhoto.uploader}` : ''}
+                {lightboxItem.uploader ? `by ${lightboxItem.uploader}` : ''}
               </span>
-              <a className={styles.lightboxDownload} href={lightboxPhoto.downloadUrl}>
+              <a className={styles.lightboxDownload} href={lightboxItem.downloadUrl}>
                 ダウンロード
               </a>
             </div>
-            {photos !== null && photos.length > 1 && (
+            {currentList.length > 1 && (
               <>
                 <button
                   type="button"
                   className={`${styles.lightboxNav} ${styles.lightboxPrev}`}
                   onClick={showPrev}
-                  aria-label="前の写真"
+                  aria-label="前へ"
                 >
                   ‹
                 </button>
@@ -513,7 +678,7 @@ export const PhotoShare: React.FC = () => {
                   type="button"
                   className={`${styles.lightboxNav} ${styles.lightboxNext}`}
                   onClick={showNext}
-                  aria-label="次の写真"
+                  aria-label="次へ"
                 >
                   ›
                 </button>

@@ -4,8 +4,11 @@
 
 ## 仕組み
 
-- **`GET /api/photos`** — 共有フォルダ内の画像一覧を返す（新しい順・最大1000枚）
+- **`GET /api/photos`** — 共有フォルダ内の**画像と動画**の一覧を返す（新しい順・最大1000件、`kind: 'image'|'video'`）。UI は「写真 / 動画」タブで出し分け
 - **`POST /api/photos`** — `multipart/form-data` で画像をアップロード（`uploaderName` 任意 + `photo` ファイル、1リクエスト最大10枚・各15MBまで）
+- **`POST /api/photos/upload-session`** — 動画用。Drive の再開可能アップロードのセッション URL を発行し、**ブラウザから Drive へ直接 PUT** する（Vercel の 4.5MB 制限を通らない）。動画は 512MB まで
+- **`POST /api/photos/finalize`** — 直接アップロード後の仕上げ。共有フォルダ内のファイルであることを確認して閲覧権限を付与
+- 動画の再生はライトボックス内の Drive プレビュー（`/file/<id>/preview` の iframe）
 - **`GET /api/photos/zip`** — 全写真を 1 つの ZIP（無圧縮 store）にまとめてストリーミング返却。「まとめてダウンロード」はこれを使う（Drive のフォルダ画面は開かない）。ファイル名は `連番_投稿者名.jpg`。`?ids=id1,id2,...` を付けると**選択した写真だけ**の ZIP（最大200件・フォルダ内に実在する ID のみ有効）
 - 認証は RSVP と同じ（`.env` の `GOOGLE_DRIVE_OAUTH_*` があればユーザーの Drive、なければサービスアカウント）。**追加の設定は不要**です。
 

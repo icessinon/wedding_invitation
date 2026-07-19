@@ -13,8 +13,11 @@ export interface SharedPhoto {
   name: string
   uploader: string
   createdTime: string
+  kind: 'image' | 'video'
   width: number | null
   height: number | null
+  /** 動画の長さ（ms）。画像は null */
+  durationMs: number | null
   thumbUrl: string
   viewUrl: string
   downloadUrl: string
@@ -23,21 +26,42 @@ export interface SharedPhoto {
 export function toSharedPhoto(f: {
   id?: string | null
   name?: string | null
+  mimeType?: string | null
   createdTime?: string | null
+  thumbnailLink?: string | null
   appProperties?: Record<string, string> | null
   imageMediaMetadata?: { width?: number | null; height?: number | null } | null
+  videoMediaMetadata?: {
+    width?: number | null
+    height?: number | null
+    durationMillis?: string | null
+  } | null
 }): SharedPhoto | null {
   const id = f.id
   if (!id) return null
+  const isVideo = (f.mimeType ?? '').startsWith('video/')
+
+  // 動画のサムネイルは Drive が生成した thumbnailLink を使う（なければ lh3 を試す）
+  const lh3Thumb = `https://lh3.googleusercontent.com/d/${id}=w640`
+  const videoThumb = f.thumbnailLink
+    ? f.thumbnailLink.replace(/=s\d+[^&]*$/, '=s640')
+    : lh3Thumb
+
   return {
     id,
-    name: f.name ?? 'photo',
+    name: f.name ?? (isVideo ? 'video' : 'photo'),
     uploader: f.appProperties?.uploader ?? '',
     createdTime: f.createdTime ?? '',
-    width: f.imageMediaMetadata?.width ?? null,
-    height: f.imageMediaMetadata?.height ?? null,
-    thumbUrl: `https://lh3.googleusercontent.com/d/${id}=w640`,
-    viewUrl: `https://lh3.googleusercontent.com/d/${id}=w1920`,
+    kind: isVideo ? 'video' : 'image',
+    width: (isVideo ? f.videoMediaMetadata?.width : f.imageMediaMetadata?.width) ?? null,
+    height: (isVideo ? f.videoMediaMetadata?.height : f.imageMediaMetadata?.height) ?? null,
+    durationMs: isVideo && f.videoMediaMetadata?.durationMillis
+      ? Number(f.videoMediaMetadata.durationMillis)
+      : null,
+    thumbUrl: isVideo ? videoThumb : lh3Thumb,
+    viewUrl: isVideo
+      ? `https://drive.google.com/file/d/${id}/preview`
+      : `https://lh3.googleusercontent.com/d/${id}=w1920`,
     downloadUrl: `https://drive.google.com/uc?export=download&id=${id}`,
   }
 }
@@ -64,15 +88,18 @@ export async function resolvePhotosFolderId(drive: DriveClient): Promise<string>
   return id
 }
 
+const LIST_FIELDS =
+  'nextPageToken, files(id, name, mimeType, createdTime, thumbnailLink, appProperties, imageMediaMetadata(width, height), videoMediaMetadata(width, height, durationMillis))'
+
+/** フォルダ内の画像・動画を新しい順に返す */
 export async function listPhotos(drive: DriveClient, folderId: string): Promise<SharedPhoto[]> {
   const photos: SharedPhoto[] = []
   let pageToken: string | undefined
 
   do {
     const res = await drive.files.list({
-      q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
-      fields:
-        'nextPageToken, files(id, name, createdTime, appProperties, imageMediaMetadata(width, height))',
+      q: `'${folderId}' in parents and (mimeType contains 'image/' or mimeType contains 'video/') and trashed = false`,
+      fields: LIST_FIELDS,
       orderBy: 'createdTime desc',
       pageSize: 200,
       pageToken,

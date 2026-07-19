@@ -163,7 +163,8 @@ export async function GET(request: Request) {
   try {
     const drive = google.drive({ version: 'v3', auth: getDriveAuth() })
     const folderId = await resolvePhotosFolderId(drive)
-    let photos = await listPhotos(drive, folderId)
+    // 動画はサイズ・時間的に ZIP へ入れない（写真のみ）
+    let photos = (await listPhotos(drive, folderId)).filter((p) => p.kind === 'image')
 
     // 選択ダウンロード: フォルダ内に実在する ID だけに絞る（それ以外は無視）
     const idsParam = new URL(request.url).searchParams.get('ids')

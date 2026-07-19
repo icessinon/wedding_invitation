@@ -87,6 +87,7 @@ export const OceanMemories: React.FC = () => {
         if (cancelled || !json.ok || !json.photos) return
         setPhotos(
           json.photos
+            .filter((p) => p.kind !== 'video') // アルバムは写真のみ
             .slice(0, MAX_PHOTOS)
             .map((p) => ({ url: p.thumbUrl, uploader: p.uploader }))
         )
