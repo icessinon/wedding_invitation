@@ -5,9 +5,9 @@ import styles from './firstView.module.css'
 import type { FirstViewProps } from './types'
 import { useTitleAnimation } from '../../hooks/useTitleAnimation'
 import { FirstViewTitle } from './FirstViewTitle'
+import { WaveDivider } from '../ocean'
 
-const TITLE_LINES = ['Wedding', 'Invitation'] as const
-const TITLE_TEXT = TITLE_LINES.join('')
+const DEFAULT_TITLE_LINES = ['Wedding', 'Invitation'] as const
 
 const PARTICLES = [
   { dx: -22, dy: -48, size: 3, color: 'rgba(120,220,255,0.95)' },
@@ -28,9 +28,12 @@ export const FirstView: React.FC<FirstViewProps> = ({
   weddingDate = '2026年7月18日（土）',
   weddingDateTime = '2026-07-18',
   dateLabel = 'ご婚礼日',
+  titleLines,
 }) => {
+  const baseTitleLines = titleLines ?? [...DEFAULT_TITLE_LINES]
+  const titleText = baseTitleLines.join('')
   const containerRef = useRef<HTMLDivElement>(null)
-  const visibleChars = useTitleAnimation(containerRef, TITLE_TEXT)
+  const visibleChars = useTitleAnimation(containerRef, titleText)
   const [splashes, setSplashes] = useState<Splash[]>([])
   const [vortexActive, setVortexActive] = useState(false)
   const [vortexTextActive, setVortexTextActive] = useState(false)
@@ -45,7 +48,7 @@ export const FirstView: React.FC<FirstViewProps> = ({
     return () => window.removeEventListener('rsvp-done', onDone)
   }, [])
 
-  const titleComplete = visibleChars >= TITLE_TEXT.length
+  const titleComplete = visibleChars >= titleText.length
 
   const addSplash = useCallback((clientX: number, clientY: number) => {
     const now = Date.now()
@@ -113,7 +116,7 @@ export const FirstView: React.FC<FirstViewProps> = ({
 
       <div className={`${styles.mainContent} ${vortexActive ? styles.mainContentSwallowed : ''}`}>
         <FirstViewTitle
-          titleLines={submitted ? ['Thank You', 'So Much'] : [...TITLE_LINES]}
+          titleLines={titleLines ?? (submitted ? ['Thank You', 'So Much'] : [...DEFAULT_TITLE_LINES])}
           visibleChars={visibleChars}
         />
         <div className={`${styles.dateBlock} ${titleComplete ? styles.dateBlockVisible : ''}`}>
@@ -126,9 +129,19 @@ export const FirstView: React.FC<FirstViewProps> = ({
 
       {vortexTextActive && (
         <p className={styles.vortexText}>
-          {submitted ? "Can\u2019t Get Enough?" : "Let\u2019s Enjoy Together"}
+          {titleLines ? 'With Love & Gratitude' : submitted ? "Can\u2019t Get Enough?" : "Let\u2019s Enjoy Together"}
         </p>
       )}
+
+      <div
+        className={`${styles.scrollHint} ${titleComplete ? styles.scrollHintVisible : ''}`}
+        aria-hidden="true"
+      >
+        <span className={styles.scrollText}>scroll</span>
+        <span className={styles.scrollLine} />
+      </div>
+
+      <WaveDivider color="#0b2033" className={styles.bottomWaves} />
     </div>
   )
 }

@@ -1,0 +1,129 @@
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  padding: 1.5rem 1.25rem 4rem;
+  background: linear-gradient(180deg, #0b2033 0%, #10314b 55%, #123a56 100%);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 水面から差し込む淡い光 */
+.glow {
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140vw;
+  height: 70%;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(216, 189, 138, 0.14) 0%,
+    rgba(140, 200, 235, 0.08) 38%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin: 2rem auto 0;
+  padding: 2.4rem 1.75rem 2.25rem;
+  border: 1px solid rgba(216, 189, 138, 0.45);
+  border-radius: 2px;
+  background: rgba(6, 22, 36, 0.35);
+  backdrop-filter: blur(2px);
+  text-align: center;
+  color: rgba(250, 250, 248, 0.96);
+  font-family: var(--font-serif-jp), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+
+.cornerTopLeft,
+.cornerBottomRight {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+}
+
+.cornerTopLeft {
+  top: 8px;
+  left: 8px;
+  border-top: 1px solid rgba(216, 189, 138, 0.9);
+  border-left: 1px solid rgba(216, 189, 138, 0.9);
+}
+
+.cornerBottomRight {
+  bottom: 8px;
+  right: 8px;
+  border-bottom: 1px solid rgba(216, 189, 138, 0.9);
+  border-right: 1px solid rgba(216, 189, 138, 0.9);
+}
+
+.opening {
+  margin: 0 0 0.7rem;
+  text-align: center;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  color: rgba(238, 222, 184, 0.92);
+}
+
+.body {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 2.35;
+  letter-spacing: 0.09em;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin: 1.7rem auto;
+  max-width: 300px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 189, 138, 0.65), transparent);
+}
+
+.dividerMark {
+  color: rgba(216, 189, 138, 0.85);
+  font-size: 0.7rem;
+}
+
+.closing {
+  margin: 0.7rem 0 0;
+  padding-right: 2rem;
+  text-align: right;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  color: rgba(238, 222, 184, 0.92);
+}
+
+.signature {
+  margin: 1.6rem 0 0;
+  font-size: 0.95rem;
+  line-height: 2.1;
+  letter-spacing: 0.12em;
+  color: rgba(250, 250, 248, 0.85);
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 2.4rem 1.1rem 2.2rem;
+  }
+
+  .body {
+    font-size: 0.92rem;
+    letter-spacing: 0.06em;
+  }
+}

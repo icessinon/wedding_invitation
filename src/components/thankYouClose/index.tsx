@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './thankYouClose.module.css'
+import { SailingHorizon } from '../ocean'
 
 const BUBBLE_SEA_COUNT = 240
 
@@ -28,20 +29,28 @@ export const ThankYouClose: React.FC = () => {
         })}
       </div>
 
+      <SailingHorizon />
+
       <div className={styles.inner}>
-        <p className={styles.thanksLine}>Thank you</p>
+        <p className={styles.thanksLine}>With gratitude</p>
         <div className={styles.divider}>✦ ✦ ✦</div>
         <p className={styles.mainMessage}>
-          たくさんのご回答
+          素敵な一日を
           <br />
           ありがとうございました
         </p>
         <p className={styles.subMessage}>
-          当日お会いできるのを
+          これからも 私たち二人を
           <br />
-          心待ちにしております
+          あたたかく見守っていただけますと
+          <br />
+          幸いです
         </p>
-        <p className={styles.signature}>2026.07.18</p>
+        <p className={styles.signature}>
+          2026.07.18 指帆亭にて
+          <br />
+          Takeshi &amp; Natsumi
+        </p>
       </div>
     </section>
   )

@@ -1,0 +1,33 @@
+.page {
+  min-height: 100svh;
+  background: #16466a;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: #16466a;
+  padding: calc(0.9rem + env(safe-area-inset-top, 0px)) 1.25rem 0;
+}
+
+.footer {
+  background: #1a5078;
+  padding: 0 1.25rem calc(3rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-serif-jp), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.1em;
+  color: rgba(238, 222, 184, 0.95);
+  text-decoration: none;
+  padding: 0.5rem 0.2rem;
+}
+
+.backLink:hover {
+  color: rgba(250, 240, 214, 1);
+}

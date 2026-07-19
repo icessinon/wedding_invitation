@@ -1,36 +1,24 @@
-import { Suspense } from 'react'
 import { FirstView } from '../components/firstView'
-import { CountDown } from '../components/countDown'
-import { Message } from '../components/message'
-import { Profile } from '../components/profile'
-import { Album } from '../components/album'
-import { PartyInfo } from '../components/partyInfo'
-import { Other } from '../components/other'
+import { ThanksMessage } from '../components/thanksMessage'
+import { OceanMemories } from '../components/oceanMemories'
+import { PhotoCta } from '../components/photoCta'
 import { ThankYouClose } from '../components/thankYouClose'
 
+// 結婚式後の Thank You バージョン。
+// 招待状時代のセクション（カウントダウン・プロフィール・アルバム・
+// パーティー情報・回答フォーム等）はコンポーネントとして残しつつ非表示。
 export default function Home() {
   return (
     <div className="min-h-screen border-0 outline-none">
       <FirstView
+        titleLines={['Thank', 'You']}
         weddingDate="2026年7月18日（土）"
         weddingDateTime="2026-07-18"
+        dateLabel="挙式の日"
       />
-      <CountDown />
-      <Message />
-      <Profile />
-      <Album />
-      <Suspense fallback={null}>
-        <PartyInfo
-          ceremonyStartTime="15:00"
-          receptionStaffTime="14:00"
-          receptionFamilyTime="14:15"
-          receptionGuestTime="14:40"
-          closingTime="18:30"
-        />
-      </Suspense>
-      <Suspense fallback={null}>
-        <Other />
-      </Suspense>
+      <ThanksMessage />
+      <OceanMemories />
+      <PhotoCta />
       <ThankYouClose />
     </div>
   )

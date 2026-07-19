@@ -1,0 +1,301 @@
+/* ---- 波のセクション区切り ---- */
+
+.waveDivider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  line-height: 0;
+}
+
+.waveLayer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  will-change: transform;
+}
+
+.waveLayerSlow {
+  composes: waveLayer;
+  animation: waveSlide 26s linear infinite;
+  opacity: 0.45;
+}
+
+.waveLayerMid {
+  composes: waveLayer;
+  animation: waveSlide 17s linear infinite reverse;
+  opacity: 0.6;
+}
+
+.waveLayerFast {
+  composes: waveLayer;
+  animation: waveSlide 11s linear infinite;
+}
+
+@keyframes waveSlide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ---- 立ちのぼる泡 ---- */
+
+.bubbles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -24px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 30%,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(220, 240, 252, 0.35) 42%,
+    rgba(255, 255, 255, 0.06) 68%,
+    transparent 78%
+  );
+  box-shadow:
+    0 0 4px rgba(255, 255, 255, 0.22),
+    0 0 10px rgba(180, 220, 240, 0.1);
+  animation: bubbleRise linear infinite;
+  will-change: transform, opacity;
+}
+
+.bubble:nth-child(odd)  { --bubble-drift: 16px; }
+.bubble:nth-child(even) { --bubble-drift: -12px; }
+.bubble:nth-child(3n)   { --bubble-drift: 6px; }
+.bubble:nth-child(5n)   { --bubble-drift: -20px; }
+.bubble:nth-child(7n)   { --bubble-drift: 24px; }
+
+@keyframes bubbleRise {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0; }
+  8%   { opacity: 0.5; }
+  85%  { opacity: 0.4; }
+  100% { transform: translate3d(var(--bubble-drift, 10px), -110vh, 0) scale(0.2); opacity: 0; }
+}
+
+/* ---- 魚の群れ ---- */
+
+.fishLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fish {
+  position: absolute;
+  top: var(--fish-top, 30%);
+  left: 0;
+  width: calc(34px * var(--fish-scale, 1));
+  height: calc(24px * var(--fish-scale, 1));
+  color: rgba(200, 230, 250, var(--fish-opacity, 0.16));
+  animation: fishSwim var(--fish-dur, 40s) linear var(--fish-delay, 0s) infinite;
+  will-change: transform;
+}
+
+.fishReverse {
+  animation-name: fishSwimReverse;
+}
+
+.fishBody {
+  width: 100%;
+  height: 100%;
+  animation: fishWiggle 1.6s ease-in-out infinite alternate;
+}
+
+/* 魚の SVG は左向き（頭が左）なので、右へ進むときは scaleX(-1) で反転する */
+@keyframes fishSwim {
+  0%   { transform: translateX(-12vw) translateY(0) scaleX(-1); }
+  25%  { transform: translateX(19vw)  translateY(-14px) scaleX(-1); }
+  50%  { transform: translateX(50vw)  translateY(6px) scaleX(-1); }
+  75%  { transform: translateX(81vw)  translateY(-10px) scaleX(-1); }
+  100% { transform: translateX(112vw) translateY(0) scaleX(-1); }
+}
+
+@keyframes fishSwimReverse {
+  0%   { transform: translateX(112vw) translateY(0); }
+  25%  { transform: translateX(81vw)  translateY(10px); }
+  50%  { transform: translateX(50vw)  translateY(-8px); }
+  75%  { transform: translateX(19vw)  translateY(12px); }
+  100% { transform: translateX(-12vw) translateY(0); }
+}
+
+@keyframes fishWiggle {
+  from { transform: skewX(-3deg) scaleY(0.97); }
+  to   { transform: skewX(3deg) scaleY(1.03); }
+}
+
+/* ---- 差し込む光 ---- */
+
+.lightRays {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ray {
+  position: absolute;
+  top: -12%;
+  width: 90px;
+  height: 75%;
+  /* 指帆亭のガラス天井から差し込む陽光をイメージした温かい光 */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 234, 190, 0.17) 0%,
+    rgba(255, 240, 210, 0.05) 55%,
+    transparent 100%
+  );
+  transform-origin: top center;
+  transform: rotate(var(--ray-angle, 12deg));
+  filter: blur(6px);
+  animation: rayShimmer var(--ray-dur, 9s) ease-in-out var(--ray-delay, 0s) infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes rayShimmer {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+
+/* ---- 水平線とヨット（会場「指帆亭」= 海に浮かぶ帆船のオマージュ） ---- */
+
+.horizon {
+  position: relative;
+  height: 52px;
+  max-width: 1080px;
+  margin: 1.1rem auto 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.horizonLine {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 10px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(238, 222, 184, 0.4) 18%,
+    rgba(238, 222, 184, 0.4) 82%,
+    transparent
+  );
+}
+
+.sailBoat {
+  position: absolute;
+  bottom: 9px;
+  left: 0;
+  width: 38px;
+  height: 34px;
+  color: rgba(238, 222, 184, 0.85);
+  animation: sailAcross 70s linear infinite;
+  will-change: transform;
+}
+
+.sailBoatBody {
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 90%;
+  animation: sailRock 3.4s ease-in-out infinite alternate;
+}
+
+@keyframes sailAcross {
+  0%   { transform: translateX(-10vw); opacity: 0; }
+  4%   { opacity: 1; }
+  96%  { opacity: 1; }
+  100% { transform: translateX(100vw); opacity: 0; }
+}
+
+@keyframes sailRock {
+  from { transform: rotate(-2.2deg) translateY(0.5px); }
+  to   { transform: rotate(2.2deg) translateY(-0.5px); }
+}
+
+/* ---- セクション共通見出し ---- */
+
+.sectionTitle {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: center;
+  padding: 0 1.25rem;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sectionTitleVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sectionTitleEn {
+  margin: 0;
+  font-family: var(--font-dancing-script), cursive;
+  font-size: clamp(2.2rem, 8vw, 2.9rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: rgba(238, 222, 184, 0.95);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+.sectionTitleRule {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 189, 138, 0.85), transparent);
+}
+
+.sectionTitleJa {
+  margin: 0;
+  font-family: var(--font-serif-jp), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  color: rgba(250, 250, 248, 0.82);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waveLayerSlow,
+  .waveLayerMid,
+  .waveLayerFast {
+    animation: none;
+    transform: translateX(-25%);
+  }
+
+  .sectionTitle {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sailBoat {
+    animation: none;
+    left: 46%;
+  }
+
+  .sailBoatBody {
+    animation: none;
+  }
+
+  .bubbles,
+  .fishLayer {
+    display: none;
+  }
+
+  .ray {
+    animation: none;
+    opacity: 0.5;
+  }
+}

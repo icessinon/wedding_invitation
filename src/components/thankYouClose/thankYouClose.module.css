@@ -4,8 +4,8 @@
   max-width: 100vw;
   min-width: 0;
   padding: 4.5rem 1.5rem calc(4.5rem + env(safe-area-inset-bottom, 0px));
-  background: #547c94;
-  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+  background: linear-gradient(180deg, #1a5078 0%, #10314b 55%, #0b2033 100%);
+  font-family: var(--font-serif-jp), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
   color: #fff;
   box-sizing: border-box;
   overflow: hidden;
@@ -74,17 +74,16 @@
 }
 
 .divider {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(216, 189, 138, 0.85);
   letter-spacing: 0.6em;
   font-size: 0.95rem;
 }
 
 .thanksLine {
-  font-family: 'Times New Roman', serif;
-  font-style: italic;
-  letter-spacing: 0.18em;
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-dancing-script), 'Times New Roman', serif;
+  letter-spacing: 0.12em;
+  font-size: 1.5rem;
+  color: rgba(238, 222, 184, 0.95);
   margin: 0;
 }
 
@@ -111,6 +110,6 @@
   font-style: italic;
   letter-spacing: 0.24em;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(238, 222, 184, 0.8);
   margin: 0;
 }

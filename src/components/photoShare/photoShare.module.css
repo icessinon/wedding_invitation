@@ -1,0 +1,483 @@
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 100vw;
+  padding: 4.5rem 1.1rem 5.5rem;
+  background: linear-gradient(180deg, #16466a 0%, #18496e 45%, #1a5078 100%);
+  color: rgba(250, 250, 248, 0.96);
+  font-family: var(--font-serif-jp), 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.lead {
+  margin: 1.6rem auto 2.2rem;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 2.15;
+  letter-spacing: 0.08em;
+  color: rgba(250, 250, 248, 0.92);
+}
+
+/* ---- 投稿パネル ---- */
+
+.uploadPanel {
+  max-width: 640px;
+  margin: 0 auto 3rem;
+  padding: 1.4rem 1.2rem 1.5rem;
+  border: 1px dashed rgba(216, 189, 138, 0.55);
+  border-radius: 10px;
+  background: rgba(6, 22, 36, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.uploadRow {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nameInput {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 16px; /* iOS のズーム防止 */
+  font-family: inherit;
+  letter-spacing: 0.04em;
+}
+
+.nameInput::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.nameInput:focus {
+  outline: none;
+  border-color: rgba(216, 189, 138, 0.85);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.selectButton {
+  flex: 0 0 auto;
+  padding: 0.7rem 1.5rem;
+  border: 1px solid rgba(216, 189, 138, 0.8);
+  border-radius: 6px;
+  background: rgba(216, 189, 138, 0.14);
+  color: rgba(238, 222, 184, 0.98);
+  font-size: 0.95rem;
+  font-family: inherit;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.selectButton:hover:not(:disabled) {
+  background: rgba(216, 189, 138, 0.26);
+}
+
+.selectButton:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.selectButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.uploadHint {
+  margin: -0.2rem 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: rgba(250, 250, 248, 0.62);
+}
+
+.previewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 0.5rem;
+}
+
+.previewItem {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.previewRemove {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadButton {
+  align-self: center;
+  padding: 0.85rem 2.6rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d8bd8a 0%, #c3a465 100%);
+  color: #1d2f42;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  transition: transform 0.15s ease, filter 0.2s ease;
+}
+
+.uploadButton:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.uploadButton:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.uploadButton:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.progressTrack {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #d8bd8a, #f0deb2);
+  transition: width 0.3s ease;
+}
+
+.errorText {
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: #ffc9c9;
+}
+
+.thanksText {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.98);
+}
+
+/* ---- ギャラリー ---- */
+
+.galleryHeader {
+  max-width: 1080px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0.2rem;
+}
+
+.galleryCount {
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  color: rgba(250, 250, 248, 0.75);
+}
+
+.bulkDownload {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: rgba(238, 222, 184, 0.98);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(216, 189, 138, 0.7);
+  padding-bottom: 2px;
+  white-space: nowrap;
+}
+
+.bulkDownload::after {
+  content: ' ↓';
+  font-size: 0.8em;
+}
+
+.stateBox {
+  max-width: 640px;
+  margin: 2.5rem auto;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 2.1;
+  letter-spacing: 0.06em;
+  color: rgba(250, 250, 248, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.stateBox p {
+  margin: 0;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(238, 222, 184, 0.95);
+  animation: photoSpin 0.9s linear infinite;
+}
+
+@keyframes photoSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retryButton {
+  padding: 0.55rem 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.gallery {
+  max-width: 1080px;
+  margin: 0 auto;
+  column-count: 2;
+  column-gap: 0.7rem;
+}
+
+@media (min-width: 720px) {
+  .gallery {
+    column-count: 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gallery {
+    column-count: 4;
+  }
+}
+
+.galleryItem {
+  margin: 0 0 0.7rem;
+  break-inside: avoid;
+}
+
+.galleryButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.galleryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+}
+
+.galleryImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 90px;
+}
+
+.galleryCaption {
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: rgba(250, 250, 248, 0.7);
+  text-align: right;
+  padding-right: 0.2rem;
+}
+
+.loadMoreWrap {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.loadMoreButton {
+  padding: 0.8rem 2.4rem;
+  border: 1px solid rgba(216, 189, 138, 0.8);
+  border-radius: 999px;
+  background: rgba(216, 189, 138, 0.12);
+  color: rgba(238, 222, 184, 0.98);
+  font-size: 0.95rem;
+  font-family: inherit;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.loadMoreButton:hover {
+  background: rgba(216, 189, 138, 0.24);
+}
+
+/* ---- ライトボックス ---- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(4, 14, 24, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: lightboxFade 0.25s ease;
+}
+
+@keyframes lightboxFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightboxInner {
+  position: relative;
+  max-width: min(96vw, 1100px);
+  max-height: 92svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.lightboxImage {
+  max-width: 100%;
+  max-height: calc(92svh - 4rem);
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.lightboxBar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lightboxCaption {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: rgba(250, 250, 248, 0.8);
+  font-style: italic;
+}
+
+.lightboxDownload {
+  padding: 0.5rem 1.4rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d8bd8a 0%, #c3a465 100%);
+  color: #1d2f42;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 4px;
+}
+
+.lightboxPrev {
+  left: -8px;
+}
+
+.lightboxNext {
+  right: -8px;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: -14px;
+  right: -6px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .lead {
+    font-size: 0.88rem;
+  }
+
+  .lightboxPrev {
+    left: 2px;
+  }
+
+  .lightboxNext {
+    right: 2px;
+  }
+
+  .lightboxClose {
+    top: -6px;
+    right: 2px;
+  }
+}

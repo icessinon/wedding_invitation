@@ -5,4 +5,6 @@ export interface FirstViewProps {
   weddingDateTime?: string
   /** 日付の上の短いラベル */
   dateLabel?: string
+  /** タイトル行の上書き（結婚式後の Thank You 表示など） */
+  titleLines?: string[]
 }
