@@ -624,10 +624,10 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
 }
 
+/* 縦横比が分かる場合はインラインstyleで動画に合わせて上書きされる */
 .lightboxVideo {
-  width: min(92vw, 900px);
-  aspect-ratio: 16 / 10;
-  max-height: calc(92svh - 5rem);
+  width: min(94vw, 920px);
+  height: min(72svh, 820px);
   border: none;
   border-radius: 6px;
   background: #000;

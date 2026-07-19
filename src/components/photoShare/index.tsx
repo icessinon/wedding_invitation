@@ -301,6 +301,18 @@ export const PhotoShare: React.FC = () => {
     [lightboxIndex, currentList]
   )
 
+  /** 動画の縦横比に合わせてプレイヤー枠をできるだけ大きくする */
+  const videoFrameStyle = useMemo<React.CSSProperties | undefined>(() => {
+    if (!lightboxItem || lightboxItem.kind !== 'video') return undefined
+    const w = lightboxItem.width
+    const h = lightboxItem.height
+    if (!w || !h) return undefined // 比率不明のときは CSS の大きめの枠のまま
+    const portrait = h > w
+    return portrait
+      ? { aspectRatio: `${w} / ${h}`, height: 'min(74svh, 840px)', width: 'auto', maxWidth: '94vw' }
+      : { aspectRatio: `${w} / ${h}`, width: 'min(94vw, 920px)', height: 'auto', maxHeight: '74svh' }
+  }, [lightboxItem])
+
   const totalPages = Math.max(1, Math.ceil(currentList.length / PAGE_SIZE))
   const pagedItems = useMemo(
     () => currentList.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
@@ -648,6 +660,7 @@ export const PhotoShare: React.FC = () => {
               <iframe
                 src={lightboxItem.viewUrl}
                 className={styles.lightboxVideo}
+                style={videoFrameStyle}
                 allow="autoplay; fullscreen"
                 allowFullScreen
                 title="動画の再生"
