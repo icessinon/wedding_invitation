@@ -9,9 +9,12 @@ import type { PhotosApiResponse, SharedPhoto } from './types'
 
 const MAX_SELECT_FILES = 30
 const UPLOADER_NAME_KEY = 'photo_uploader_name'
-/** 最初に表示する枚数（「もっと見る」で追加表示） */
-const INITIAL_VISIBLE = 36
-const VISIBLE_STEP = 60
+/** 1ページに表示する枚数 */
+const PAGE_SIZE = 24
+/** 選択ダウンロードの上限（URL長対策） */
+const MAX_SELECT_DOWNLOAD = 100
+/** スワイプ判定のしきい値（px） */
+const SWIPE_THRESHOLD = 48
 
 interface PendingFile {
   key: string
@@ -31,7 +34,11 @@ export const PhotoShare: React.FC = () => {
   const [justUploaded, setJustUploaded] = useState(false)
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE)
+  const [page, setPage] = useState(0)
+  /** 選択ダウンロード用に選ばれている写真ID */
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const galleryTopRef = useRef<HTMLDivElement>(null)
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -190,6 +197,61 @@ export const PhotoShare: React.FC = () => {
     [lightboxIndex, photos]
   )
 
+  const totalPages = photos ? Math.max(1, Math.ceil(photos.length / PAGE_SIZE)) : 1
+  const pagedPhotos = useMemo(
+    () => (photos ? photos.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : []),
+    [photos, page]
+  )
+
+  const changePage = useCallback(
+    (next: number) => {
+      setPage(Math.min(Math.max(0, next), totalPages - 1))
+      galleryTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    },
+    [totalPages]
+  )
+
+  const toggleSelected = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else if (next.size < MAX_SELECT_DOWNLOAD) {
+        next.add(id)
+      }
+      return next
+    })
+  }, [])
+
+  const downloadSelected = useCallback(() => {
+    if (selectedIds.size === 0) return
+    const ids = [...selectedIds].join(',')
+    window.location.href = `/api/photos/zip?ids=${encodeURIComponent(ids)}`
+  }, [selectedIds])
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0]
+    if (t) touchStartRef.current = { x: t.clientX, y: t.clientY }
+  }, [])
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const start = touchStartRef.current
+      touchStartRef.current = null
+      const t = e.changedTouches[0]
+      if (!start || !t) return
+      const dx = t.clientX - start.x
+      const dy = t.clientY - start.y
+      if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return
+      if (dx > 0) {
+        showPrev()
+      } else {
+        showNext()
+      }
+    },
+    [showPrev, showNext]
+  )
+
   return (
     <section className={styles.container}>
       <RisingBubbles count={24} />
@@ -288,7 +350,7 @@ export const PhotoShare: React.FC = () => {
       </div>
 
       {/* ---- ギャラリー ---- */}
-      <div className={styles.galleryHeader}>
+      <div className={styles.galleryHeader} ref={galleryTopRef}>
         <span className={styles.galleryCount}>
           {photos === null ? '' : photos.length > 0 ? `${photos.length}枚の思い出` : ''}
         </span>
@@ -326,41 +388,90 @@ export const PhotoShare: React.FC = () => {
       )}
 
       {photos !== null && photos.length > 0 && (
-        <div className={styles.gallery}>
-          {photos.slice(0, visibleCount).map((photo, index) => (
-            <figure key={photo.id} className={styles.galleryItem}>
+        <>
+          <div className={styles.gallery}>
+            {pagedPhotos.map((photo, i) => {
+              const globalIndex = page * PAGE_SIZE + i
+              const isSelected = selectedIds.has(photo.id)
+              return (
+                <figure
+                  key={photo.id}
+                  className={`${styles.galleryItem} ${isSelected ? styles.galleryItemSelected : ''}`}
+                >
+                  <button
+                    type="button"
+                    className={styles.galleryButton}
+                    onClick={() => openLightbox(globalIndex)}
+                    aria-label="写真を拡大表示"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={photo.thumbUrl}
+                      alt={photo.uploader ? `${photo.uploader}さんの写真` : '当日の写真'}
+                      loading="lazy"
+                      className={styles.galleryImage}
+                      width={photo.width ?? undefined}
+                      height={photo.height ?? undefined}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.selectToggle} ${isSelected ? styles.selectToggleOn : ''}`}
+                    onClick={() => toggleSelected(photo.id)}
+                    aria-label={isSelected ? '選択を外す' : 'この写真を選択'}
+                    aria-pressed={isSelected}
+                  >
+                    ✓
+                  </button>
+                  {photo.uploader && (
+                    <figcaption className={styles.galleryCaption}>{photo.uploader}</figcaption>
+                  )}
+                </figure>
+              )
+            })}
+          </div>
+
+          {totalPages > 1 && (
+            <div className={styles.pager}>
               <button
                 type="button"
-                className={styles.galleryButton}
-                onClick={() => openLightbox(index)}
-                aria-label="写真を拡大表示"
+                className={styles.pagerButton}
+                onClick={() => changePage(page - 1)}
+                disabled={page === 0}
+                aria-label="前のページ"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={photo.thumbUrl}
-                  alt={photo.uploader ? `${photo.uploader}さんの写真` : '当日の写真'}
-                  loading="lazy"
-                  className={styles.galleryImage}
-                  width={photo.width ?? undefined}
-                  height={photo.height ?? undefined}
-                />
+                ‹
               </button>
-              {photo.uploader && (
-                <figcaption className={styles.galleryCaption}>{photo.uploader}</figcaption>
-              )}
-            </figure>
-          ))}
-        </div>
+              <span className={styles.pagerLabel}>
+                {page + 1} / {totalPages}
+              </span>
+              <button
+                type="button"
+                className={styles.pagerButton}
+                onClick={() => changePage(page + 1)}
+                disabled={page >= totalPages - 1}
+                aria-label="次のページ"
+              >
+                ›
+              </button>
+            </div>
+          )}
+        </>
       )}
 
-      {photos !== null && photos.length > visibleCount && (
-        <div className={styles.loadMoreWrap}>
+      {/* ---- 選択ダウンロードの追従バー ---- */}
+      {selectedIds.size > 0 && (
+        <div className={styles.selectionBar}>
+          <span className={styles.selectionCount}>{selectedIds.size}枚選択中</span>
+          <button type="button" className={styles.selectionSave} onClick={downloadSelected}>
+            保存する
+          </button>
           <button
             type="button"
-            className={styles.loadMoreButton}
-            onClick={() => setVisibleCount((c) => c + VISIBLE_STEP)}
+            className={styles.selectionClear}
+            onClick={() => setSelectedIds(new Set())}
           >
-            もっと見る（あと{photos.length - visibleCount}枚）
+            解除
           </button>
         </div>
       )}
@@ -368,7 +479,12 @@ export const PhotoShare: React.FC = () => {
       {/* ---- ライトボックス ---- */}
       {lightboxPhoto && (
         <div className={styles.lightbox} role="dialog" aria-modal="true" onClick={closeLightbox}>
-          <div className={styles.lightboxInner} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.lightboxInner}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={lightboxPhoto.viewUrl} alt="" className={styles.lightboxImage} />
             <div className={styles.lightboxBar}>

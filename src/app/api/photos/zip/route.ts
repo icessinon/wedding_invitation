@@ -156,14 +156,24 @@ async function* buildZip(drive: DriveClient, photos: SharedPhoto[]): AsyncGenera
   yield endOfCentralDirectory(entries.length, cdSize, cdOffset)
 }
 
-export async function GET() {
+/** ?ids=... で選択された写真だけの ZIP を作れる（最大200件） */
+const MAX_SELECTED_IDS = 200
+
+export async function GET(request: Request) {
   try {
     const drive = google.drive({ version: 'v3', auth: getDriveAuth() })
     const folderId = await resolvePhotosFolderId(drive)
-    const photos = await listPhotos(drive, folderId)
+    let photos = await listPhotos(drive, folderId)
+
+    // 選択ダウンロード: フォルダ内に実在する ID だけに絞る（それ以外は無視）
+    const idsParam = new URL(request.url).searchParams.get('ids')
+    if (idsParam) {
+      const wanted = new Set(idsParam.split(',').map((s) => s.trim()).filter(Boolean).slice(0, MAX_SELECTED_IDS))
+      photos = photos.filter((p) => wanted.has(p.id))
+    }
 
     if (photos.length === 0) {
-      return NextResponse.json({ ok: false, error: 'まだ写真がありません' }, { status: 404 })
+      return NextResponse.json({ ok: false, error: '対象の写真がありません' }, { status: 404 })
     }
 
     // 古い順に並べて連番を付ける
