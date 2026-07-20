@@ -16,7 +16,7 @@ const MAX_SELECT_DOWNLOAD = 100
 /** スワイプ判定のしきい値（px） */
 const SWIPE_THRESHOLD = 48
 /** 動画の上限サイズ */
-const MAX_VIDEO_BYTES = 512 * 1024 * 1024
+const MAX_VIDEO_BYTES = 1024 * 1024 * 1024
 
 type Tab = 'image' | 'video'
 

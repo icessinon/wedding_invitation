@@ -12,7 +12,7 @@ export const maxDuration = 30
  * ホスティングのリクエストサイズ上限（Vercel 約4.5MB）を通らない。
  */
 
-const MAX_VIDEO_BYTES = 512 * 1024 * 1024 // 512MB
+const MAX_VIDEO_BYTES = 1024 * 1024 * 1024 // 1GB
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024
 const MAX_UPLOADER_NAME_LEN = 60
 
@@ -60,6 +60,11 @@ export async function POST(request: Request) {
     const token = typeof tokenResult === 'string' ? tokenResult : tokenResult?.token
     if (!token) throw new Error('アクセストークンの取得に失敗しました')
 
+    // ブラウザが直接 PUT できるよう、セッションにサイトの Origin を紐付ける（CORS 許可）
+    const origin =
+      request.headers.get('origin') ??
+      (request.headers.get('host') ? `https://${request.headers.get('host')}` : '')
+
     const name = `memory_${Date.now()}_${sanitizeFileName(fileName)}`
     const res = await fetch(
       'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true',
@@ -70,6 +75,7 @@ export async function POST(request: Request) {
           'Content-Type': 'application/json; charset=UTF-8',
           'X-Upload-Content-Type': mimeType,
           'X-Upload-Content-Length': String(size),
+          ...(origin ? { Origin: origin } : {}),
         },
         body: JSON.stringify({
           name,
