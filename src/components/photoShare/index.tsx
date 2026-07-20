@@ -175,6 +175,8 @@ export const PhotoShare: React.FC = () => {
   const [zipStarted, setZipStarted] = useState(false)
   /** 一括ダウンロード前の確認ダイアログ */
   const [confirmDownload, setConfirmDownload] = useState<{ url: string; count: number } | null>(null)
+  /** 単体写真の保存処理中 */
+  const [savingPhoto, setSavingPhoto] = useState(false)
 
   const [uploaderName, setUploaderName] = useState('')
   const [pending, setPending] = useState<PendingFile[]>([])
@@ -504,13 +506,62 @@ export const PhotoShare: React.FC = () => {
     showZipToast()
   }, [confirmDownload, showZipToast])
 
+  /**
+   * 写真1枚の保存。共有シート（iPhone/Android の「画像を保存」）を優先し、
+   * 使えない環境では画像ファイルのダウンロードにフォールバックする。
+   */
+  const saveSinglePhoto = useCallback(async (photo: SharedPhoto) => {
+    if (savingPhoto) return
+    setSavingPhoto(true)
+    try {
+      const res = await fetch(`/api/photos/stream/${photo.id}`)
+      if (!res.ok) throw new Error('fetch failed')
+      const blob = await res.blob()
+      const type = blob.type || 'image/jpeg'
+      const ext = type.includes('png') ? '.png' : type.includes('webp') ? '.webp' : '.jpg'
+      const file = new File([blob], `wedding_${photo.id.slice(0, 8)}${ext}`, { type })
+
+      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] })
+          return // 共有シートから「画像を保存」でカメラロールへ
+        } catch (e) {
+          if (e instanceof Error && e.name === 'AbortError') return // ユーザーがキャンセル
+          // 共有できなければダウンロードへフォールバック
+        }
+      }
+
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = file.name
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      // 最終フォールバック: 従来のダウンロードURL
+      window.location.href = photo.downloadUrl
+    } finally {
+      setSavingPhoto(false)
+    }
+  }, [savingPhoto])
+
   const downloadSelected = useCallback(() => {
     if (selectedIds.size === 0) return
+    // 1枚だけならZIPにせず、画像としてそのまま保存できるようにする
+    if (selectedIds.size === 1) {
+      const id = [...selectedIds][0]
+      const photo = (photos ?? []).find((p) => p.id === id)
+      if (photo) {
+        void saveSinglePhoto(photo)
+        setSelectedIds(new Set())
+        return
+      }
+    }
     const ids = [...selectedIds].join(',')
     window.location.href = `/api/photos/zip?ids=${encodeURIComponent(ids)}`
     setSelectedIds(new Set())
     showZipToast()
-  }, [selectedIds, showZipToast])
+  }, [selectedIds, photos, saveSinglePhoto, showZipToast])
 
   // 隣の写真を先読みして、スワイプ時に待たせない
   useEffect(() => {
@@ -993,9 +1044,20 @@ export const PhotoShare: React.FC = () => {
               <span className={styles.lightboxCaption}>
                 {lightboxItem.uploader ? `by ${lightboxItem.uploader}` : ''}
               </span>
-              <a className={styles.lightboxDownload} href={lightboxItem.downloadUrl}>
-                ダウンロード
-              </a>
+              {lightboxItem.kind === 'video' ? (
+                <a className={styles.lightboxDownload} href={lightboxItem.downloadUrl}>
+                  ダウンロード
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.lightboxDownload}
+                  onClick={() => saveSinglePhoto(lightboxItem)}
+                  disabled={savingPhoto}
+                >
+                  {savingPhoto ? '準備中…' : '保存する'}
+                </button>
+              )}
               {lightboxItem.kind === 'video' && currentList.length > 1 && (
                 <button type="button" className={styles.barNav} onClick={showNext} aria-label="次へ">
                   ›

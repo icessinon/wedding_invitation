@@ -784,14 +784,22 @@
 
 .lightboxDownload {
   padding: 0.5rem 1.4rem;
+  border: none;
   border-radius: 999px;
   background: linear-gradient(135deg, #d8bd8a 0%, #c3a465 100%);
   color: #1d2f42;
   font-size: 0.88rem;
   font-weight: 600;
+  font-family: inherit;
   letter-spacing: 0.1em;
   text-decoration: none;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+.lightboxDownload:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 
 .lightboxHint {
