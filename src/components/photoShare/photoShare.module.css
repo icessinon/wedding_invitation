@@ -225,8 +225,14 @@
   margin: 0;
   text-align: center;
   font-size: 0.9rem;
+  line-height: 1.9;
   letter-spacing: 0.06em;
   color: rgba(238, 222, 184, 0.98);
+}
+
+.thanksSub {
+  font-size: 0.78rem;
+  color: rgba(250, 250, 248, 0.7);
 }
 
 /* ---- タブ ---- */

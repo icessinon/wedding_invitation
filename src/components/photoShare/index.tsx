@@ -27,32 +27,91 @@ interface PendingFile {
   isVideo: boolean
 }
 
-/** Drive の再開可能アップロード URL へ進捗つきで PUT する */
-function putWithProgress(
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+/** 再開可能アップロードの1回分の PUT（offset から最後まで） */
+function putChunk(
+  url: string,
+  file: File,
+  offset: number,
+  onProgress: (fraction: number) => void
+): Promise<{ status: number; body: string }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('PUT', url)
+    if (offset > 0) {
+      xhr.setRequestHeader('Content-Range', `bytes ${offset}-${file.size - 1}/${file.size}`)
+    }
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress((offset + e.loaded) / file.size)
+    }
+    xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText })
+    xhr.onerror = () => reject(new Error('network'))
+    xhr.send(offset > 0 ? file.slice(offset) : file)
+  })
+}
+
+/**
+ * Drive の再開可能アップロード。
+ * 途中で通信が切れても状態を確認して続きから送り、
+ * 「実はサーバー側では完了していた」場合も成功として扱う。
+ */
+async function uploadVideoResumable(
   url: string,
   file: File,
   onProgress: (fraction: number) => void
 ): Promise<{ id?: string }> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest()
-    xhr.open('PUT', url)
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(e.loaded / e.total)
+  let offset = 0
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const r = await putChunk(url, file, offset, onProgress)
+      if (r.status >= 200 && r.status < 300) return JSON.parse(r.body)
+    } catch {
+      // 通信断 → 状態確認へ
     }
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          resolve(JSON.parse(xhr.responseText))
-        } catch {
-          reject(new Error('アップロード結果の解析に失敗しました'))
-        }
-      } else {
-        reject(new Error(`動画の送信に失敗しました（HTTP ${xhr.status}）`))
+    await sleep(1500)
+    // アップロードがどこまで届いたかをセッションに問い合わせる
+    try {
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Range': `bytes */${file.size}` },
+      })
+      if (res.status >= 200 && res.status < 300) {
+        // 実は完了していた
+        return JSON.parse(await res.text())
       }
+      if (res.status === 308) {
+        const range = res.headers.get('Range')
+        offset = range ? parseInt(range.split('-')[1], 10) + 1 : 0
+        continue
+      }
+      if (res.status >= 400) break // セッション失効
+    } catch {
+      // 状態確認も失敗 → そのまま再試行
     }
-    xhr.onerror = () => reject(new Error('動画の送信に失敗しました（通信エラー）'))
-    xhr.send(file)
-  })
+  }
+  throw new Error('動画の送信に失敗しました。電波の良い場所でもう一度お試しください')
+}
+
+/** 仕上げ（公開権限の付与）。一時的な失敗に備えてリトライする */
+async function finalizeWithRetry(fileId: string): Promise<PhotosApiResponse> {
+  let lastError = ''
+  for (let i = 0; i < 3; i++) {
+    try {
+      const res = await fetch('/api/photos/finalize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileId }),
+      })
+      const json: PhotosApiResponse = await res.json()
+      if (json.ok && json.photos?.length) return json
+      lastError = json.error ?? ''
+    } catch (e) {
+      lastError = e instanceof Error ? e.message : ''
+    }
+    await sleep(1200 * (i + 1))
+  }
+  throw new Error(lastError || '共有設定に失敗しました')
 }
 
 function formatDuration(ms: number | null | undefined): string {
@@ -79,6 +138,9 @@ export const PhotoShare: React.FC = () => {
   const [fileProgress, setFileProgress] = useState(0)
   const [uploadError, setUploadError] = useState('')
   const [justUploaded, setJustUploaded] = useState(false)
+  const [uploadedHadVideo, setUploadedHadVideo] = useState(false)
+  /** ネイティブ再生に失敗したとき Drive プレイヤーへ切替 */
+  const [videoFallback, setVideoFallback] = useState(false)
 
   const [tab, setTab] = useState<Tab>('image')
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
@@ -125,6 +187,22 @@ export const PhotoShare: React.FC = () => {
     // アンマウント時のみ解放
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // アップロード中にページを閉じようとしたら確認を出す
+  useEffect(() => {
+    if (!uploading) return
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [uploading])
+
+  // ライトボックスの対象が変わったらフォールバック状態をリセット
+  useEffect(() => {
+    setVideoFallback(false)
+  }, [lightboxIndex])
 
   const images = useMemo(() => (photos ?? []).filter((p) => p.kind !== 'video'), [photos])
   const videos = useMemo(() => (photos ?? []).filter((p) => p.kind === 'video'), [photos])
@@ -207,18 +285,10 @@ export const PhotoShare: React.FC = () => {
           if (!sess.ok || !sess.uploadUrl) {
             throw new Error(sess.error || 'アップロードの準備に失敗しました')
           }
-          const created = await putWithProgress(sess.uploadUrl, item.file, setFileProgress)
+          const created = await uploadVideoResumable(sess.uploadUrl, item.file, setFileProgress)
           if (!created.id) throw new Error('アップロード結果を取得できませんでした')
-          const finRes = await fetch('/api/photos/finalize', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fileId: created.id }),
-          })
-          const fin: PhotosApiResponse = await finRes.json()
-          if (!fin.ok || !fin.photos?.length) {
-            throw new Error(fin.error || '共有設定に失敗しました')
-          }
-          uploaded.push(...fin.photos)
+          const fin = await finalizeWithRetry(created.id)
+          uploaded.push(...(fin.photos ?? []))
         } else {
           const prepared = await prepareImageForUpload(item.file)
           const fd = new FormData()
@@ -253,6 +323,7 @@ export const PhotoShare: React.FC = () => {
 
     if (uploaded.length > 0) {
       setPhotos((prev) => [...uploaded, ...(prev ?? [])])
+      setUploadedHadVideo(uploaded.some((p) => p.kind === 'video'))
     }
     setPending(failed)
     if (failed.length > 0) {
@@ -465,14 +536,33 @@ export const PhotoShare: React.FC = () => {
         )}
 
         {uploading && (
-          <div className={styles.progressTrack} aria-hidden="true">
-            <div className={styles.progressBar} style={{ width: `${overallProgress}%` }} />
-          </div>
+          <>
+            <div className={styles.progressTrack} aria-hidden="true">
+              <div className={styles.progressBar} style={{ width: `${overallProgress}%` }} />
+            </div>
+            {pending.some((p) => p.isVideo) && (
+              <p className={styles.uploadHint}>
+                動画の送信には数分かかることがあります
+                <br />
+                送信が終わるまでこの画面を閉じずにお待ちください
+              </p>
+            )}
+          </>
         )}
 
         {uploadError && <p className={styles.errorText}>{uploadError}</p>}
         {justUploaded && (
-          <p className={styles.thanksText}>ありがとうございます！ギャラリーに追加しました</p>
+          <p className={styles.thanksText}>
+            ありがとうございます！ギャラリーに追加しました
+            {uploadedHadVideo && (
+              <>
+                <br />
+                <span className={styles.thanksSub}>
+                  動画のサムネイル表示には数分かかることがあります
+                </span>
+              </>
+            )}
+          </p>
         )}
       </div>
 
@@ -657,17 +747,30 @@ export const PhotoShare: React.FC = () => {
             onTouchEnd={handleTouchEnd}
           >
             {lightboxItem.kind === 'video' ? (
-              <video
-                key={lightboxItem.id}
-                src={`/api/photos/stream/${lightboxItem.id}`}
-                className={styles.lightboxVideo}
-                style={videoFrameStyle}
-                controls
-                playsInline
-                autoPlay
-                preload="metadata"
-                poster={lightboxItem.thumbUrl}
-              />
+              videoFallback ? (
+                // ネイティブ再生できない形式は Drive のプレイヤーで再生（変換してくれる）
+                <iframe
+                  src={`https://drive.google.com/file/d/${lightboxItem.id}/preview`}
+                  className={styles.lightboxVideo}
+                  style={videoFrameStyle}
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  title="動画の再生"
+                />
+              ) : (
+                <video
+                  key={lightboxItem.id}
+                  src={`/api/photos/stream/${lightboxItem.id}`}
+                  className={styles.lightboxVideo}
+                  style={videoFrameStyle}
+                  controls
+                  playsInline
+                  autoPlay
+                  preload="metadata"
+                  poster={lightboxItem.thumbUrl}
+                  onError={() => setVideoFallback(true)}
+                />
+              )
             ) : (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={lightboxItem.viewUrl} alt="" className={styles.lightboxImage} />

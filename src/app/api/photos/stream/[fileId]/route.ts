@@ -16,9 +16,9 @@ const verifiedIds = new Map<string, number>()
 
 /**
  * このサイズ未満の公開ファイルは Google から直接配信できる
- * （これ以上はウイルススキャンの確認ページが挟まるため中継する）
+ * （これ以上はウイルススキャンの確認ページが挟まることがあるため中継する）
  */
-const DIRECT_STREAM_MAX_BYTES = 95 * 1024 * 1024
+const DIRECT_STREAM_MAX_BYTES = 25 * 1024 * 1024
 
 export async function GET(
   request: Request,
