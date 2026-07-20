@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import styles from './endRoll.module.css'
+import { reportError } from '../../lib/reportError'
 import { RisingBubbles } from '../ocean'
 import { SectionTitle } from '../ocean/SectionTitle'
 
@@ -34,7 +35,10 @@ export const EndRoll: React.FC = () => {
             controls
             playsInline
             preload="none"
-            onError={() => setFallback(true)}
+            onError={() => {
+              setFallback(true)
+              reportError('エンドロール再生（プレイヤー切替）', 'ネイティブ再生に失敗')
+            }}
           />
         )}
       </div>

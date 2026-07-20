@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styles from './photoShare.module.css'
 import { prepareImageForUpload } from './compressImage'
+import { reportError } from '../../lib/reportError'
 import { ExternalBrowserNotice } from './ExternalBrowserNotice'
 import { RisingBubbles } from '../ocean'
 import { SectionTitle } from '../ocean/SectionTitle'
@@ -206,7 +207,9 @@ export const PhotoShare: React.FC = () => {
       setPhotos(json.photos)
     } catch (e) {
       setPhotos((prev) => prev ?? [])
-      setLoadError(e instanceof Error ? e.message : '写真の取得に失敗しました')
+      const msg = e instanceof Error ? e.message : '写真の取得に失敗しました'
+      setLoadError(msg)
+      reportError('ギャラリー読み込み失敗', msg)
     } finally {
       setRefreshing(false)
     }
@@ -389,6 +392,10 @@ export const PhotoShare: React.FC = () => {
     if (failed.length > 0) {
       setUploadError(
         `${failed.length}件のアップロードに失敗しました（${firstError}）。もう一度お試しください。`
+      )
+      reportError(
+        'アップロード失敗',
+        `${failed.length}件失敗（成功${uploaded.length}件）: ${firstError} / 例: ${failed[0]?.file.name ?? ''} ${Math.round((failed[0]?.file.size ?? 0) / 1024 / 1024)}MB`
       )
     } else {
       setJustUploaded(true)
@@ -884,7 +891,10 @@ export const PhotoShare: React.FC = () => {
                   autoPlay
                   preload="metadata"
                   poster={lightboxItem.thumbUrl}
-                  onError={() => setVideoFallback(true)}
+                  onError={() => {
+                    setVideoFallback(true)
+                    reportError('動画再生（プレイヤー切替）', `id=${lightboxItem.id} ${lightboxItem.name}`)
+                  }}
                 />
               )
             ) : (
