@@ -30,8 +30,8 @@ export async function GET() {
       { ok: true, photos },
       {
         headers: {
-          // CDN に1分キャッシュ（新規投稿は投稿者自身の画面には即時反映される）
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+          // CDN に短くキャッシュ（長すぎると投稿後のリロードで件数が増えず不安にさせる）
+          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=45',
         },
       }
     )

@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styles from './photoShare.module.css'
 import { prepareImageForUpload } from './compressImage'
+import { ExternalBrowserNotice } from './ExternalBrowserNotice'
 import { RisingBubbles } from '../ocean'
 import { SectionTitle } from '../ocean/SectionTitle'
 import type { PhotosApiResponse, SharedPhoto } from './types'
@@ -17,6 +18,8 @@ const MAX_SELECT_DOWNLOAD = 100
 const SWIPE_THRESHOLD = 48
 /** 動画の上限サイズ（iPhoneの4K長尺も収まる） */
 const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024
+/** 直接アップロードに回す画像の上限（RAW等の大きい写真も可） */
+const MAX_IMAGE_BYTES = 100 * 1024 * 1024
 
 type Tab = 'image' | 'video'
 
@@ -25,6 +28,42 @@ interface PendingFile {
   file: File
   previewUrl: string
   isVideo: boolean
+}
+
+/** type が空でも拡張子で写真/動画を判定できるようにする */
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif', 'hif', 'avif', 'bmp', 'tiff', 'tif', 'dng', 'arw', 'cr2', 'cr3', 'nef', 'orf', 'rw2', 'raf', 'jfif']
+const VIDEO_EXTS = ['mp4', 'mov', 'm4v', 'webm', 'avi', 'mkv', '3gp', 'mts', 'wmv']
+
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', jfif: 'image/jpeg', png: 'image/png',
+  gif: 'image/gif', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif',
+  hif: 'image/heif', avif: 'image/avif', bmp: 'image/bmp', tiff: 'image/tiff',
+  tif: 'image/tiff', dng: 'image/x-adobe-dng', arw: 'image/x-sony-arw',
+  cr2: 'image/x-canon-cr2', cr3: 'image/x-canon-cr3', nef: 'image/x-nikon-nef',
+  orf: 'image/x-olympus-orf', rw2: 'image/x-panasonic-rw2', raf: 'image/x-fuji-raf',
+  mp4: 'video/mp4', mov: 'video/quicktime', m4v: 'video/x-m4v', webm: 'video/webm',
+  avi: 'video/x-msvideo', mkv: 'video/x-matroska', '3gp': 'video/3gpp',
+  mts: 'video/mp2t', wmv: 'video/x-ms-wmv',
+}
+
+function extOf(name: string): string {
+  const i = name.lastIndexOf('.')
+  return i >= 0 ? name.slice(i + 1).toLowerCase() : ''
+}
+
+function classifyFile(file: File): 'image' | 'video' | null {
+  if (file.type.startsWith('video/')) return 'video'
+  if (file.type.startsWith('image/')) return 'image'
+  const ext = extOf(file.name)
+  if (VIDEO_EXTS.includes(ext)) return 'video'
+  if (IMAGE_EXTS.includes(ext)) return 'image'
+  return null
+}
+
+/** Drive に渡す MIME（一覧の image/video 判定にも使われるため必ず補完する） */
+function mimeFor(file: File, kind: 'image' | 'video'): string {
+  if (file.type.startsWith('image/') || file.type.startsWith('video/')) return file.type
+  return MIME_BY_EXT[extOf(file.name)] ?? (kind === 'video' ? 'video/mp4' : 'image/jpeg')
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -218,26 +257,32 @@ export const PhotoShare: React.FC = () => {
     if (!list || list.length === 0) return
     setUploadError('')
     setJustUploaded(false)
-    let tooBigVideo = false
+    let tooBig = 0
+    let unknown = 0
     setPending((prev) => {
       const next = [...prev]
       for (const file of Array.from(list)) {
-        const isVideo = file.type.startsWith('video/')
-        if (!file.type.startsWith('image/') && !isVideo) continue
-        if (isVideo && file.size > MAX_VIDEO_BYTES) {
-          tooBigVideo = true
+        const kind = classifyFile(file)
+        if (!kind) {
+          unknown++
+          continue
+        }
+        const maxBytes = kind === 'video' ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES
+        if (file.size > maxBytes) {
+          tooBig++
           continue
         }
         if (next.length >= MAX_SELECT_FILES) break
         const key = `${file.name}_${file.size}_${file.lastModified}`
         if (next.some((p) => p.key === key)) continue
-        next.push({ key, file, previewUrl: URL.createObjectURL(file), isVideo })
+        next.push({ key, file, previewUrl: URL.createObjectURL(file), isVideo: kind === 'video' })
       }
       return next
     })
-    if (tooBigVideo) {
-      setUploadError(`動画は ${formatBytes(MAX_VIDEO_BYTES)} 以下にしてください`)
-    }
+    const notes: string[] = []
+    if (tooBig > 0) notes.push(`${tooBig}件はサイズ上限（動画${formatBytes(MAX_VIDEO_BYTES)}・写真${formatBytes(MAX_IMAGE_BYTES)}）を超えているため外しました`)
+    if (unknown > 0) notes.push(`${unknown}件は写真・動画として認識できずスキップしました`)
+    if (notes.length > 0) setUploadError(notes.join('。'))
   }, [])
 
   const removePending = useCallback((key: string) => {
@@ -266,49 +311,58 @@ export const PhotoShare: React.FC = () => {
     const failed: PendingFile[] = []
     let firstError = ''
 
+    // Drive への直接アップロード（動画と、変換できない/大きい写真が通る）
+    const uploadDirect = async (item: PendingFile, kind: 'image' | 'video') => {
+      const sessRes = await fetch('/api/photos/upload-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: item.file.name,
+          mimeType: mimeFor(item.file, kind),
+          size: item.file.size,
+          uploaderName: uploaderName.trim(),
+        }),
+      })
+      const sess = await sessRes.json()
+      if (!sess.ok || !sess.uploadUrl) {
+        throw new Error(sess.error || 'アップロードの準備に失敗しました')
+      }
+      const created = await uploadVideoResumable(sess.uploadUrl, item.file, setFileProgress)
+      if (!created.id) throw new Error('アップロード結果を取得できませんでした')
+      const fin = await finalizeWithRetry(created.id)
+      return fin.photos ?? []
+    }
+
     for (const item of pending) {
       setFileProgress(0)
       try {
         if (item.isVideo) {
-          // 動画: Drive へ直接アップロード（ホスティングのサイズ上限を通らない）
-          const sessRes = await fetch('/api/photos/upload-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fileName: item.file.name,
-              mimeType: item.file.type,
-              size: item.file.size,
-              uploaderName: uploaderName.trim(),
-            }),
-          })
-          const sess = await sessRes.json()
-          if (!sess.ok || !sess.uploadUrl) {
-            throw new Error(sess.error || 'アップロードの準備に失敗しました')
-          }
-          const created = await uploadVideoResumable(sess.uploadUrl, item.file, setFileProgress)
-          if (!created.id) throw new Error('アップロード結果を取得できませんでした')
-          const fin = await finalizeWithRetry(created.id)
-          uploaded.push(...(fin.photos ?? []))
+          uploaded.push(...(await uploadDirect(item, 'video')))
         } else {
           const prepared = await prepareImageForUpload(item.file)
-          const fd = new FormData()
-          fd.set('uploaderName', uploaderName.trim())
-          fd.append('photo', prepared.blob, prepared.fileName)
-          const res = await fetch('/api/photos', { method: 'POST', body: fd })
-          let json: PhotosApiResponse | null = null
-          try {
-            json = await res.json()
-          } catch {
-            // ホスティング側のエラー（413等）は JSON でないことがある
+          if (!prepared) {
+            // 変換できない・4MBに収まらない写真は Drive へ直接
+            uploaded.push(...(await uploadDirect(item, 'image')))
+          } else {
+            const fd = new FormData()
+            fd.set('uploaderName', uploaderName.trim())
+            fd.append('photo', prepared.blob, prepared.fileName)
+            const res = await fetch('/api/photos', { method: 'POST', body: fd })
+            let json: PhotosApiResponse | null = null
+            try {
+              json = await res.json()
+            } catch {
+              // ホスティング側のエラー（413等）は JSON でないことがある
+            }
+            if (!res.ok || !json?.ok || !json.photos?.length) {
+              const fallback =
+                res.status === 413
+                  ? '画像サイズが大きすぎます'
+                  : `送信に失敗しました（HTTP ${res.status}）`
+              throw new Error(json?.error || fallback)
+            }
+            uploaded.push(...json.photos)
           }
-          if (!res.ok || !json?.ok || !json.photos?.length) {
-            const fallback =
-              res.status === 413
-                ? '画像サイズが大きすぎます'
-                : `送信に失敗しました（HTTP ${res.status}）`
-            throw new Error(json?.error || fallback)
-          }
-          uploaded.push(...json.photos)
         }
         URL.revokeObjectURL(item.previewUrl)
       } catch (e) {
@@ -445,6 +499,7 @@ export const PhotoShare: React.FC = () => {
   return (
     <section className={styles.container}>
       <RisingBubbles count={24} />
+      <ExternalBrowserNotice />
       <SectionTitle en="Memories" ja="みんなの写真" />
 
       <p className={styles.lead}>
@@ -482,7 +537,7 @@ export const PhotoShare: React.FC = () => {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*,video/*"
+            accept="image/*,video/*,.heic,.heif,.hif,.avif,.dng,.arw,.cr2,.cr3,.nef,.orf,.rw2,.raf,.mov,.m4v,.3gp"
             multiple
             hidden
             onChange={(e) => handleFilesChosen(e.target.files)}

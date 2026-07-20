@@ -13,7 +13,7 @@ export const maxDuration = 30
  */
 
 const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024 // 2GB（iPhoneの4K長尺も収まる）
-const MAX_IMAGE_BYTES = 15 * 1024 * 1024
+const MAX_IMAGE_BYTES = 100 * 1024 * 1024 // RAW など大きい写真も受ける
 const MAX_UPLOADER_NAME_LEN = 60
 
 function sanitizeFileName(raw: string): string {

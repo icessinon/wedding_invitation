@@ -1,10 +1,10 @@
 /**
  * アップロード前に画像を JPEG に再エンコードして縮小する。
- * - 長辺 2560px / 品質 0.85（閲覧・ダウンロードには十分）
- * - ホスティングのリクエスト上限（Vercel は約 4.5MB）を超えないよう、
- *   仕上がりが 4MB を超える場合はさらに強く縮小し、最終的に 4MB 以下を保証する
+ * - 長辺 2560px / 品質 0.85（閲覧・ダウンロードには十分で、通信量と
+ *   ホスティングのリクエスト上限（Vercel は約 4.5MB）に収まりやすい）
  * - HEIC など、そのままではブラウザ表示できない形式も可能なら JPEG に変換する
- * - デコードできない場合、元ファイルが 4MB 以下ならそのまま送り、超える場合はエラー
+ * - 変換できず 4MB を超える場合は null を返す
+ *   （呼び出し側が Drive への直接アップロードにフォールバックする）
  */
 
 /** ホスティングのリクエストボディ上限（約4.5MB）に対する安全マージン */
@@ -81,7 +81,11 @@ export interface PreparedUpload {
   fileName: string
 }
 
-export async function prepareImageForUpload(file: File): Promise<PreparedUpload> {
+/**
+ * 通常のアップロード（/api/photos 直送）に使える形へ変換する。
+ * 4MB 以下にできない場合は null（直接アップロードへフォールバック）。
+ */
+export async function prepareImageForUpload(file: File): Promise<PreparedUpload | null> {
   const original: PreparedUpload = { blob: file, fileName: file.name }
   const isWebSafe = WEB_SAFE_TYPES.includes(file.type)
 
@@ -90,18 +94,16 @@ export async function prepareImageForUpload(file: File): Promise<PreparedUpload>
 
   const source = await decodeImage(file)
   if (!source) {
-    // 変換できない形式: 上限内なら原本のまま、超えるなら諦める
-    if (file.size <= MAX_UPLOAD_BYTES) return original
-    throw new Error(
-      `「${file.name}」は形式を変換できず、サイズが大きいため送信できません`
-    )
+    // 変換できない形式（RAW・一部のHEIC等）: 上限内なら原本、超えるなら直接アップロードへ
+    // type が image/* でないと通常経路のサーバー検証を通らないため直接アップロードへ
+    return file.type.startsWith('image/') && file.size <= MAX_UPLOAD_BYTES ? original : null
   }
 
   const { width, height } = sourceSize(source)
   if (!width || !height) {
     if ('close' in source) source.close()
-    if (file.size <= MAX_UPLOAD_BYTES) return original
-    throw new Error(`「${file.name}」を読み込めませんでした`)
+    // type が image/* でないと通常経路のサーバー検証を通らないため直接アップロードへ
+    return file.type.startsWith('image/') && file.size <= MAX_UPLOAD_BYTES ? original : null
   }
 
   let best: Blob | null = null
@@ -114,8 +116,8 @@ export async function prepareImageForUpload(file: File): Promise<PreparedUpload>
   if ('close' in source) source.close()
 
   if (!best) {
-    if (file.size <= MAX_UPLOAD_BYTES) return original
-    throw new Error(`「${file.name}」の変換に失敗しました`)
+    // type が image/* でないと通常経路のサーバー検証を通らないため直接アップロードへ
+    return file.type.startsWith('image/') && file.size <= MAX_UPLOAD_BYTES ? original : null
   }
 
   // 再エンコードで大きくなってしまったら元のまま（ただし上限内のときだけ）
@@ -123,9 +125,7 @@ export async function prepareImageForUpload(file: File): Promise<PreparedUpload>
     return original
   }
 
-  if (best.size > MAX_UPLOAD_BYTES) {
-    throw new Error(`「${file.name}」はサイズが大きすぎて送信できません`)
-  }
+  if (best.size > MAX_UPLOAD_BYTES) return null
 
   const base = file.name.replace(/\.[^.]+$/, '') || 'photo'
   return { blob: best, fileName: `${base}.jpg` }

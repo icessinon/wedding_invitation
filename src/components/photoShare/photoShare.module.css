@@ -10,6 +10,50 @@
   overflow: hidden;
 }
 
+/* アプリ内ブラウザ向けの案内バナー */
+.externalNotice {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  margin: 0 auto 1.6rem;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid rgba(216, 189, 138, 0.75);
+  border-radius: 10px;
+  background: rgba(216, 189, 138, 0.14);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.externalNoticeText {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  color: rgba(250, 245, 232, 0.98);
+}
+
+.externalNoticeSub {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(238, 222, 184, 0.95);
+}
+
+.externalNoticeButton {
+  padding: 0.55rem 1.6rem;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d8bd8a 0%, #c3a465 100%);
+  color: #1d2f42;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
 .lead {
   margin: 1.6rem auto 2.2rem;
   text-align: center;
