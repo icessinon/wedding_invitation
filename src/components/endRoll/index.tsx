@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useState } from 'react'
 import styles from './endRoll.module.css'
 import { RisingBubbles } from '../ocean'
 import { SectionTitle } from '../ocean/SectionTitle'
@@ -6,26 +8,42 @@ import { SectionTitle } from '../ocean/SectionTitle'
 /** Drive にアップロード済みのエンドロールムービーのファイルID */
 const ENDROLL_FILE_ID = '15qaL1-D9QCaNNszKHS4SUBVS_AUE565A'
 
-export const EndRoll: React.FC = () => (
-  <section className={styles.container}>
-    <RisingBubbles count={20} />
-    <SectionTitle en="End Roll" ja="エンドロールムービー" />
+export const EndRoll: React.FC = () => {
+  const [fallback, setFallback] = useState(false)
 
-    <div className={styles.videoWrap}>
-      <video
-        className={styles.video}
-        src={`/api/photos/stream/${ENDROLL_FILE_ID}`}
-        poster={`https://lh3.googleusercontent.com/d/${ENDROLL_FILE_ID}=w1280`}
-        controls
-        playsInline
-        preload="none"
-      />
-    </div>
+  return (
+    <section className={styles.container}>
+      <RisingBubbles count={20} />
+      <SectionTitle en="End Roll" ja="エンドロールムービー" />
 
-    <p className={styles.note}>披露宴で上映したエンドロールをご覧いただけます</p>
-    <p className={styles.rotateHint}>
-      <span className={styles.rotateIcon} aria-hidden="true">📱</span>
-      スマホを横向きにしてご覧いただくのがおすすめです
-    </p>
-  </section>
-)
+      <div className={styles.videoWrap}>
+        {fallback ? (
+          // ネイティブ再生できない環境では Drive のプレイヤーで再生
+          <iframe
+            src={`https://drive.google.com/file/d/${ENDROLL_FILE_ID}/preview`}
+            className={styles.video}
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            title="エンドロールムービー"
+          />
+        ) : (
+          <video
+            className={styles.video}
+            src={`/api/photos/stream/${ENDROLL_FILE_ID}`}
+            poster={`https://lh3.googleusercontent.com/d/${ENDROLL_FILE_ID}=w1280`}
+            controls
+            playsInline
+            preload="none"
+            onError={() => setFallback(true)}
+          />
+        )}
+      </div>
+
+      <p className={styles.note}>披露宴で上映したエンドロールをご覧いただけます</p>
+      <p className={styles.rotateHint}>
+        <span className={styles.rotateIcon} aria-hidden="true">📱</span>
+        スマホを横向きにしてご覧いただくのがおすすめです
+      </p>
+    </section>
+  )
+}

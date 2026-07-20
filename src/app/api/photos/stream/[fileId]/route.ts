@@ -14,12 +14,6 @@ export const maxDuration = 300
 /** 共有フォルダ内と確認済みの fileId → ファイルサイズ（プロセス内キャッシュ） */
 const verifiedIds = new Map<string, number>()
 
-/**
- * このサイズ未満の公開ファイルは Google から直接配信できる
- * （これ以上はウイルススキャンの確認ページが挟まることがあるため中継する）
- */
-const DIRECT_STREAM_MAX_BYTES = 25 * 1024 * 1024
-
 export async function GET(
   request: Request,
   context: { params: Promise<{ fileId: string }> }
@@ -49,13 +43,9 @@ export async function GET(
       verifiedIds.set(fileId, fileSize)
     }
 
-    // 小さいファイルは Google から直接配信（サーバーを経由しないぶん速く・軽く）
-    if (fileSize > 0 && fileSize < DIRECT_STREAM_MAX_BYTES) {
-      return NextResponse.redirect(
-        `https://drive.google.com/uc?export=download&id=${fileId}`,
-        302
-      )
-    }
+    // メディア再生は中継が最も確実（Google の直リンクは <video> からの読み込みを弾くことがある）。
+    // 長い動画で接続が切れてもブラウザが Range で続きから再開し、
+    // それでも再生できない場合はクライアント側で Drive プレイヤーにフォールバックする。
 
     const tokenResult = await auth.getAccessToken()
     const token = typeof tokenResult === 'string' ? tokenResult : tokenResult?.token

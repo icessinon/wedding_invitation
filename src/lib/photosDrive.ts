@@ -62,7 +62,10 @@ export function toSharedPhoto(f: {
     viewUrl: isVideo
       ? `https://drive.google.com/file/d/${id}/preview`
       : `https://lh3.googleusercontent.com/d/${id}=w1920`,
-    downloadUrl: `https://drive.google.com/uc?export=download&id=${id}`,
+    // 動画は大容量でもスキャン確認ページを挟まない URL でダウンロードさせる
+    downloadUrl: isVideo
+      ? `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`
+      : `https://drive.google.com/uc?export=download&id=${id}`,
   }
 }
 

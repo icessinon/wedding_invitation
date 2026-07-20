@@ -25,6 +25,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: contain;
+  border: none;
   background: #000;
   border-radius: 4px;
 }

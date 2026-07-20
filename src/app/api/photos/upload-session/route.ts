@@ -12,7 +12,7 @@ export const maxDuration = 30
  * ホスティングのリクエストサイズ上限（Vercel 約4.5MB）を通らない。
  */
 
-const MAX_VIDEO_BYTES = 1024 * 1024 * 1024 // 1GB
+const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024 // 2GB（iPhoneの4K長尺も収まる）
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024
 const MAX_UPLOADER_NAME_LEN = 60
 
