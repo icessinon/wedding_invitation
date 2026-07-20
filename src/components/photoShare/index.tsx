@@ -695,12 +695,28 @@ export const PhotoShare: React.FC = () => {
             </button>
           )}
         </span>
-        {tab === 'image' && images.length > 0 && (
-          <a className={styles.bulkDownload} href="/api/photos/zip" onClick={showZipToast}>
+        {tab === 'image' && images.length > 0 && images.length <= 100 && (
+          <a className={styles.bulkDownload} href="/api/photos/zip?part=1" onClick={showZipToast}>
             まとめてダウンロード
           </a>
         )}
       </div>
+
+      {tab === 'image' && images.length > 100 && (
+        <div className={styles.bulkParts}>
+          <span className={styles.bulkPartsLabel}>まとめてダウンロード（100枚ずつ）:</span>
+          {Array.from({ length: Math.ceil(images.length / 100) }, (_, i) => (
+            <a
+              key={i}
+              className={styles.bulkDownload}
+              href={`/api/photos/zip?part=${i + 1}`}
+              onClick={showZipToast}
+            >
+              {i * 100 + 1}〜{Math.min((i + 1) * 100, images.length)}
+            </a>
+          ))}
+        </div>
+      )}
 
       {tab === 'image' && images.length > 50 && (
         <p className={styles.zipNote}>
