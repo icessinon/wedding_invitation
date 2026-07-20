@@ -173,6 +173,8 @@ export const PhotoShare: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false)
   /** まとめて/選択ダウンロード開始のフィードバック */
   const [zipStarted, setZipStarted] = useState(false)
+  /** 一括ダウンロード前の確認ダイアログ */
+  const [confirmDownload, setConfirmDownload] = useState<{ url: string; count: number } | null>(null)
 
   const [uploaderName, setUploaderName] = useState('')
   const [pending, setPending] = useState<PendingFile[]>([])
@@ -487,6 +489,21 @@ export const PhotoShare: React.FC = () => {
     window.setTimeout(() => setZipStarted(false), 7000)
   }, [])
 
+  const askBulkDownload = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, url: string, count: number) => {
+      e.preventDefault()
+      setConfirmDownload({ url, count })
+    },
+    []
+  )
+
+  const runConfirmedDownload = useCallback(() => {
+    if (!confirmDownload) return
+    window.location.href = confirmDownload.url
+    setConfirmDownload(null)
+    showZipToast()
+  }, [confirmDownload, showZipToast])
+
   const downloadSelected = useCallback(() => {
     if (selectedIds.size === 0) return
     const ids = [...selectedIds].join(',')
@@ -696,7 +713,11 @@ export const PhotoShare: React.FC = () => {
           )}
         </span>
         {tab === 'image' && images.length > 0 && images.length <= 100 && (
-          <a className={styles.bulkDownload} href="/api/photos/zip?part=1" onClick={showZipToast}>
+          <a
+            className={styles.bulkDownload}
+            href="/api/photos/zip?part=1"
+            onClick={(e) => askBulkDownload(e, '/api/photos/zip?part=1', images.length)}
+          >
             まとめてダウンロード
           </a>
         )}
@@ -705,16 +726,20 @@ export const PhotoShare: React.FC = () => {
       {tab === 'image' && images.length > 100 && (
         <div className={styles.bulkParts}>
           <span className={styles.bulkPartsLabel}>まとめてダウンロード（100枚ずつ）:</span>
-          {Array.from({ length: Math.ceil(images.length / 100) }, (_, i) => (
-            <a
-              key={i}
-              className={styles.bulkDownload}
-              href={`/api/photos/zip?part=${i + 1}`}
-              onClick={showZipToast}
-            >
-              {i * 100 + 1}〜{Math.min((i + 1) * 100, images.length)}
-            </a>
-          ))}
+          {Array.from({ length: Math.ceil(images.length / 100) }, (_, i) => {
+            const count = Math.min((i + 1) * 100, images.length) - i * 100
+            const url = `/api/photos/zip?part=${i + 1}`
+            return (
+              <a
+                key={i}
+                className={styles.bulkDownload}
+                href={url}
+                onClick={(e) => askBulkDownload(e, url, count)}
+              >
+                {i * 100 + 1}〜{Math.min((i + 1) * 100, images.length)}
+              </a>
+            )
+          })}
         </div>
       )}
 
@@ -850,6 +875,37 @@ export const PhotoShare: React.FC = () => {
             </div>
           )}
         </>
+      )}
+
+      {/* ---- 一括ダウンロードの確認 ---- */}
+      {confirmDownload && (
+        <div className={styles.confirmOverlay} onClick={() => setConfirmDownload(null)}>
+          <div
+            className={styles.confirmBox}
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className={styles.confirmText}>
+              写真{confirmDownload.count}枚（約{Math.max(1, Math.round(confirmDownload.count * 1.1))}MB）を
+              <br />
+              ZIPで保存しますか？
+            </p>
+            <p className={styles.confirmSub}>Wi-Fi環境でのダウンロードがおすすめです</p>
+            <div className={styles.confirmActions}>
+              <button
+                type="button"
+                className={styles.confirmCancel}
+                onClick={() => setConfirmDownload(null)}
+              >
+                やめる
+              </button>
+              <button type="button" className={styles.confirmOk} onClick={runConfirmedDownload}>
+                保存する
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ---- ZIPダウンロード開始のトースト ---- */}

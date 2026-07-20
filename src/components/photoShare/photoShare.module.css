@@ -801,6 +801,80 @@
   color: rgba(250, 250, 248, 0.55);
 }
 
+/* 一括ダウンロードの確認ダイアログ */
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  background: rgba(4, 14, 24, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: lightboxFade 0.2s ease;
+}
+
+.confirmBox {
+  width: min(92vw, 380px);
+  padding: 1.8rem 1.5rem 1.4rem;
+  border-radius: 14px;
+  border: 1px solid rgba(216, 189, 138, 0.6);
+  background: #10314b;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.confirmText {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.9;
+  letter-spacing: 0.05em;
+  color: rgba(250, 250, 248, 0.98);
+}
+
+.confirmSub {
+  margin: 0.7rem 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: rgba(238, 222, 184, 0.9);
+}
+
+.confirmActions {
+  margin-top: 1.4rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.confirmCancel {
+  flex: 1;
+  max-width: 140px;
+  padding: 0.75rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(250, 250, 248, 0.9);
+  font-size: 0.92rem;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.confirmOk {
+  flex: 1;
+  max-width: 140px;
+  padding: 0.75rem 0;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #d8bd8a 0%, #c3a465 100%);
+  color: #1d2f42;
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
 /* ZIP開始のトースト */
 .zipToast {
   position: fixed;
