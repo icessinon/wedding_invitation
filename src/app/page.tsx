@@ -1,5 +1,6 @@
 import { FirstView } from '../components/firstView'
 import { ThanksMessage } from '../components/thanksMessage'
+import { EndRoll } from '../components/endRoll'
 import { OceanMemories } from '../components/oceanMemories'
 import { PhotoCta } from '../components/photoCta'
 import { ThankYouClose } from '../components/thankYouClose'
@@ -17,6 +18,7 @@ export default function Home() {
         dateLabel="挙式の日"
       />
       <ThanksMessage />
+      <EndRoll />
       <OceanMemories />
       <PhotoCta />
       <ThankYouClose />
