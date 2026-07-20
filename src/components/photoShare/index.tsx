@@ -169,6 +169,9 @@ function formatBytes(bytes: number): string {
 export const PhotoShare: React.FC = () => {
   const [photos, setPhotos] = useState<SharedPhoto[] | null>(null)
   const [loadError, setLoadError] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
+  /** まとめて/選択ダウンロード開始のフィードバック */
+  const [zipStarted, setZipStarted] = useState(false)
 
   const [uploaderName, setUploaderName] = useState('')
   const [pending, setPending] = useState<PendingFile[]>([])
@@ -193,6 +196,7 @@ export const PhotoShare: React.FC = () => {
 
   const loadPhotos = useCallback(async () => {
     setLoadError('')
+    setRefreshing(true)
     try {
       const res = await fetch('/api/photos')
       const json: PhotosApiResponse = await res.json()
@@ -203,6 +207,8 @@ export const PhotoShare: React.FC = () => {
     } catch (e) {
       setPhotos((prev) => prev ?? [])
       setLoadError(e instanceof Error ? e.message : '写真の取得に失敗しました')
+    } finally {
+      setRefreshing(false)
     }
   }, [])
 
@@ -388,6 +394,11 @@ export const PhotoShare: React.FC = () => {
       setJustUploaded(true)
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
+    // 投稿した種類のタブ・先頭ページに切り替えて、自分の投稿がすぐ見えるようにする
+    if (uploaded.length > 0) {
+      setTab(uploaded.some((p) => p.kind !== 'video') ? 'image' : 'video')
+      setPage(0)
+    }
     setUploading(false)
   }, [uploading, pending, uploaderName])
 
@@ -464,11 +475,30 @@ export const PhotoShare: React.FC = () => {
     })
   }, [])
 
+  const showZipToast = useCallback(() => {
+    setZipStarted(true)
+    window.setTimeout(() => setZipStarted(false), 7000)
+  }, [])
+
   const downloadSelected = useCallback(() => {
     if (selectedIds.size === 0) return
     const ids = [...selectedIds].join(',')
     window.location.href = `/api/photos/zip?ids=${encodeURIComponent(ids)}`
-  }, [selectedIds])
+    setSelectedIds(new Set())
+    showZipToast()
+  }, [selectedIds, showZipToast])
+
+  // 隣の写真を先読みして、スワイプ時に待たせない
+  useEffect(() => {
+    if (lightboxIndex === null || currentList.length < 2) return
+    for (const offset of [1, -1]) {
+      const neighbor =
+        currentList[(lightboxIndex + offset + currentList.length) % currentList.length]
+      if (neighbor && neighbor.kind !== 'video') {
+        new Image().src = neighbor.viewUrl
+      }
+    }
+  }, [lightboxIndex, currentList])
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0]
@@ -641,21 +671,45 @@ export const PhotoShare: React.FC = () => {
 
       {/* ---- ギャラリー ---- */}
       <div className={styles.galleryHeader}>
-        <span className={styles.galleryCount}>
-          {tab === 'image' && images.length > 0 ? `${images.length}枚の思い出` : ''}
-          {tab === 'video' && videos.length > 0 ? `${videos.length}本の思い出` : ''}
+        <span className={styles.galleryCountGroup}>
+          <span className={styles.galleryCount}>
+            {tab === 'image' && images.length > 0 ? `${images.length}枚の思い出` : ''}
+            {tab === 'video' && videos.length > 0 ? `${videos.length}本の思い出` : ''}
+          </span>
+          {photos !== null && (
+            <button
+              type="button"
+              className={styles.refreshButton}
+              onClick={loadPhotos}
+              disabled={refreshing}
+              aria-label="一覧を更新"
+            >
+              {refreshing ? '更新中…' : '↻ 更新'}
+            </button>
+          )}
         </span>
         {tab === 'image' && images.length > 0 && (
-          <a className={styles.bulkDownload} href="/api/photos/zip">
+          <a className={styles.bulkDownload} href="/api/photos/zip" onClick={showZipToast}>
             まとめてダウンロード
           </a>
         )}
       </div>
 
+      {tab === 'image' && images.length > 50 && (
+        <p className={styles.zipNote}>
+          ※まとめてダウンロードは容量が大きいため Wi-Fi でのご利用がおすすめです
+        </p>
+      )}
+
       {photos === null && (
-        <div className={styles.stateBox}>
-          <span className={styles.spinner} aria-hidden="true" />
-          <p>読み込んでいます…</p>
+        <div className={styles.gallery} aria-hidden="true">
+          {Array.from({ length: 12 }, (_, i) => (
+            <div
+              key={i}
+              className={styles.skeleton}
+              style={{ height: 110 + ((i * 47) % 90) }}
+            />
+          ))}
         </div>
       )}
 
@@ -775,6 +829,13 @@ export const PhotoShare: React.FC = () => {
         </>
       )}
 
+      {/* ---- ZIPダウンロード開始のトースト ---- */}
+      {zipStarted && (
+        <div className={styles.zipToast} role="status">
+          ZIPを作成しています… まもなくダウンロードが始まります
+        </div>
+      )}
+
       {/* ---- 選択ダウンロードの追従バー ---- */}
       {selectedIds.size > 0 && (
         <div className={styles.selectionBar}>
@@ -828,7 +889,18 @@ export const PhotoShare: React.FC = () => {
               )
             ) : (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={lightboxItem.viewUrl} alt="" className={styles.lightboxImage} />
+              <img
+                src={lightboxItem.viewUrl}
+                alt=""
+                className={styles.lightboxImage}
+                style={{
+                  // 高解像度版の読み込み中はサムネイルを下敷きにして待たせない
+                  backgroundImage: `url(${lightboxItem.thumbUrl})`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              />
             )}
             <div className={styles.lightboxBar}>
               {lightboxItem.kind === 'video' && currentList.length > 1 && (
@@ -848,6 +920,9 @@ export const PhotoShare: React.FC = () => {
                 </button>
               )}
             </div>
+            {lightboxItem.kind !== 'video' && (
+              <p className={styles.lightboxHint}>写真を長押しすると端末に保存できます</p>
+            )}
             {/* 写真のときだけ左右の矢印を重ねる（動画はプレイヤーの操作と被るためバー側に） */}
             {lightboxItem.kind !== 'video' && currentList.length > 1 && (
               <>
