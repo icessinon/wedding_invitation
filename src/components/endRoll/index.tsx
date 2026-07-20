@@ -23,5 +23,9 @@ export const EndRoll: React.FC = () => (
     </div>
 
     <p className={styles.note}>披露宴で上映したエンドロールをご覧いただけます</p>
+    <p className={styles.rotateHint}>
+      <span className={styles.rotateIcon} aria-hidden="true">📱</span>
+      スマホを横向きにしてご覧いただくのがおすすめです
+    </p>
   </section>
 )
