@@ -67,25 +67,35 @@ export function buildServiceAccountAuth(scopes: readonly string[]): RsvpGoogleAu
   })
 }
 
+let cachedSheetsAuth: RsvpGoogleAuth | null = null
+let cachedDriveAuth: DriveAuth | null = null
+
 /** スプレッドシート用（サービスアカウントのみ） */
 export function getSheetsAuth(): RsvpGoogleAuth {
-  return buildServiceAccountAuth([SCOPE_SHEETS])
+  if (!cachedSheetsAuth) {
+    cachedSheetsAuth = buildServiceAccountAuth([SCOPE_SHEETS])
+  }
+  return cachedSheetsAuth
 }
 
 /**
  * Drive 用: OAuth リフレッシュトークンがあればユーザーの容量で保存。
- * なければサービスアカウント（共有ドライブ上のフォルダが必須）
+ * なければサービスアカウント（共有ドライブ上のフォルダが必須）。
+ * クライアントをプロセス内で再利用し、アクセストークンの再取得を避ける。
  */
 export function getDriveAuth(): DriveAuth {
+  if (cachedDriveAuth) return cachedDriveAuth
   const rt = process.env.GOOGLE_DRIVE_OAUTH_REFRESH_TOKEN?.trim()
   const cid = process.env.GOOGLE_DRIVE_OAUTH_CLIENT_ID?.trim()
   const cs = process.env.GOOGLE_DRIVE_OAUTH_CLIENT_SECRET?.trim()
   if (rt && cid && cs) {
     const oauth2 = new google.auth.OAuth2(cid, cs)
     oauth2.setCredentials({ refresh_token: rt })
-    return oauth2
+    cachedDriveAuth = oauth2
+  } else {
+    cachedDriveAuth = buildServiceAccountAuth([SCOPE_DRIVE])
   }
-  return buildServiceAccountAuth([SCOPE_DRIVE])
+  return cachedDriveAuth
 }
 
 export function extractGoogleApiMessage(e: unknown): string {

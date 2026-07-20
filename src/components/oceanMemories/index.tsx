@@ -89,7 +89,8 @@ export const OceanMemories: React.FC = () => {
           json.photos
             .filter((p) => p.kind !== 'video') // アルバムは写真のみ
             .slice(0, MAX_PHOTOS)
-            .map((p) => ({ url: p.thumbUrl, uploader: p.uploader }))
+            // アルバムのカードは小さいので軽いサムネイルで十分
+            .map((p) => ({ url: p.thumbUrl.replace('=w640', '=w480'), uploader: p.uploader }))
         )
       })
       .catch(() => {

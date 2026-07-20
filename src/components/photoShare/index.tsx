@@ -561,7 +561,7 @@ export const PhotoShare: React.FC = () => {
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={item.thumbUrl}
+                      src={item.thumbUrl.replace('=w640', '=w480').replace('=s640', '=s480')}
                       alt={item.uploader ? `${item.uploader}さんの${isVideo ? '動画' : '写真'}` : ''}
                       loading="lazy"
                       className={styles.galleryImage}

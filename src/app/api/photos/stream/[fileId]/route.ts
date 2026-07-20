@@ -11,8 +11,14 @@ export const maxDuration = 300
  * Range リクエスト（シーク）も Drive にそのまま転送する。
  */
 
-/** 共有フォルダ内と確認済みの fileId（プロセス内キャッシュ） */
-const verifiedIds = new Map<string, boolean>()
+/** 共有フォルダ内と確認済みの fileId → ファイルサイズ（プロセス内キャッシュ） */
+const verifiedIds = new Map<string, number>()
+
+/**
+ * このサイズ未満の公開ファイルは Google から直接配信できる
+ * （これ以上はウイルススキャンの確認ページが挟まるため中継する）
+ */
+const DIRECT_STREAM_MAX_BYTES = 95 * 1024 * 1024
 
 export async function GET(
   request: Request,
@@ -27,18 +33,28 @@ export async function GET(
     const auth = getDriveAuth()
     const drive = google.drive({ version: 'v3', auth })
 
-    if (!verifiedIds.get(fileId)) {
+    let fileSize = verifiedIds.get(fileId)
+    if (fileSize === undefined) {
       const folderId = await resolvePhotosFolderId(drive)
       const meta = await drive.files.get({
         fileId,
-        fields: 'id, mimeType, parents',
+        fields: 'id, mimeType, parents, size',
         supportsAllDrives: true,
       })
       const mime = meta.data.mimeType ?? ''
       if (!meta.data.parents?.includes(folderId) || !(mime.startsWith('video/') || mime.startsWith('image/'))) {
         return NextResponse.json({ ok: false, error: '対象外のファイルです' }, { status: 403 })
       }
-      verifiedIds.set(fileId, true)
+      fileSize = Number(meta.data.size ?? 0)
+      verifiedIds.set(fileId, fileSize)
+    }
+
+    // 小さいファイルは Google から直接配信（サーバーを経由しないぶん速く・軽く）
+    if (fileSize > 0 && fileSize < DIRECT_STREAM_MAX_BYTES) {
+      return NextResponse.redirect(
+        `https://drive.google.com/uc?export=download&id=${fileId}`,
+        302
+      )
     }
 
     const tokenResult = await auth.getAccessToken()
