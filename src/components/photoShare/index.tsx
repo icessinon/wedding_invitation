@@ -15,6 +15,8 @@ const UPLOADER_NAME_KEY = 'photo_uploader_name'
 const PAGE_SIZE = 24
 /** 選択ダウンロードの上限（URL長対策） */
 const MAX_SELECT_DOWNLOAD = 100
+/** この枚数までは共有シートでまとめてカメラロール保存、超えたらZIP */
+const SHARE_SAVE_MAX = 30
 /** スワイプ判定のしきい値（px） */
 const SWIPE_THRESHOLD = 48
 /** 動画の上限サイズ（iPhoneの4K長尺も収まる） */
@@ -507,61 +509,97 @@ export const PhotoShare: React.FC = () => {
   }, [confirmDownload, showZipToast])
 
   /**
-   * 写真1枚の保存。共有シート（iPhone/Android の「画像を保存」）を優先し、
-   * 使えない環境では画像ファイルのダウンロードにフォールバックする。
+   * 写真1枚〜数十枚の保存。共有シート（iPhone/Android の「画像を保存」）を優先し、
+   * 使えない環境では画像ファイルのダウンロード/ZIPにフォールバックする。
    */
-  const saveSinglePhoto = useCallback(async (photo: SharedPhoto) => {
-    if (savingPhoto) return
+  const savePhotosToDevice = useCallback(async (targets: SharedPhoto[]) => {
+    if (savingPhoto || targets.length === 0) return
     setSavingPhoto(true)
     try {
-      const res = await fetch(`/api/photos/stream/${photo.id}`)
-      if (!res.ok) throw new Error('fetch failed')
-      const blob = await res.blob()
-      const type = blob.type || 'image/jpeg'
-      const ext = type.includes('png') ? '.png' : type.includes('webp') ? '.webp' : '.jpg'
-      const file = new File([blob], `wedding_${photo.id.slice(0, 8)}${ext}`, { type })
+      // 並列4本で取得（枚数が多いときの待ち時間を短縮）
+      const queue = [...targets]
+      const files: File[] = []
+      let failed = 0
+      await Promise.all(
+        Array.from({ length: 4 }, async () => {
+          for (;;) {
+            const photo = queue.shift()
+            if (!photo) return
+            try {
+              const res = await fetch(`/api/photos/stream/${photo.id}`)
+              if (!res.ok) throw new Error('fetch failed')
+              const blob = await res.blob()
+              const type = blob.type || 'image/jpeg'
+              const ext = type.includes('png') ? '.png' : type.includes('webp') ? '.webp' : '.jpg'
+              files.push(new File([blob], `wedding_${photo.id.slice(0, 8)}${ext}`, { type }))
+            } catch {
+              failed++
+            }
+          }
+        })
+      )
+      if (files.length === 0) throw new Error('no files')
 
-      if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+      if (
+        failed === 0 &&
+        typeof navigator.canShare === 'function' &&
+        navigator.canShare({ files })
+      ) {
         try {
-          await navigator.share({ files: [file] })
+          await navigator.share({ files })
           return // 共有シートから「画像を保存」でカメラロールへ
         } catch (e) {
           if (e instanceof Error && e.name === 'AbortError') return // ユーザーがキャンセル
-          // 共有できなければダウンロードへフォールバック
+          // 共有できなければフォールバック
         }
       }
 
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = file.name
-      a.click()
-      URL.revokeObjectURL(url)
+      if (targets.length === 1) {
+        // 1枚: 画像ファイルとしてダウンロード
+        const url = URL.createObjectURL(files[0])
+        const a = document.createElement('a')
+        a.href = url
+        a.download = files[0].name
+        a.click()
+        URL.revokeObjectURL(url)
+      } else {
+        // 複数: ZIPにフォールバック
+        const ids = targets.map((p) => p.id).join(',')
+        window.location.href = `/api/photos/zip?ids=${encodeURIComponent(ids)}`
+        showZipToast()
+      }
     } catch {
-      // 最終フォールバック: 従来のダウンロードURL
-      window.location.href = photo.downloadUrl
+      // 最終フォールバック: 従来のダウンロードURL / ZIP
+      if (targets.length === 1) {
+        window.location.href = targets[0].downloadUrl
+      } else {
+        const ids = targets.map((p) => p.id).join(',')
+        window.location.href = `/api/photos/zip?ids=${encodeURIComponent(ids)}`
+        showZipToast()
+      }
     } finally {
       setSavingPhoto(false)
     }
-  }, [savingPhoto])
+  }, [savingPhoto, showZipToast])
+
+  const saveSinglePhoto = useCallback(
+    (photo: SharedPhoto) => savePhotosToDevice([photo]),
+    [savePhotosToDevice]
+  )
 
   const downloadSelected = useCallback(() => {
-    if (selectedIds.size === 0) return
-    // 1枚だけならZIPにせず、画像としてそのまま保存できるようにする
-    if (selectedIds.size === 1) {
-      const id = [...selectedIds][0]
-      const photo = (photos ?? []).find((p) => p.id === id)
-      if (photo) {
-        void saveSinglePhoto(photo)
-        setSelectedIds(new Set())
-        return
-      }
+    if (selectedIds.size === 0 || savingPhoto) return
+    const targets = (photos ?? []).filter((p) => selectedIds.has(p.id))
+    // 少数ならZIPにせず、共有シートでカメラロールにそのまま保存できるようにする
+    if (targets.length > 0 && targets.length <= SHARE_SAVE_MAX) {
+      void savePhotosToDevice(targets).then(() => setSelectedIds(new Set()))
+      return
     }
     const ids = [...selectedIds].join(',')
     window.location.href = `/api/photos/zip?ids=${encodeURIComponent(ids)}`
     setSelectedIds(new Set())
     showZipToast()
-  }, [selectedIds, photos, saveSinglePhoto, showZipToast])
+  }, [selectedIds, savingPhoto, photos, savePhotosToDevice, showZipToast])
 
   // 隣の写真を先読みして、スワイプ時に待たせない
   useEffect(() => {
@@ -970,8 +1008,13 @@ export const PhotoShare: React.FC = () => {
       {selectedIds.size > 0 && (
         <div className={styles.selectionBar}>
           <span className={styles.selectionCount}>{selectedIds.size}枚選択中</span>
-          <button type="button" className={styles.selectionSave} onClick={downloadSelected}>
-            保存する
+          <button
+            type="button"
+            className={styles.selectionSave}
+            onClick={downloadSelected}
+            disabled={savingPhoto}
+          >
+            {savingPhoto ? '準備中…' : '保存する'}
           </button>
           <button
             type="button"
