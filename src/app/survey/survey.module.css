@@ -1,0 +1,8 @@
+.page {
+  min-height: 100svh;
+  background: #16466a;
+  display: flex;
+  flex-direction: column;
+  padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+}

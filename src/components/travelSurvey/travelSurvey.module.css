@@ -1,0 +1,495 @@
+/* サイト全体のトーン（紺 #16466a × 金 #eedeb8）に合わせた旅行アンケート */
+
+.container {
+  width: min(100%, 640px);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  color: rgba(238, 222, 184, 0.95);
+}
+
+/* ── ヒーロー ─────────────────────────── */
+
+.hero {
+  text-align: center;
+  padding-top: 0.5rem;
+}
+
+.heroEyebrow {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 1.35rem;
+  color: rgba(238, 222, 184, 0.8);
+  margin: 0 0 0.4rem;
+}
+
+.heroTitle {
+  font-size: 1.5rem;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+.heroLead {
+  font-size: 0.9rem;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.82);
+  margin: 0;
+}
+
+/* ── カード共通 ───────────────────────── */
+
+.card,
+.chartCard,
+.answerList {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(238, 222, 184, 0.22);
+  border-radius: 14px;
+  padding: 1.4rem 1.2rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+/* ── フォーム ─────────────────────────── */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.fieldLabel {
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+.fieldHint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(238, 222, 184, 0.65);
+  letter-spacing: 0.06em;
+}
+
+.textInput {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 1rem;
+  color: rgba(238, 222, 184, 0.95);
+  background: rgba(11, 32, 51, 0.55);
+  border: 1px solid rgba(238, 222, 184, 0.3);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.textInput::placeholder {
+  color: rgba(238, 222, 184, 0.4);
+}
+
+.textInput:focus {
+  outline: 2px solid rgba(238, 222, 184, 0.55);
+  outline-offset: 1px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.chip,
+.monthChip {
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: rgba(238, 222, 184, 0.9);
+  background: rgba(11, 32, 51, 0.45);
+  border: 1px solid rgba(238, 222, 184, 0.35);
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip[aria-pressed='true'],
+.monthChip[aria-pressed='true'] {
+  background: #eedeb8;
+  border-color: #eedeb8;
+  color: #16466a;
+  font-weight: 600;
+}
+
+.monthChip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  line-height: 1.2;
+  padding: 0.45rem 0.9rem;
+  border-radius: 12px;
+}
+
+.monthChipYear {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.customRow {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.activityRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border-top: 1px dashed rgba(238, 222, 184, 0.25);
+  padding-top: 0.75rem;
+}
+
+.activityRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: rgba(11, 32, 51, 0.35);
+  border: 1px solid rgba(238, 222, 184, 0.18);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+}
+
+.activityRowLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.miniChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.miniChip {
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: rgba(238, 222, 184, 0.85);
+  background: rgba(11, 32, 51, 0.45);
+  border: 1px solid rgba(238, 222, 184, 0.3);
+  border-radius: 999px;
+  padding: 0.28rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.miniChip[aria-pressed='true'] {
+  background: #eedeb8;
+  border-color: #eedeb8;
+  color: #16466a;
+  font-weight: 600;
+}
+
+.addButton {
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: #16466a;
+  background: rgba(238, 222, 184, 0.92);
+  border: none;
+  border-radius: 10px;
+  padding: 0 1.1rem;
+  cursor: pointer;
+}
+
+.submitButton {
+  font: inherit;
+  font-size: 1.02rem;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  color: #16466a;
+  background: #eedeb8;
+  border: none;
+  border-radius: 999px;
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.submitButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #ffb3a7;
+}
+
+.success {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #9fd4b8;
+}
+
+/* ── 結果 ─────────────────────────────── */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  scroll-margin-top: 1rem;
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.resultsTitle {
+  font-size: 1.25rem;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.refreshButton {
+  font: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: rgba(238, 222, 184, 0.85);
+  background: transparent;
+  border: 1px solid rgba(238, 222, 184, 0.35);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  cursor: pointer;
+}
+
+.stateNote {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.75);
+}
+
+.statTile {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.statValue {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: rgba(238, 222, 184, 0.8);
+}
+
+/* ── グラフ共通 ───────────────────────── */
+
+.chartTitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 1.02rem;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  margin: 0 0 1.1rem;
+}
+
+.chartHint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.6);
+  white-space: nowrap;
+}
+
+.namesNote {
+  margin: 0.9rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.88);
+  border-top: 1px solid rgba(238, 222, 184, 0.18);
+  padding-top: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* ── 月別の縦棒グラフ ─────────────────── */
+
+.columns {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.column {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 0.3rem 0.1rem;
+  cursor: pointer;
+}
+
+.column[aria-pressed='true'] {
+  background: rgba(238, 222, 184, 0.1);
+}
+
+.columnCount {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(238, 222, 184, 0.95);
+}
+
+.columnTrack {
+  width: 100%;
+  max-width: 34px;
+  height: 130px;
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(238, 222, 184, 0.35);
+}
+
+.columnBar {
+  width: 100%;
+  background: #c08627;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.columnLabel {
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+
+.columnYear {
+  font-size: 0.6rem;
+  color: rgba(238, 222, 184, 0.55);
+}
+
+/* ── 旅行先の横棒グラフ ───────────────── */
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 6.5em 1fr 2em;
+  align-items: center;
+  gap: 0.6rem;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 0.25rem 0.3rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.barRow[aria-pressed='true'] {
+  background: rgba(238, 222, 184, 0.1);
+}
+
+.barLabel {
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barTrack {
+  height: 14px;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid rgba(238, 222, 184, 0.35);
+}
+
+.barFill {
+  height: 100%;
+  min-width: 3px;
+  background: #1ba08f;
+  border-radius: 0 4px 4px 0;
+  transition: width 0.3s ease;
+}
+
+.barCount {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.activityBarFill {
+  background: #977ee3;
+}
+
+/* ── 回答一覧 ─────────────────────────── */
+
+.answerListSummary {
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.answerItems {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.answerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-top: 1px solid rgba(238, 222, 184, 0.16);
+  padding-top: 0.85rem;
+}
+
+.answerName {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.answerDetail {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.78);
+  overflow-wrap: anywhere;
+}
