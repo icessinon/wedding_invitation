@@ -1,0 +1,703 @@
+/* サイト全体のトーン（紺 #16466a × 金 #eedeb8）に合わせた日程調整 */
+
+.container {
+  width: min(100%, 640px);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  color: rgba(238, 222, 184, 0.95);
+}
+
+/* ── ヒーロー ─────────────────────────── */
+
+.hero {
+  text-align: center;
+  padding-top: 0.5rem;
+}
+
+.heroEyebrow {
+  font-family: var(--font-dancing-script), cursive;
+  font-size: 1.35rem;
+  color: rgba(238, 222, 184, 0.8);
+  margin: 0 0 0.4rem;
+}
+
+.heroTitle {
+  font-size: 1.5rem;
+  letter-spacing: 0.14em;
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+.heroLead {
+  font-size: 0.9rem;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.82);
+  margin: 0;
+}
+
+.heroLink {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: rgba(238, 222, 184, 0.85);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ── カード共通 ───────────────────────── */
+
+.card,
+.chartCard,
+.answerList,
+.summaryCard {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(238, 222, 184, 0.22);
+  border-radius: 14px;
+  padding: 1.4rem 1.2rem;
+}
+
+.card,
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 1.02rem;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.sectionHint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.6);
+  white-space: nowrap;
+}
+
+/* ── アンケートのまとめ ───────────────── */
+
+.summaryBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.summaryLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0;
+  color: rgba(238, 222, 184, 0.85);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.1rem;
+}
+
+.rankList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rankItem {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: rgba(238, 222, 184, 0.88);
+  border-bottom: 1px dashed rgba(238, 222, 184, 0.16);
+  padding-bottom: 0.3rem;
+}
+
+.rankCount {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.columns {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.column {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.columnCount {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.columnTrack {
+  width: 100%;
+  max-width: 34px;
+  height: 84px;
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid rgba(238, 222, 184, 0.35);
+}
+
+.columnBar {
+  width: 100%;
+  background: #c08627;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.columnLabel {
+  font-size: 0.78rem;
+}
+
+/* ── フォーム ─────────────────────────── */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.fieldLabel {
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+.fieldHint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(238, 222, 184, 0.65);
+  letter-spacing: 0.06em;
+}
+
+.textInput {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 1rem;
+  color: rgba(238, 222, 184, 0.95);
+  background: rgba(11, 32, 51, 0.55);
+  border: 1px solid rgba(238, 222, 184, 0.3);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+}
+
+.textInput::placeholder {
+  color: rgba(238, 222, 184, 0.4);
+}
+
+.textInput:focus {
+  outline: 2px solid rgba(238, 222, 184, 0.55);
+  outline-offset: 1px;
+}
+
+/* ── 月タブとイベント候補 ─────────────── */
+
+.monthTabs {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  scrollbar-width: none;
+}
+
+.monthTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.monthTab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  font: inherit;
+  color: rgba(238, 222, 184, 0.9);
+  background: rgba(11, 32, 51, 0.45);
+  border: 1px solid rgba(238, 222, 184, 0.3);
+  border-radius: 12px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.monthTab[aria-pressed='true'] {
+  background: #eedeb8;
+  border-color: #eedeb8;
+  color: #16466a;
+  font-weight: 600;
+}
+
+.monthTabMonth {
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+}
+
+.monthTabTitle {
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.planCard {
+  background: rgba(11, 32, 51, 0.4);
+  border: 1px solid rgba(238, 222, 184, 0.2);
+  border-radius: 12px;
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.planHeading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.planMonth {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: rgba(238, 222, 184, 0.65);
+}
+
+.planTitle {
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.planMeta {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.88);
+}
+
+.planNote {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.7;
+  color: rgba(238, 222, 184, 0.6);
+}
+
+/* ── カレンダー ───────────────────────── */
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.calendarMonth {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.calendarPicked {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.6);
+}
+
+.navButton {
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: rgba(238, 222, 184, 0.9);
+  background: rgba(11, 32, 51, 0.45);
+  border: 1px solid rgba(238, 222, 184, 0.3);
+  border-radius: 999px;
+  width: 2.1rem;
+  height: 2.1rem;
+  cursor: pointer;
+}
+
+.navButton:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.6);
+  padding-bottom: 0.2rem;
+}
+
+.blank {
+  display: block;
+}
+
+.day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  font: inherit;
+  color: rgba(238, 222, 184, 0.92);
+  background: rgba(11, 32, 51, 0.45);
+  border: 1px solid rgba(238, 222, 184, 0.18);
+  border-radius: 10px;
+  aspect-ratio: 1 / 1;
+  padding: 0.15rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.day[aria-pressed='true'] {
+  background: #eedeb8;
+  border-color: #eedeb8;
+  color: #16466a;
+  font-weight: 600;
+}
+
+.dayAll {
+  border-color: #c08627;
+  box-shadow: 0 0 0 1px rgba(192, 134, 39, 0.6);
+}
+
+.dayNumber {
+  font-size: 0.88rem;
+  line-height: 1;
+}
+
+.dayCount {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #16466a;
+  background: #1ba08f;
+  border-radius: 999px;
+  padding: 0.12rem 0.26rem;
+}
+
+.day[aria-pressed='true'] .dayCount {
+  background: #16466a;
+  color: #eedeb8;
+}
+
+.dayTrack {
+  width: 70%;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(238, 222, 184, 0.18);
+  overflow: hidden;
+}
+
+.dayFill {
+  display: block;
+  height: 100%;
+  background: #1ba08f;
+  transition: width 0.3s ease;
+}
+
+.sunday {
+  color: #f4b3a7;
+}
+
+.saturday {
+  color: #a8cdf0;
+}
+
+.day[aria-pressed='true'].sunday,
+.day[aria-pressed='true'].saturday {
+  color: #16466a;
+}
+
+.calendarActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ghostButton {
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.85);
+  background: transparent;
+  border: 1px solid rgba(238, 222, 184, 0.3);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+}
+
+.namesNote {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.88);
+  border-top: 1px solid rgba(238, 222, 184, 0.18);
+  padding-top: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.submitButton {
+  font: inherit;
+  font-size: 1.02rem;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  color: #16466a;
+  background: #eedeb8;
+  border: none;
+  border-radius: 999px;
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.submitButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #ffb3a7;
+}
+
+.success {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #9fd4b8;
+}
+
+/* ── 結果 ─────────────────────────────── */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  scroll-margin-top: 1rem;
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.resultsTitle {
+  font-size: 1.25rem;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.refreshButton {
+  font: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: rgba(238, 222, 184, 0.85);
+  background: transparent;
+  border: 1px solid rgba(238, 222, 184, 0.35);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  cursor: pointer;
+}
+
+.stateNote {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.75);
+}
+
+.statTile {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.statValue {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: rgba(238, 222, 184, 0.8);
+}
+
+.chartTitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 1.02rem;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.chartHint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(238, 222, 184, 0.6);
+  white-space: nowrap;
+}
+
+/* ── 候補日リスト ─────────────────────── */
+
+.windowList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.windowItem {
+  display: grid;
+  grid-template-columns: 7.5em 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  border-top: 1px solid rgba(238, 222, 184, 0.16);
+  padding-top: 0.7rem;
+}
+
+.windowItem:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.windowDate {
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.windowMeta {
+  font-size: 0.8rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.78);
+  overflow-wrap: anywhere;
+}
+
+.windowCount {
+  font-size: 0.88rem;
+  color: rgba(238, 222, 184, 0.95);
+  margin-right: 0.4rem;
+}
+
+.windowBadge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #16466a;
+  background: #c08627;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  margin-right: 0.4rem;
+}
+
+.windowPlan {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: rgba(238, 222, 184, 0.6);
+}
+
+/* ── 回答一覧 ─────────────────────────── */
+
+.answerListSummary {
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.answerItems {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.answerItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-top: 1px solid rgba(238, 222, 184, 0.16);
+  padding-top: 0.85rem;
+}
+
+.answerName {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.answerDays {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: rgba(238, 222, 184, 0.6);
+}
+
+.answerDetail {
+  font-size: 0.82rem;
+  line-height: 1.8;
+  color: rgba(238, 222, 184, 0.78);
+  overflow-wrap: anywhere;
+}

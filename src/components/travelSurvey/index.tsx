@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   MAX_ACTIVITIES,
@@ -314,6 +315,9 @@ export function TravelSurvey() {
           <br />
           回答するとその場でみんなの結果に反映されます。
         </p>
+        <Link className={styles.heroLink} href="/schedule">
+          行ける日を選ぶ（日程アンケート）→
+        </Link>
       </header>
 
       <form className={styles.card} onSubmit={handleSubmit} noValidate>

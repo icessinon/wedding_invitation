@@ -39,6 +39,16 @@
   margin: 0;
 }
 
+.heroLink {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: rgba(238, 222, 184, 0.85);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 /* ── カード共通 ───────────────────────── */
 
 .card,
