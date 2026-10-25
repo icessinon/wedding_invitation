@@ -1,8 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "src/app/api/photos/**": {
-      "memory": 3009
-    }
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }
